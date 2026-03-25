@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v8.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v9.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v8.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v9.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1242,9 +1242,11 @@ async function runScrape() {
     addLog(`${source.name}: ${articles.length} found via [${method}] — ${newArticles.length} new, ${skipped} skipped`, 'ok');
 
     let newCount = 0;
-    for (const art of newArticles) {
-      existingUrls.add(art.url);
+    const CONCURRENCY = 4; // max parallel requests
+    newArticles.forEach(a => existingUrls.add(a.url));
 
+    // Process in parallel batches of CONCURRENCY
+    async function processArticle(art) {
       const fetched = await sbEdge('fetch_article', {
         url: art.url,
         source_id: source.id,
@@ -1253,17 +1255,24 @@ async function runScrape() {
         author: art.author || null,
         published_at: art.published_at || null
       });
-
-      if (!fetched || !fetched.article_id) continue;
+      if (!fetched || !fetched.article_id) return;
       newCount++;
       totalNew++;
-
+      addLog('  + ' + (fetched.title || art.url).substring(0, 60), 'ok');
       if (CFG.autoEmbed && fetched.article_id) {
-        const content = fetched.content || art.title || '';
-        if (content.length > 50) {
-          await sbEdge('embed', { article_id: fetched.article_id, text: content });
+        const text = fetched.content || art.title || '';
+        if (text.length > 50) {
+          await sbEdge('embed', { article_id: fetched.article_id, text });
         }
       }
+    }
+
+    // Run in batches
+    for (let i = 0; i < newArticles.length; i += CONCURRENCY) {
+      const batch = newArticles.slice(i, i + CONCURRENCY);
+      addLog(`${source.name}: processing articles ${i+1}-${Math.min(i+CONCURRENCY, newArticles.length)} of ${newArticles.length}…`, 'info');
+      await Promise.all(batch.map(art => processArticle(art)));
+      animateProgress(pct, pct + (step * batch.length / newArticles.length));
     }
 
     addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
