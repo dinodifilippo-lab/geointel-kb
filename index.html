@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v9.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v10.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v9.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v10.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1242,40 +1242,201 @@ async function runScrape() {
     addLog(`${source.name}: ${articles.length} found via [${method}] — ${newArticles.length} new, ${skipped} skipped`, 'ok');
 
     let newCount = 0;
-    const CONCURRENCY = 4; // max parallel requests
+    const CONCURRENCY = 4;
     newArticles.forEach(a => existingUrls.add(a.url));
 
-    // Process in parallel batches of CONCURRENCY
+    async function safeParseJSON(text) {
+      text = text.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+      try { return JSON.parse(text); } catch(e) {}
+      const s1 = text.indexOf('[');
+      const e1 = text.lastIndexOf(']');
+      if (s1 >= 0 && e1 > s1) {
+        try { return JSON.parse(text.substring(s1, e1+1)); } catch(e) {}
+      }
+      const s2 = text.indexOf('{');
+      const e2 = text.lastIndexOf('}');
+      if (s2 >= 0 && e2 > s2) {
+        try { return JSON.parse(text.substring(s2, e2+1)); } catch(e) {}
+      }
+      throw new Error('No valid JSON found');
+    }
+
     async function processArticle(art) {
-      const fetched = await sbEdge('fetch_article', {
-        url: art.url,
-        source_id: source.id,
-        original_language: source.language === 'auto' ? null : source.language,
-        title: art.title || null,
-        author: art.author || null,
-        published_at: art.published_at || null
-      });
-      if (!fetched || !fetched.article_id) return;
-      newCount++;
-      totalNew++;
-      addLog('  + ' + (fetched.title || art.url).substring(0, 60), 'ok');
-      if (CFG.autoEmbed && fetched.article_id) {
-        const text = fetched.content || art.title || '';
-        if (text.length > 50) {
-          await sbEdge('embed', { article_id: fetched.article_id, text });
+      try {
+        // Step 1: fetch content via Jina from browser (no timeout limit)
+        let rawContent = '';
+        try {
+          const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
+            headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
+            signal: AbortSignal.timeout(8000)
+          });
+          if (jinaRes.ok) {
+            const t = await jinaRes.text();
+            if (t.length > 200) rawContent = t;
+          }
+        } catch(e) {}
+
+        // Step 2: fallback to direct fetch
+        if (!rawContent) {
+          try {
+            const dRes = await fetch(art.url, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+              signal: AbortSignal.timeout(8000)
+            });
+            if (dRes.ok) rawContent = await dRes.text();
+          } catch(e) {}
         }
+
+        if (!rawContent || rawContent.length < 100) {
+          addLog('  skip (no content): ' + art.url.substring(0,60), 'warn');
+          return;
+        }
+
+        const isHtml = rawContent.trim().startsWith('<') || rawContent.includes('<html');
+        const contentType = isHtml ? 'HTML' : 'text';
+
+        // Step 3: extract via Claude from browser
+        const prompt = [
+          'Extract the article from this ' + contentType + '.',
+          'Return ONLY a raw JSON object, no markdown, no backticks.',
+          'Format: {"title":"...","author":"...","published_at":"...","content":"..."}',
+          'Rules: content=full article as plain text, author="N/A" if unknown, published_at=null if unknown.',
+          art.title ? 'Hint title: "' + art.title + '"' : '',
+          art.author && art.author !== 'N/A' ? 'Hint author: "' + art.author + '"' : '',
+          contentType + ':',
+          rawContent.substring(0, 14000)
+        ].filter(Boolean).join('\n');
+
+        const cRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': CFG.antKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 4000,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+
+        if (!cRes.ok) { addLog('  skip (Claude error): ' + art.url.substring(0,60), 'warn'); return; }
+        const cData = await cRes.json();
+        let extracted;
+        try { extracted = await safeParseJSON(cData.content[0].text); }
+        catch(e) { addLog('  skip (parse): ' + art.url.substring(0,60), 'warn'); return; }
+
+        // Use raw content if extraction gave nothing
+        if (!extracted.content || extracted.content.trim().length < 30) {
+          extracted.content = rawContent.replace(/\n{3,}/g, '\n\n').trim().substring(0, 8000);
+        }
+        if (!extracted.content || extracted.content.trim().length < 30) {
+          addLog('  skip (empty): ' + art.url.substring(0,60), 'warn'); return;
+        }
+
+        // Apply RSS hints for missing metadata
+        if ((!extracted.title || extracted.title === 'Untitled') && art.title) extracted.title = art.title;
+        if ((!extracted.author || extracted.author === 'N/A') && art.author) extracted.author = art.author;
+        if (!extracted.published_at && art.published_at) extracted.published_at = art.published_at;
+
+        // Step 4: detect language
+        let detectedLang = (source.language && source.language !== 'auto') ? source.language : null;
+        if (!detectedLang) {
+          try {
+            const lRes = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': CFG.antKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+              },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 5,
+                messages: [{ role: 'user', content: 'Reply with ONLY the ISO 639-1 two-letter code (en/it/fr/de/es/ar/zh/ru). Text: ' + extracted.content.substring(0,200) }]
+              })
+            });
+            if (lRes.ok) {
+              const lData = await lRes.json();
+              detectedLang = lData.content[0].text.trim().toLowerCase().substring(0,2);
+            }
+          } catch(e) { detectedLang = 'en'; }
+        }
+
+        // Step 5: translate if not IT or EN
+        let translated = false;
+        let content_translated = null;
+        const lang = (detectedLang || '').toLowerCase();
+        if (!['it','en'].includes(lang) && extracted.content.length > 80) {
+          try {
+            const tRes = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': CFG.antKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+              },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 4000,
+                messages: [{ role: 'user', content: 'Translate to English. Return ONLY the translated text.\n\n' + extracted.content }]
+              })
+            });
+            if (tRes.ok) {
+              const tData = await tRes.json();
+              const trans = tData.content[0].text || '';
+              if (trans.length > 50 && !trans.toLowerCase().includes("i don't see") && !trans.toLowerCase().includes("please provide")) {
+                content_translated = trans;
+                translated = true;
+              }
+            }
+          } catch(e) {}
+        }
+
+        // Step 6: save to Supabase from browser
+        const urlHash = btoa(encodeURIComponent(art.url)).substring(0,64);
+        const saveRes = await sbFetch('geo_articles', 'POST', {
+          source_id: source.id,
+          url: art.url,
+          url_hash: urlHash,
+          title: extracted.title || art.title || 'Untitled',
+          author: extracted.author || art.author || 'N/A',
+          original_language: detectedLang || 'en',
+          content_original: extracted.content,
+          content_translated,
+          translated,
+          published_at: extracted.published_at || art.published_at || null
+        });
+
+        if (!saveRes || !saveRes[0]) { addLog('  skip (save error): ' + art.url.substring(0,60), 'warn'); return; }
+        const articleId = saveRes[0].id;
+        newCount++;
+        totalNew++;
+        addLog('  + ' + (extracted.title || art.url).substring(0,60), 'ok');
+
+        // Step 7: embed if enabled
+        if (CFG.autoEmbed && articleId && extracted.content.length > 50) {
+          await sbEdge('embed', { article_id: articleId, text: extracted.content });
+        }
+
+      } catch(e) {
+        addLog('  error: ' + e.message.substring(0,80), 'err');
       }
     }
 
-    // Run in batches
+    // Run in parallel batches
     for (let i = 0; i < newArticles.length; i += CONCURRENCY) {
       const batch = newArticles.slice(i, i + CONCURRENCY);
-      addLog(`${source.name}: processing articles ${i+1}-${Math.min(i+CONCURRENCY, newArticles.length)} of ${newArticles.length}…`, 'info');
+      addLog(source.name + ': batch ' + (Math.floor(i/CONCURRENCY)+1) + '/' + Math.ceil(newArticles.length/CONCURRENCY) + ' — ' + batch.length + ' articles', 'info');
       await Promise.all(batch.map(art => processArticle(art)));
-      animateProgress(pct, pct + (step * batch.length / newArticles.length));
     }
 
-    addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
+
+        addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
     await sbFetch('geo_sources?id=eq.' + source.id, 'PATCH', { last_scraped_at: new Date().toISOString() });
   }
 
