@@ -248,6 +248,18 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .log-msg.err { color:var(–red); }
 .log-msg.info { color:var(–accent); }
 
+/* MULTI-SELECT */
+.article-card.selected { border-color:var(–accent); background:var(–accent-dim); }
+.article-card.selected::before { background:var(–accent); }
+.article-checkbox { width:16px; height:16px; accent-color:var(–accent); cursor:pointer; flex-shrink:0; margin-right:4px; }
+.select-bar { display:none; align-items:center; gap:10px; background:var(–surface2); border:1px solid var(–accent); padding:10px 16px; }
+.select-bar.visible { display:flex; }
+.select-count { color:var(–accent); font-size:12px; flex:1; }
+.btn-delete-sel { background:var(–red); border:none; color:#fff; font-family:var(–mono); font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; transition:opacity .2s; }
+.btn-delete-sel:hover { opacity:0.85; }
+.btn-delete-all { background:none; border:1px solid var(–red); color:var(–red); font-family:var(–mono); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; transition:all .2s; }
+.btn-delete-all:hover { background:var(–red-dim); }
+
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:var(–bg); }
 ::-webkit-scrollbar-thumb { background:var(–border2); border-radius:3px; }
@@ -405,6 +417,14 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
         <option value="30" selected>Last 30 days</option>
         <option value="365">All time</option>
       </select>
+      <button class="btn-outline" onclick="toggleSelectMode()" id="btn-select-mode">☐ Select</button>
+    </div>
+    <div class="select-bar" id="select-bar">
+      <span class="select-count" id="select-count">0 selected</span>
+      <button class="btn-outline" onclick="selectAllArticles()">Select All</button>
+      <button class="btn-outline" onclick="deselectAll()">Deselect All</button>
+      <button class="btn-delete-sel" onclick="deleteSelected()">🗑 Delete Selected</button>
+      <button class="btn-delete-all" onclick="deleteAllArticles()">⚠ Delete All</button>
     </div>
     <div class="articles-list" id="articles-list">
       <div class="empty-state"><div class="es-icon">📡</div><div class="es-text">No articles yet. Add sources and run a scrape.</div></div>
@@ -546,7 +566,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             <span class="config-val" id="cfg-total-src">—</span>
           </div>
           <div style="margin-top:8px">
-            <button class="btn-outline" style="width:100%;color:var(--red);border-color:var(--red)" onclick="confirmDeleteAll()">⚠ DELETE ALL ARTICLES</button>
+            <button class="btn-outline" style="width:100%;color:var(--red);border-color:var(--red)" onclick="deleteAllArticles()">⚠ DELETE ALL ARTICLES</button>
           </div>
         </div>
       </div>
@@ -960,9 +980,79 @@ document.getElementById('src-secret-name').addEventListener('input', function() 
 // ARTICLES
 // ═══════════════════════════════════════════════════════
 async function loadArticles() {
-  const arts = await sbFetch('geo_articles?order=scraped_at.desc&select=id,title,author,original_language,translated,scraped_at,published_at,source_id,url');
+  const arts = await sbFetch('geo_articles?order=scraped_at.desc&select=id,title,author,original_language,translated,scraped_at,published_at,source_id,url,content_original,content_translated');
   STATE.articles = arts || [];
   renderArticles(STATE.articles);
+}
+
+let selectMode = false;
+let selectedIds = new Set();
+
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  selectedIds.clear();
+  const btn = document.getElementById('btn-select-mode');
+  const bar = document.getElementById('select-bar');
+  btn.textContent = selectMode ? '✕ Cancel' : '☐ Select';
+  btn.style.borderColor = selectMode ? 'var(--accent)' : '';
+  btn.style.color = selectMode ? 'var(--accent)' : '';
+  bar.classList.toggle('visible', selectMode);
+  filterArticles();
+}
+
+function toggleArticleSelect(id, el, e) {
+  e.stopPropagation();
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+    el.classList.remove('selected');
+  } else {
+    selectedIds.add(id);
+    el.classList.add('selected');
+  }
+  document.getElementById('select-count').textContent = selectedIds.size + ' selected';
+}
+
+function selectAllArticles() {
+  document.querySelectorAll('.article-card').forEach(card => {
+    const id = card.dataset.id;
+    if (id) { selectedIds.add(id); card.classList.add('selected'); }
+  });
+  document.getElementById('select-count').textContent = selectedIds.size + ' selected';
+}
+
+function deselectAll() {
+  selectedIds.clear();
+  document.querySelectorAll('.article-card').forEach(card => card.classList.remove('selected'));
+  document.getElementById('select-count').textContent = '0 selected';
+}
+
+async function deleteSelected() {
+  if (!selectedIds.size) { showToast('No articles selected.', 'amber'); return; }
+  if (!confirm(`Delete ${selectedIds.size} selected article(s)? This cannot be undone.`)) return;
+  let deleted = 0;
+  for (const id of selectedIds) {
+    await sbFetch('geo_embeddings?article_id=eq.' + id, 'DELETE');
+    await sbFetch('geo_articles?id=eq.' + id, 'DELETE');
+    deleted++;
+  }
+  showToast(deleted + ' articles deleted.', 'green');
+  selectedIds.clear();
+  toggleSelectMode();
+  loadArticles();
+  loadDashboard();
+  loadConfigStats();
+}
+
+async function deleteAllArticles() {
+  if (!confirm('Delete ALL articles and embeddings? This cannot be undone.')) return;
+  await sbFetch('geo_embeddings?id=gte.00000000-0000-0000-0000-000000000000', 'DELETE');
+  await sbFetch('geo_articles?id=gte.00000000-0000-0000-0000-000000000000', 'DELETE');
+  showToast('All articles deleted.', 'amber');
+  selectedIds.clear();
+  if (selectMode) toggleSelectMode();
+  loadArticles();
+  loadDashboard();
+  loadConfigStats();
 }
 
 function renderArticles(articles) {
@@ -977,11 +1067,16 @@ function renderArticles(articles) {
     const lang = (a.original_language || '—').toUpperCase();
     const langDisplay = a.translated ? lang + ' → EN' : lang;
     const date = a.scraped_at ? new Date(a.scraped_at).toLocaleDateString() : '—';
-    return `<div class="article-card" onclick="viewArticle('${a.id}')">
+    const isSelected = selectedIds.has(a.id);
+    const hasContent = a.content_original || a.content_translated;
+    return `<div class="article-card ${isSelected?'selected':''}" data-id="${a.id}"
+      onclick="${selectMode ? `toggleArticleSelect('${a.id}',this,event)` : `viewArticle('${a.id}')`}">
       <div class="article-meta">
+        ${selectMode ? `<input type="checkbox" class="article-checkbox" ${isSelected?'checked':''} onclick="toggleArticleSelect('${a.id}',this.closest('.article-card'),event)"/>` : ''}
         <span class="article-source">${escHtml(srcName)}</span>
         <span class="article-lang">${langDisplay}</span>
         ${a.author && a.author !== 'N/A' ? `<span class="article-author">by ${escHtml(a.author)}</span>` : ''}
+        ${!hasContent ? '<span style="color:var(--amber);font-size:10px;background:var(--amber-dim);padding:2px 6px;border:1px solid rgba(255,170,0,0.3)">⚠ empty</span>' : ''}
         <span class="article-date">${date}</span>
       </div>
       <div class="article-title">${escHtml(a.title || 'Untitled')}</div>
