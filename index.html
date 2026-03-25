@@ -121,10 +121,10 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .btn-run:disabled { opacity:0.4; cursor:not-allowed; }
 
 /* TOGGLE */
-.toggle { width:32px; height:18px; background:var(–border); border-radius:9px; position:relative; cursor:pointer; transition:background .2s; border:none; flex-shrink:0; }
+.toggle { width:36px; height:20px; background:var(–border2); border-radius:10px; position:relative; cursor:pointer; transition:background .2s; border:none; flex-shrink:0; display:inline-block; vertical-align:middle; padding:0; appearance:none; -webkit-appearance:none; }
 .toggle.on { background:var(–accent); }
-.toggle::after { content:’’; position:absolute; width:12px; height:12px; background:#fff; border-radius:50%; top:3px; left:3px; transition:transform .2s; }
-.toggle.on::after { transform:translateX(14px); }
+.toggle::after { content:’’; display:block; position:absolute; width:14px; height:14px; background:#fff; border-radius:50%; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+.toggle.on::after { transform:translateX(16px); }
 
 /* SOURCES TABLE */
 .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
@@ -524,11 +524,15 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
           </div>
           <div class="config-item">
             <span class="config-label">Auto-translate</span>
-            <button class="toggle on" id="cfg-translate" onclick="this.classList.toggle('on')"></button>
+            <label class="checkbox-row" style="margin:0">
+              <input type="checkbox" id="cfg-translate" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer"/>
+            </label>
           </div>
           <div class="config-item">
             <span class="config-label">Auto-embed</span>
-            <button class="toggle on" id="cfg-embed" onclick="this.classList.toggle('on')"></button>
+            <label class="checkbox-row" style="margin:0">
+              <input type="checkbox" id="cfg-embed" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer"/>
+            </label>
           </div>
           <button class="btn-accent" style="width:100%;margin-top:16px" onclick="saveConfig()">SAVE SETTINGS</button>
         </div>
@@ -746,7 +750,7 @@ function bootApp() {
   loadConfigToForm();
   if (CFG.sbUrl && CFG.sbKey) {
     loadDashboard();
-    loadSources();
+    loadSources().then(() => seedDefaultSources());
     loadArticles();
     loadConfigStats();
     startScheduler();
@@ -754,6 +758,55 @@ function bootApp() {
     showToast('Configure Supabase connection in Config tab first.', 'amber');
     switchView('config', document.querySelector('nav button:nth-child(5)'));
   }
+}
+
+// ── DEFAULT SOURCES ────────────────────────────────────
+const DEFAULT_SOURCES = [
+  // FULLY FREE
+  { name:'ECFR', url:'https://ecfr.eu/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'ISPI', url:'https://www.ispionline.it/feed/', language:'it', frequency_hours:8, requires_login:false, active:true },
+  { name:'CSIS', url:'https://www.csis.org/analysis', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'Brookings', url:'https://www.brookings.edu/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'Carnegie Endowment', url:'https://carnegieendowment.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'Wilson Center', url:'https://www.wilsoncenter.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'The Diplomat', url:'https://thediplomat.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'War on the Rocks', url:'https://warontherocks.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'Lawfare', url:'https://www.lawfaremedia.org/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'E-International Relations', url:'https://www.e-ir.info/feed/', language:'en', frequency_hours:24, requires_login:false, active:true },
+  { name:'Geopolitical Monitor', url:'https://www.geopoliticalmonitor.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'The Geopolitics', url:'https://thegeopolitics.com/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'Real Clear World', url:'https://www.realclearworld.com/index.xml', language:'en', frequency_hours:4, requires_login:false, active:true },
+  { name:'Relief Web', url:'https://reliefweb.int/updates/rss.xml', language:'en', frequency_hours:4, requires_login:false, active:true },
+  // PARTIALLY FREE
+  { name:'Foreign Affairs', url:'https://www.foreignaffairs.com/rss.xml', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'CFR', url:'https://www.cfr.org/rss/feeds/publications.xml', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'Chatham House', url:'https://www.chathamhouse.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
+  { name:'Foreign Policy', url:'https://foreignpolicy.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
+  { name:'Politico Europe', url:'https://www.politico.eu/feed/', language:'en', frequency_hours:4, requires_login:false, active:true },
+  { name:'Le Monde Diplomatique', url:'https://www.monde-diplomatique.fr/feed/rss', language:'fr', frequency_hours:24, requires_login:false, active:true },
+  { name:'IISS', url:'https://www.iiss.org/rss/', language:'en', frequency_hours:24, requires_login:false, active:true },
+  // PAYWALL - credentials required
+  { name:'Limes', url:'https://www.limesonline.com/feed/', language:'it', frequency_hours:24, requires_login:true, active:false },
+  { name:'Il Foglio', url:'https://www.ilfoglio.it/feed/', language:'it', frequency_hours:12, requires_login:true, active:false },
+  { name:'Corriere della Sera', url:'https://xml2.corrieredellasera.it/rss/homepage.xml', language:'it', frequency_hours:4, requires_login:true, active:false },
+];
+
+async function seedDefaultSources() {
+  if (!CFG.sbUrl || !CFG.sbKey) return;
+  // Only seed if DB is empty
+  if (STATE.sources && STATE.sources.length > 0) return;
+  if (localStorage.getItem('geointel_seeded')) return;
+  addLog('Loading default sources…', 'info');
+  let count = 0;
+  for (const src of DEFAULT_SOURCES) {
+    const res = await sbFetch('geo_sources', 'POST', src);
+    if (res) count++;
+  }
+  localStorage.setItem('geointel_seeded', '1');
+  addLog(count + ' default sources loaded.', 'ok');
+  showToast(count + ' default sources loaded. Review and activate in Sources tab.', 'green');
+  loadSources();
+  loadDashboard();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -950,8 +1003,19 @@ async function deleteSource(id) {
 }
 
 async function toggleSource(id, current) {
+  // Optimistic UI update immediately
+  const btn = document.querySelector(`button[onclick="toggleSource('${id}',${current})"]`);
+  if (btn) {
+    btn.classList.toggle('on', !current);
+    btn.setAttribute('onclick', `toggleSource('${id}',${!current})`);
+  }
+  // Update state locally
+  const src = STATE.sources.find(s => s.id === id);
+  if (src) src.active = !current;
+  // Persist to Supabase
   await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: !current });
-  loadSources();
+  // Reload dashboard stats
+  loadDashboard();
 }
 
 function openAddSource() {
@@ -1403,8 +1467,8 @@ function loadConfigToForm() {
   document.getElementById('cfg-ant-key').value = CFG.antKey || '';
   document.getElementById('cfg-freq').value = CFG.freq || 4;
   document.getElementById('cfg-max-art').value = CFG.maxArt || 50;
-  if (!CFG.autoTranslate) document.getElementById('cfg-translate').classList.remove('on');
-  if (!CFG.autoEmbed) document.getElementById('cfg-embed').classList.remove('on');
+  document.getElementById('cfg-translate').checked = CFG.autoTranslate !== false;
+  document.getElementById('cfg-embed').checked = CFG.autoEmbed !== false;
 }
 
 function saveConfig() {
@@ -1413,8 +1477,8 @@ function saveConfig() {
   CFG.antKey = document.getElementById('cfg-ant-key').value.trim();
   CFG.freq = parseInt(document.getElementById('cfg-freq').value);
   CFG.maxArt = parseInt(document.getElementById('cfg-max-art').value);
-  CFG.autoTranslate = document.getElementById('cfg-translate').classList.contains('on');
-  CFG.autoEmbed = document.getElementById('cfg-embed').classList.contains('on');
+  CFG.autoTranslate = document.getElementById('cfg-translate').checked;
+  CFG.autoEmbed = document.getElementById('cfg-embed').checked;
   saveConfigToStorage();
   showToast('Configuration saved.', 'green');
   startScheduler();
