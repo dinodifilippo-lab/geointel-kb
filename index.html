@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v7.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v8.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v7.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v8.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1238,16 +1238,20 @@ async function runScrape() {
     const articles = result.articles.slice(0, CFG.maxArt);
     const newArticles = articles.filter(a => a.url && !existingUrls.has(a.url));
     const skipped = articles.length - newArticles.length;
-    addLog(`${source.name}: found ${articles.length} — ${newArticles.length} new, ${skipped} skipped (duplicate)`, 'ok');
+    const method = result.method || 'unknown';
+    addLog(`${source.name}: ${articles.length} found via [${method}] — ${newArticles.length} new, ${skipped} skipped`, 'ok');
 
     let newCount = 0;
     for (const art of newArticles) {
-      existingUrls.add(art.url); // add to cache immediately
+      existingUrls.add(art.url);
 
       const fetched = await sbEdge('fetch_article', {
         url: art.url,
         source_id: source.id,
-        original_language: source.language === 'auto' ? null : source.language
+        original_language: source.language === 'auto' ? null : source.language,
+        title: art.title || null,
+        author: art.author || null,
+        published_at: art.published_at || null
       });
 
       if (!fetched || !fetched.article_id) continue;
