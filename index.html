@@ -763,48 +763,48 @@ function bootApp() {
 // ── DEFAULT SOURCES ────────────────────────────────────
 const DEFAULT_SOURCES = [
   // FULLY FREE
-  { name:'ECFR', url:'https://ecfr.eu/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'ISPI', url:'https://www.ispionline.it/feed/', language:'it', frequency_hours:8, requires_login:false, active:true },
-  { name:'CSIS', url:'https://www.csis.org/analysis', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'Brookings', url:'https://www.brookings.edu/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'Carnegie Endowment', url:'https://carnegieendowment.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'Wilson Center', url:'https://www.wilsoncenter.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'The Diplomat', url:'https://thediplomat.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'War on the Rocks', url:'https://warontherocks.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'Lawfare', url:'https://www.lawfaremedia.org/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'E-International Relations', url:'https://www.e-ir.info/feed/', language:'en', frequency_hours:24, requires_login:false, active:true },
-  { name:'Geopolitical Monitor', url:'https://www.geopoliticalmonitor.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'The Geopolitics', url:'https://thegeopolitics.com/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'Real Clear World', url:'https://www.realclearworld.com/index.xml', language:'en', frequency_hours:4, requires_login:false, active:true },
-  { name:'Relief Web', url:'https://reliefweb.int/updates/rss.xml', language:'en', frequency_hours:4, requires_login:false, active:true },
+  { name:'ECFR', url:'https://ecfr.eu/feed/', language:'en', requires_login:false, active:true },
+  { name:'ISPI', url:'https://www.ispionline.it/feed/', language:'it', requires_login:false, active:true },
+  { name:'CSIS', url:'https://www.csis.org/analysis', language:'en', requires_login:false, active:true },
+  { name:'Brookings', url:'https://www.brookings.edu/feed/', language:'en', requires_login:false, active:true },
+  { name:'Carnegie Endowment', url:'https://carnegieendowment.org/feed/', language:'en', requires_login:false, active:true },
+  { name:'Wilson Center', url:'https://www.wilsoncenter.org/feed/', language:'en', requires_login:false, active:true },
+  { name:'The Diplomat', url:'https://thediplomat.com/feed/', language:'en', requires_login:false, active:true },
+  { name:'War on the Rocks', url:'https://warontherocks.com/feed/', language:'en', requires_login:false, active:true },
+  { name:'Lawfare', url:'https://www.lawfaremedia.org/feed/', language:'en', requires_login:false, active:true },
+  { name:'E-International Relations', url:'https://www.e-ir.info/feed/', language:'en', requires_login:false, active:true },
+  { name:'Geopolitical Monitor', url:'https://www.geopoliticalmonitor.com/feed/', language:'en', requires_login:false, active:true },
+  { name:'The Geopolitics', url:'https://thegeopolitics.com/feed/', language:'en', requires_login:false, active:true },
+  { name:'Real Clear World', url:'https://www.realclearworld.com/index.xml', language:'en', requires_login:false, active:true },
+  { name:'Relief Web', url:'https://reliefweb.int/updates/rss.xml', language:'en', requires_login:false, active:true },
   // PARTIALLY FREE
-  { name:'Foreign Affairs', url:'https://www.foreignaffairs.com/rss.xml', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'CFR', url:'https://www.cfr.org/rss/feeds/publications.xml', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'Chatham House', url:'https://www.chathamhouse.org/feed/', language:'en', frequency_hours:12, requires_login:false, active:true },
-  { name:'Foreign Policy', url:'https://foreignpolicy.com/feed/', language:'en', frequency_hours:8, requires_login:false, active:true },
-  { name:'Politico Europe', url:'https://www.politico.eu/feed/', language:'en', frequency_hours:4, requires_login:false, active:true },
-  { name:'Le Monde Diplomatique', url:'https://www.monde-diplomatique.fr/feed/rss', language:'fr', frequency_hours:24, requires_login:false, active:true },
-  { name:'IISS', url:'https://www.iiss.org/rss/', language:'en', frequency_hours:24, requires_login:false, active:true },
+  { name:'Foreign Affairs', url:'https://www.foreignaffairs.com/rss.xml', language:'en', requires_login:false, active:true },
+  { name:'CFR', url:'https://www.cfr.org/rss/feeds/publications.xml', language:'en', requires_login:false, active:true },
+  { name:'Chatham House', url:'https://www.chathamhouse.org/feed/', language:'en', requires_login:false, active:true },
+  { name:'Foreign Policy', url:'https://foreignpolicy.com/feed/', language:'en', requires_login:false, active:true },
+  { name:'Politico Europe', url:'https://www.politico.eu/feed/', language:'en', requires_login:false, active:true },
+  { name:'Le Monde Diplomatique', url:'https://www.monde-diplomatique.fr/feed/rss', language:'fr', requires_login:false, active:true },
+  { name:'IISS', url:'https://www.iiss.org/rss/', language:'en', requires_login:false, active:true },
   // PAYWALL - credentials required
-  { name:'Limes', url:'https://www.limesonline.com/feed/', language:'it', frequency_hours:24, requires_login:true, active:false },
-  { name:'Il Foglio', url:'https://www.ilfoglio.it/feed/', language:'it', frequency_hours:12, requires_login:true, active:false },
-  { name:'Corriere della Sera', url:'https://xml2.corrieredellasera.it/rss/homepage.xml', language:'it', frequency_hours:4, requires_login:true, active:false },
+  { name:'Limes', url:'https://www.limesonline.com/feed/', language:'it', requires_login:true, active:false },
+  { name:'Il Foglio', url:'https://www.ilfoglio.it/feed/', language:'it', requires_login:true, active:false },
+  { name:'Corriere della Sera', url:'https://xml2.corrieredellasera.it/rss/homepage.xml', language:'it', requires_login:true, active:false },
 ];
 
 async function seedDefaultSources() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
-  // Only seed if DB is empty
   if (STATE.sources && STATE.sources.length > 0) return;
   if (localStorage.getItem('geointel_seeded')) return;
   addLog('Loading default sources…', 'info');
   let count = 0;
+  const freq = CFG.freq || 4;
   for (const src of DEFAULT_SOURCES) {
-    const res = await sbFetch('geo_sources', 'POST', src);
+    const res = await sbFetch('geo_sources', 'POST', { ...src, frequency_hours: freq });
     if (res) count++;
   }
   localStorage.setItem('geointel_seeded', '1');
   addLog(count + ' default sources loaded.', 'ok');
-  showToast(count + ' default sources loaded. Review and activate in Sources tab.', 'green');
+  showToast(count + ' default sources loaded. Review in Sources tab.', 'green');
   loadSources();
   loadDashboard();
 }
@@ -939,7 +939,7 @@ function renderSourcesTable(sources) {
       <div style="color:var(--text2)">Every ${s.frequency_hours}h</div>
       <div style="color:${langColor};text-transform:uppercase">${s.language||'auto'}</div>
       <div style="color:var(--text2);font-size:11px">${lastScraped}</div>
-      <button class="toggle ${s.active?'on':''}" onclick="toggleSource('${s.id}',${s.active})"></button>
+      <button class="toggle ${s.active?'on':''}" onclick="toggleSource('${s.id}',${s.active},this)"></button>
       <div class="row-actions">
         <button class="btn-sm" onclick="editSource('${s.id}')">Edit</button>
         <button class="btn-red" onclick="deleteSource('${s.id}')">Del</button>
@@ -1002,19 +1002,15 @@ async function deleteSource(id) {
   loadDashboard();
 }
 
-async function toggleSource(id, current) {
-  // Optimistic UI update immediately
-  const btn = document.querySelector(`button[onclick="toggleSource('${id}',${current})"]`);
+async function toggleSource(id, current, btn) {
+  const newVal = !current;
   if (btn) {
-    btn.classList.toggle('on', !current);
-    btn.setAttribute('onclick', `toggleSource('${id}',${!current})`);
+    btn.classList.toggle('on', newVal);
+    btn.setAttribute('onclick', `toggleSource('${id}',${newVal},this)`);
   }
-  // Update state locally
   const src = STATE.sources.find(s => s.id === id);
-  if (src) src.active = !current;
-  // Persist to Supabase
-  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: !current });
-  // Reload dashboard stats
+  if (src) src.active = newVal;
+  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newVal });
   loadDashboard();
 }
 
@@ -1218,12 +1214,18 @@ async function runScrape() {
   let pct = 0;
   const step = 100 / sources.length;
 
+  // Build URL cache to avoid duplicates without per-article DB queries
+  addLog('Building URL cache…', 'info');
+  const existingUrls = new Set();
+  const existingData = await sbFetch('geo_articles?select=url');
+  if (existingData) existingData.forEach(a => existingUrls.add(a.url));
+  addLog('Cache ready — ' + existingUrls.size + ' existing articles.', 'ok');
+
   for (const source of sources) {
     addLog('Scraping: ' + source.name + '…', 'info');
     animateProgress(pct, pct + step);
     pct += step;
 
-    // Call Edge Function to scrape article list
     const result = await sbEdge('scrape', {
       url: source.url,
       source_id: source.id,
@@ -1236,17 +1238,14 @@ async function runScrape() {
     }
 
     const articles = result.articles.slice(0, CFG.maxArt);
-    addLog(source.name + ': found ' + articles.length + ' articles', 'ok');
+    const newArticles = articles.filter(a => a.url && !existingUrls.has(a.url));
+    const skipped = articles.length - newArticles.length;
+    addLog(`${source.name}: found ${articles.length} — ${newArticles.length} new, ${skipped} skipped (duplicate)`, 'ok');
 
     let newCount = 0;
-    for (const art of articles) {
-      if (!art.url) continue;
+    for (const art of newArticles) {
+      existingUrls.add(art.url); // add to cache immediately
 
-      // Check duplicate
-      const existing = await sbFetch('geo_articles?url=eq.' + encodeURIComponent(art.url) + '&select=id');
-      if (existing && existing.length) continue;
-
-      // Fetch full article
       const fetched = await sbEdge('fetch_article', {
         url: art.url,
         source_id: source.id,
@@ -1257,7 +1256,6 @@ async function runScrape() {
       newCount++;
       totalNew++;
 
-      // Embed if enabled
       if (CFG.autoEmbed && fetched.article_id) {
         const content = fetched.content || art.title || '';
         if (content.length > 50) {
@@ -1267,8 +1265,6 @@ async function runScrape() {
     }
 
     addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
-
-    // Update last_scraped_at
     await sbFetch('geo_sources?id=eq.' + source.id, 'PATCH', { last_scraped_at: new Date().toISOString() });
   }
 
