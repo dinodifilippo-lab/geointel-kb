@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v10.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v11.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v10.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v11.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -811,13 +811,14 @@ async function seedDefaultSources() {
 // ═══════════════════════════════════════════════════════
 async function sbFetch(path, method='GET', body=null) {
   if (!CFG.sbUrl || !CFG.sbKey) return null;
+  const isUpsert = path.includes('on_conflict');
   const opts = {
     method,
     headers: {
       'apikey': CFG.sbKey,
       'Authorization': 'Bearer ' + CFG.sbKey,
       'Content-Type': 'application/json',
-      'Prefer': method==='POST' ? 'return=representation' : ''
+      'Prefer': method==='POST' ? (isUpsert ? 'return=representation,resolution=merge-duplicates' : 'return=representation') : ''
     }
   };
   if (body) opts.body = JSON.stringify(body);
@@ -1235,10 +1236,22 @@ async function runScrape() {
       continue;
     }
 
-    const articles = result.articles.slice(0, CFG.maxArt);
+    let articles = result.articles.slice(0, CFG.maxArt);
+    let method = result.method || 'unknown';
+
+    // If RSS returned very few articles, also try sitemap via Edge Function
+    if (articles.length < 5 && method.includes('rss')) {
+      addLog(source.name + ': few RSS results, trying sitemap…', 'info');
+      const sitemapResult = await sbEdge('scrape_sitemap', { url: source.url });
+      if (sitemapResult && sitemapResult.articles && sitemapResult.articles.length > articles.length) {
+        articles = sitemapResult.articles.slice(0, CFG.maxArt);
+        method = method + '+sitemap';
+        addLog(source.name + ': sitemap found ' + articles.length + ' total articles', 'ok');
+      }
+    }
+
     const newArticles = articles.filter(a => a.url && !existingUrls.has(a.url));
     const skipped = articles.length - newArticles.length;
-    const method = result.method || 'unknown';
     addLog(`${source.name}: ${articles.length} found via [${method}] — ${newArticles.length} new, ${skipped} skipped`, 'ok');
 
     let newCount = 0;
@@ -1397,9 +1410,9 @@ async function runScrape() {
           } catch(e) {}
         }
 
-        // Step 6: save to Supabase from browser
+        // Step 6: upsert to Supabase from browser (handles duplicates gracefully)
         const urlHash = btoa(encodeURIComponent(art.url)).substring(0,64);
-        const saveRes = await sbFetch('geo_articles', 'POST', {
+        const saveRes = await sbFetch('geo_articles?on_conflict=url_hash', 'POST', {
           source_id: source.id,
           url: art.url,
           url_hash: urlHash,
