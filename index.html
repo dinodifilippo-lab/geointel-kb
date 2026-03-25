@@ -120,11 +120,13 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .btn-run:hover { background:var(–accent-dim); }
 .btn-run:disabled { opacity:0.4; cursor:not-allowed; }
 
-/* TOGGLE */
-.toggle { width:36px; height:20px; background:var(–border2); border-radius:10px; position:relative; cursor:pointer; transition:background .2s; border:none; flex-shrink:0; display:inline-block; vertical-align:middle; padding:0; appearance:none; -webkit-appearance:none; }
-.toggle.on { background:var(–accent); }
-.toggle::after { content:’’; display:block; position:absolute; width:14px; height:14px; background:#fff; border-radius:50%; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
-.toggle.on::after { transform:translateX(16px); }
+/* TOGGLE — checkbox based, works on all browsers including Safari iOS */
+.toggle-wrap { display:inline-flex; align-items:center; cursor:pointer; flex-shrink:0; }
+.toggle-wrap input[type=checkbox] { display:none; }
+.toggle-track { width:36px; height:20px; background:var(–border2); border-radius:10px; position:relative; transition:background .2s; flex-shrink:0; }
+.toggle-wrap input[type=checkbox]:checked + .toggle-track { background:var(–accent); }
+.toggle-knob { position:absolute; width:14px; height:14px; background:#fff; border-radius:50%; top:3px; left:3px; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,0.5); }
+.toggle-wrap input[type=checkbox]:checked + .toggle-track .toggle-knob { transform:translateX(16px); }
 
 /* SOURCES TABLE */
 .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
@@ -274,7 +276,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base</div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v6.0</span></div>
   </div>
   <div class="login-box">
     <label>Access Password</label>
@@ -288,7 +290,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v6.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -939,7 +941,7 @@ function renderSourcesTable(sources) {
       <div style="color:var(--text2)">Every ${s.frequency_hours}h</div>
       <div style="color:${langColor};text-transform:uppercase">${s.language||'auto'}</div>
       <div style="color:var(--text2);font-size:11px">${lastScraped}</div>
-      <button class="toggle ${s.active?'on':''}" onclick="toggleSource('${s.id}',${s.active},this)"></button>
+      <label class="toggle-wrap"><input type="checkbox" ${s.active?'checked':''} onchange="toggleSource('${s.id}',this.checked)"/><span class="toggle-track"><span class="toggle-knob"></span></span></label>
       <div class="row-actions">
         <button class="btn-sm" onclick="editSource('${s.id}')">Edit</button>
         <button class="btn-red" onclick="deleteSource('${s.id}')">Del</button>
@@ -1002,12 +1004,7 @@ async function deleteSource(id) {
   loadDashboard();
 }
 
-async function toggleSource(id, current, btn) {
-  const newVal = !current;
-  if (btn) {
-    btn.classList.toggle('on', newVal);
-    btn.setAttribute('onclick', `toggleSource('${id}',${newVal},this)`);
-  }
+async function toggleSource(id, newVal) {
   const src = STATE.sources.find(s => s.id === id);
   if (src) src.active = newVal;
   await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newVal });
