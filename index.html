@@ -1309,7 +1309,7 @@ function renderSources(sources) {
       <div style="color:var(--text3);font-size:11px">${(s.language||'?').toUpperCase()}</div>
       <div style="color:var(--text3);font-size:11px">${s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '—'}</div>
       <div>
-        <button class="toggle-btn ${s.active?'active':''}" onclick="toggleSource(${s.id}, ${!s.active})">${s.active?'ON':'OFF'}</button>
+        <button class="toggle-btn ${s.active?'active':''}" onclick="event.stopPropagation();toggleSource(${s.id}, ${s.active?'false':'true'})">${s.active?'ON':'OFF'}</button>
       </div>
       <div class="row-actions">
         <button class="btn-sm" onclick="editSource(${s.id})">Edit</button>
@@ -1325,8 +1325,11 @@ function filterSources(q) {
 }
 
 async function toggleSource(id, active) {
-  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active });
-  loadSources();
+  const val = (active === true || active === 'true');
+  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: val });
+  const src = STATE.sources.find(s => s.id === id);
+  if (src) src.active = val;
+  renderSources(STATE.sources);
   loadDashboard();
 }
 
