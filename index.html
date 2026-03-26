@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v11.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v12.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v11.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v12.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1276,27 +1276,38 @@ async function runScrape() {
 
     async function processArticle(art) {
       try {
-        // Step 1: fetch content via Jina from browser (no timeout limit)
+        // Step 1: direct browser fetch (best — browser sends real headers, bypasses bot blocks)
         let rawContent = '';
         try {
-          const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
-            headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
-            signal: AbortSignal.timeout(8000)
-          });
-          if (jinaRes.ok) {
-            const t = await jinaRes.text();
-            if (t.length > 200) rawContent = t;
+          const dRes = await fetch(art.url, { signal: AbortSignal.timeout(10000) });
+          if (dRes.ok) {
+            const t = await dRes.text();
+            if (t.length > 500) rawContent = t;
           }
         } catch(e) {}
 
-        // Step 2: fallback to direct fetch
+        // Step 2: Jina fallback (for JS-rendered or Cloudflare sites)
         if (!rawContent) {
           try {
-            const dRes = await fetch(art.url, {
-              headers: { 'User-Agent': 'Mozilla/5.0' },
+            const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
+              headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
               signal: AbortSignal.timeout(8000)
             });
-            if (dRes.ok) rawContent = await dRes.text();
+            if (jinaRes.ok) {
+              const t = await jinaRes.text();
+              if (t.length > 200) rawContent = t;
+            }
+          } catch(e) {}
+        }
+
+        // Step 3: last resort — direct fetch with explicit headers
+        if (!rawContent) {
+          try {
+            const dRes2 = await fetch(art.url, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+              signal: AbortSignal.timeout(8000)
+            });
+            if (dRes2.ok) rawContent = await dRes2.text();
           } catch(e) {}
         }
 
