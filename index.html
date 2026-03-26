@@ -129,9 +129,9 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .search-input:focus { border-color:var(–accent); }
 .search-input::placeholder { color:var(–text3); }
 .table-wrap { background:var(–surface); border:1px solid var(–border); overflow:hidden; }
-.table-header { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 70px 130px; padding:10px 18px; border-bottom:1px solid var(–border); background:var(–surface2); }
+.table-header { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 100px; padding:10px 18px; border-bottom:1px solid var(–border); background:var(–surface2); }
 .th { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(–text3); }
-.table-row { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 70px 130px; padding:11px 18px; border-bottom:1px solid var(–border); align-items:center; transition:background .15s; }
+.table-row { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 100px; padding:11px 18px; border-bottom:1px solid var(–border); align-items:center; transition:background .15s; }
 .table-row:last-child { border-bottom:none; }
 .table-row:hover { background:var(–surface2); }
 .row-actions { display:flex; gap:6px; align-items:center; }
@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v14.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v16.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v14.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v16.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -332,7 +332,10 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Run Log</div>
-          <button class="btn-sm" onclick="clearLog()">Clear</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="copyLog()">Copy</button>
+            <button class="btn-sm" onclick="clearLog()">Clear</button>
+          </div>
         </div>
         <div class="log-panel" id="run-log">
           <div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">System ready. Configure sources and run.</span></div>
@@ -566,6 +569,19 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             <span class="config-label">Total sources</span>
             <span class="config-val" id="cfg-total-src">—</span>
           </div>
+          <div class="config-item">
+            <span class="config-label">Claude calls (session)</span>
+            <span class="config-val" id="cfg-claude-calls">0</span>
+          </div>
+          <div class="config-item">
+            <span class="config-label">Tokens used (session)</span>
+            <span class="config-val" id="cfg-tokens-used">0</span>
+          </div>
+          <div class="config-item">
+            <span class="config-label">Est. cost (session)</span>
+            <span class="config-val" id="cfg-est-cost">$0.000</span>
+          </div>
+          <button class="btn-outline" style="width:100%;margin-top:8px" onclick="resetSessionStats()">Reset Session Stats</button>
           <div style="margin-top:8px">
             <button class="btn-outline" style="width:100%;color:var(--red);border-color:var(--red)" onclick="deleteAllArticles()">⚠ DELETE ALL ARTICLES</button>
           </div>
@@ -686,6 +702,22 @@ let CFG = {
   autoEmbed: true,
   appPasswordHash: ''
 };
+
+let SESSION_STATS = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
+
+function updateSessionStats() {
+  document.getElementById('cfg-claude-calls').textContent = SESSION_STATS.claudeCalls;
+  document.getElementById('cfg-tokens-used').textContent = (SESSION_STATS.tokensIn + SESSION_STATS.tokensOut).toLocaleString();
+  // Haiku pricing: $0.80/M input, $4/M output
+  const cost = (SESSION_STATS.tokensIn * 0.0000008) + (SESSION_STATS.tokensOut * 0.000004);
+  document.getElementById('cfg-est-cost').textContent = '$' + cost.toFixed(4);
+}
+
+function resetSessionStats() {
+  SESSION_STATS = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
+  updateSessionStats();
+  showToast('Session stats reset.', 'green');
+}
 
 let STATE = {
   running: false,
@@ -1305,47 +1337,86 @@ async function runScrape() {
           return;
         }
 
-        const isHtml = rawContent.trim().startsWith('<') || rawContent.includes('<html');
-        const contentType = isHtml ? 'HTML' : 'text';
-
-        // Step 3: extract via Claude from browser
-        const prompt = [
-          'Extract the article from this ' + contentType + '.',
-          'Return ONLY a raw JSON object, no markdown, no backticks.',
-          'Format: {"title":"...","author":"...","published_at":"...","content":"..."}',
-          'Rules: content=full article as plain text, author="N/A" if unknown, published_at=null if unknown.',
-          art.title ? 'Hint title: "' + art.title + '"' : '',
-          art.author && art.author !== 'N/A' ? 'Hint author: "' + art.author + '"' : '',
-          contentType + ':',
-          rawContent.substring(0, 14000)
-        ].filter(Boolean).join('\n');
-
-        const cRes = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': CFG.antKey,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 4000,
-            messages: [{ role: 'user', content: prompt }]
-          })
-        });
-
-        if (!cRes.ok) { addLog('  skip (Claude error): ' + art.url.substring(0,60), 'warn'); return; }
-        const cData = await cRes.json();
-        let extracted;
-        try { extracted = await safeParseJSON(cData.content[0].text); }
-        catch(e) { addLog('  skip (parse): ' + art.url.substring(0,60), 'warn'); return; }
-
-        // Use raw content if extraction gave nothing
-        if (!extracted.content || extracted.content.trim().length < 30) {
-          extracted.content = rawContent.replace(/\n{3,}/g, '\n\n').trim().substring(0, 8000);
+        // Step 3: extract content — Jina gives clean text directly, no Claude needed
+        // Strip HTML for direct fetch content
+        function stripHtml(html) {
+          return html
+            .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+            .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"').replace(/\s{3,}/g, '\n\n').trim();
         }
-        if (!extracted.content || extracted.content.trim().length < 30) {
+
+        const isHtml = rawContent.trim().startsWith('<') || rawContent.includes('<html');
+        let cleanedContent = isHtml ? stripHtml(rawContent) : rawContent;
+
+        // If content came from Jina it's already clean text with metadata hints
+        // Try to extract title/author from Jina output directly (no Claude needed)
+        let extracted = { title: art.title || '', author: art.author || 'N/A', published_at: art.published_at || null, content: '' };
+
+        // Jina format: first line is often "Title: ..." or the title itself
+        if (cleanedContent.length > 100) {
+          const lines = cleanedContent.split('\n').filter(l => l.trim().length > 0);
+          // Extract title from first meaningful line if not from RSS
+          if (!extracted.title || extracted.title === 'Untitled') {
+            extracted.title = lines[0].replace(/^Title:\s*/i, '').trim().substring(0, 200);
+          }
+          // Extract author if pattern found
+          if (extracted.author === 'N/A') {
+            const authorLine = lines.find(l => /^(By|Author|Di|Autore):/i.test(l));
+            if (authorLine) extracted.author = authorLine.replace(/^(By|Author|Di|Autore):\s*/i, '').trim();
+          }
+          // Content is everything after the first few header lines
+          extracted.content = lines.slice(1).join('\n').trim().substring(0, 32000);
+        }
+
+        // Fallback: use Claude ONLY if content is too short or clearly wrong
+        if (!extracted.content || extracted.content.trim().length < 200) {
+          const prompt = [
+            'Extract the article from this text.',
+            'Return ONLY a raw JSON object, no markdown.',
+            'Format: {"title":"...","author":"...","published_at":"...","content":"..."}',
+            'IMPORTANT: content must be the COMPLETE full article, do not truncate.',
+            'author="N/A" if unknown, published_at=null if unknown.',
+            art.title ? 'Hint title: "' + art.title + '"' : '',
+            'Text:', cleanedContent.substring(0, 20000)
+          ].filter(Boolean).join('\n');
+
+          try {
+            const cRes = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': CFG.antKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+              },
+              body: JSON.stringify({
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 8000,
+                messages: [{ role: 'user', content: prompt }]
+              })
+            });
+            if (cRes.ok) {
+              const cData = await cRes.json();
+              // Track token usage
+              if (cData.usage) {
+                SESSION_STATS.tokensIn += (cData.usage.input_tokens || 0);
+                SESSION_STATS.tokensOut += (cData.usage.output_tokens || 0);
+                SESSION_STATS.claudeCalls += 1;
+                updateSessionStats();
+              }
+              const claudeExtracted = await safeParseJSON(cData.content[0].text).catch(() => null);
+              if (claudeExtracted && claudeExtracted.content && claudeExtracted.content.length > 200) {
+                extracted = claudeExtracted;
+              }
+            }
+          } catch(e) {}
+        }
+
+        if (!extracted.content || extracted.content.trim().length < 50) {
           addLog('  skip (empty): ' + art.url.substring(0,60), 'warn'); return;
         }
 
@@ -1354,61 +1425,11 @@ async function runScrape() {
         if ((!extracted.author || extracted.author === 'N/A') && art.author) extracted.author = art.author;
         if (!extracted.published_at && art.published_at) extracted.published_at = art.published_at;
 
-        // Step 4: detect language
-        let detectedLang = (source.language && source.language !== 'auto') ? source.language : null;
-        if (!detectedLang) {
-          try {
-            const lRes = await fetch('https://api.anthropic.com/v1/messages', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': CFG.antKey,
-                'anthropic-version': '2023-06-01',
-                'anthropic-dangerous-direct-browser-access': 'true'
-              },
-              body: JSON.stringify({
-                model: 'claude-haiku-4-5-20251001',
-                max_tokens: 5,
-                messages: [{ role: 'user', content: 'Reply with ONLY the ISO 639-1 two-letter code (en/it/fr/de/es/ar/zh/ru). Text: ' + extracted.content.substring(0,200) }]
-              })
-            });
-            if (lRes.ok) {
-              const lData = await lRes.json();
-              detectedLang = lData.content[0].text.trim().toLowerCase().substring(0,2);
-            }
-          } catch(e) { detectedLang = 'en'; }
-        }
-
-        // Step 5: translate if not IT or EN
-        let translated = false;
-        let content_translated = null;
-        const lang = (detectedLang || '').toLowerCase();
-        if (!['it','en'].includes(lang) && extracted.content.length > 80) {
-          try {
-            const tRes = await fetch('https://api.anthropic.com/v1/messages', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': CFG.antKey,
-                'anthropic-version': '2023-06-01',
-                'anthropic-dangerous-direct-browser-access': 'true'
-              },
-              body: JSON.stringify({
-                model: 'claude-haiku-4-5-20251001',
-                max_tokens: 4000,
-                messages: [{ role: 'user', content: 'Translate to English. Return ONLY the translated text.\n\n' + extracted.content }]
-              })
-            });
-            if (tRes.ok) {
-              const tData = await tRes.json();
-              const trans = tData.content[0].text || '';
-              if (trans.length > 50 && !trans.toLowerCase().includes("i don't see") && !trans.toLowerCase().includes("please provide")) {
-                content_translated = trans;
-                translated = true;
-              }
-            }
-          } catch(e) {}
-        }
+        // Language: use source config, no Claude detection needed
+        const detectedLang = (source.language && source.language !== 'auto') ? source.language : 'en';
+        // Translation disabled — saved in original language, translated at query time
+        const translated = false;
+        const content_translated = null;
 
         // Step 6: upsert to Supabase from browser (handles duplicates gracefully)
         // Use proper hash to avoid collisions from truncation
@@ -1569,6 +1590,12 @@ QUESTION: ${q}`
       })
     });
     const data = await res.json();
+    if (data.usage) {
+      SESSION_STATS.tokensIn += (data.usage.input_tokens || 0);
+      SESSION_STATS.tokensOut += (data.usage.output_tokens || 0);
+      SESSION_STATS.claudeCalls += 1;
+      updateSessionStats();
+    }
     const answer = data.content?.[0]?.text || 'Unable to generate answer.';
 
     document.getElementById('query-answer').textContent = answer;
@@ -1776,6 +1803,20 @@ function addLog(msg, type='') {
 
 function clearLog() {
   document.getElementById('run-log').innerHTML = '';
+}
+
+function copyLog() {
+  const log = document.getElementById('run-log');
+  const lines = Array.from(log.querySelectorAll('.log-line')).map(l => {
+    const time = l.querySelector('.log-time')?.textContent || '';
+    const msg = l.querySelector('.log-msg')?.textContent || '';
+    return time + '  ' + msg;
+  }).join('\n');
+  navigator.clipboard.writeText(lines).then(() => {
+    showToast('Log copied to clipboard.', 'green');
+  }).catch(() => {
+    showToast('Copy failed — try long-press on log text.', 'amber');
+  });
 }
 
 function escHtml(str) {
