@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v13.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v11.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v13.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v11.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1276,13 +1276,12 @@ async function runScrape() {
 
     async function processArticle(art) {
       try {
-        // Step 1: Jina first — renders JS, returns clean text
+        // Step 1: fetch content via Jina from browser (no timeout limit)
         let rawContent = '';
-        let rawContentDirect = '';
         try {
           const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
             headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
-            signal: AbortSignal.timeout(10000)
+            signal: AbortSignal.timeout(8000)
           });
           if (jinaRes.ok) {
             const t = await jinaRes.text();
@@ -1290,30 +1289,14 @@ async function runScrape() {
           }
         } catch(e) {}
 
-        // Step 2: direct browser fetch in parallel (save for comparison)
-        try {
-          const dRes = await fetch(art.url, { signal: AbortSignal.timeout(10000) });
-          if (dRes.ok) {
-            const t = await dRes.text();
-            if (t.length > 500) rawContentDirect = t;
-          }
-        } catch(e) {}
-
-        // Use direct fetch if Jina failed OR if direct content is much longer (more complete)
-        if (!rawContent && rawContentDirect) {
-          rawContent = rawContentDirect;
-        } else if (rawContent && rawContentDirect && rawContentDirect.length > rawContent.length * 2) {
-          rawContent = rawContentDirect;
-        }
-
-        // Last resort: Chrome UA
+        // Step 2: fallback to direct fetch
         if (!rawContent) {
           try {
-            const dRes2 = await fetch(art.url, {
-              headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+            const dRes = await fetch(art.url, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
               signal: AbortSignal.timeout(8000)
             });
-            if (dRes2.ok) rawContent = await dRes2.text();
+            if (dRes.ok) rawContent = await dRes.text();
           } catch(e) {}
         }
 
