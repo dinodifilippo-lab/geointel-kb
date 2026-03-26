@@ -181,9 +181,9 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .search-input::placeholder { color: var(–text3); }
 .search-input:focus { border-color: var(–accent); }
 .table-wrap { background: var(–surface); border: 1px solid var(–border); overflow: hidden; }
-.table-hdr { display: grid; grid-template-columns: 2fr 1fr 70px 1fr 90px 110px; padding: 10px 18px; border-bottom: 1px solid var(–border); background: var(–surface2); }
+.table-hdr { display: grid; grid-template-columns: 2.5fr 1.5fr 90px 120px; padding: 10px 18px; border-bottom: 1px solid var(–border); background: var(–surface2); }
 .th { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); }
-.table-row { display: grid; grid-template-columns: 2fr 1fr 70px 1fr 90px 110px; padding: 11px 18px; border-bottom: 1px solid var(–border); align-items: center; }
+.table-row { display: grid; grid-template-columns: 2.5fr 1.5fr 90px 120px; padding: 11px 18px; border-bottom: 1px solid var(–border); align-items: center; }
 .table-row:last-child { border-bottom: none; }
 .table-row:hover { background: var(–surface2); }
 .toggle-btn { background: none; border: 1px solid var(–border); color: var(–text3); font-family: var(–mono); font-size: 10px; letter-spacing: 2px; padding: 4px 10px; cursor: pointer; min-width: 52px; text-align: center; }
@@ -344,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v0.12 · L0</div>
+  <div class="version">v0.13 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.12</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.13</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -416,7 +416,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
           <div class="panel-body">
             <div class="sched-row">
               <span style="color:var(--text2);font-size:12px">Frequency</span>
-              <span style="color:var(--accent);font-size:12px">Every 4h</span>
+              <span style="color:var(--accent);font-size:12px" id="sched-freq-display">0:04:00</span>
             </div>
             <div class="sched-row">
               <span style="color:var(--text2);font-size:12px">Last run</span>
@@ -449,8 +449,6 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="table-wrap">
       <div class="table-hdr">
         <div class="th">Source / URL</div>
-        <div class="th">Frequency</div>
-        <div class="th">Lang</div>
         <div class="th">Last scraped</div>
         <div class="th">Active</div>
         <div class="th">Actions</div>
@@ -460,8 +458,6 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
           <div style="color:var(--text);font-size:12px;font-weight:500">Foreign Policy</div>
           <div style="color:var(--text3);font-size:10px;margin-top:2px">foreignpolicy.com/news-sitemap.xml</div>
         </div>
-        <div style="color:var(--text2);font-size:11px">Every 4h</div>
-        <div style="color:var(--text3);font-size:11px">EN</div>
         <div style="color:var(--text3);font-size:11px">--</div>
         <div><button class="toggle-btn on">ON</button></div>
         <div class="row-actions">
@@ -560,248 +556,37 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <!-- CONFIG -->
 
   <div class="view" id="view-config">
-    <div class="config-grid">
-      <div class="panel">
-        <div class="panel-hdr"><div class="panel-title">Connection</div></div>
-        <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
+    <!-- Row 1: Connection full width -->
+    <div class="panel">
+      <div class="panel-hdr"><div class="panel-title">Connection</div></div>
+      <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:14px">
           <div class="form-row"><label>Supabase URL</label><input type="text" placeholder="https://xxxx.supabase.co"/></div>
           <div class="form-row"><label>Supabase Anon Key</label><div class="api-row"><input type="password" placeholder="eyJ…"/><button class="btn-outline">TEST</button></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
           <div class="form-row"><label>Anthropic API Key</label><div class="api-row"><input type="password" placeholder="sk-ant-…"/><button class="btn-outline">TEST</button></div></div>
-          <button class="btn-accent" style="width:100%">SAVE CONNECTION</button>
+          <button class="btn-accent" style="width:100%;margin-top:auto">SAVE CONNECTION</button>
         </div>
       </div>
+    </div>
+    <!-- Row 2: Scheduler + Security side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Scheduler</div></div>
-        <div class="panel-body" style="display:flex;flex-direction:column">
-          <div class="config-item">
-            <span class="config-label">Frequency (d:hh:mm)</span>
-            <input type="text" class="inline-input" placeholder="0:04:00" value="0:04:00" style="width:100px;text-align:center"/>
-          </div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:0">
+          <div class="config-item"><span class="config-label">Frequency (d:hh:mm)</span><input type="text" class="inline-input" placeholder="0:04:00" value="0:04:00" style="width:100px;text-align:center"/></div>
           <div class="config-item"><span class="config-label">Max articles/run</span><input type="number" class="inline-input" value="50"/></div>
           <button class="btn-accent" style="width:100%;margin-top:16px">SAVE</button>
         </div>
       </div>
-
-```
-  <div class="panel">
-    <div class="panel-hdr"><div class="panel-title">Security</div></div>
-    <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
-      <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…"/></div>
-      <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…"/></div>
-      <button class="btn-accent" style="width:100%">CHANGE PASSWORD</button>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-title">Security</div></div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
+          <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…"/></div>
+          <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…"/></div>
+          <button class="btn-accent" style="width:100%;margin-top:auto">CHANGE PASSWORD</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-```
-
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// AUTH
-async function hashStr(s) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-let pwdHash = localStorage.getItem('gi_pwd') || '';
-if (!pwdHash) document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
-
-async function doLogin() {
-  const pwd = document.getElementById('login-pwd').value;
-  if (!pwd) return;
-  const h = await hashStr(pwd);
-  if (!pwdHash) { pwdHash = h; localStorage.setItem('gi_pwd', h); showApp(); }
-  else if (h === pwdHash) { showApp(); }
-  else { document.getElementById('login-error').textContent = 'Invalid password.'; document.getElementById('login-pwd').value = ''; }
-}
-document.getElementById('login-pwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-function showApp() {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-}
-function doLogout() {
-  document.getElementById('login').style.display = 'flex';
-  document.getElementById('app').classList.remove('visible');
-  document.getElementById('login-pwd').value = '';
-}
-
-// NAV
-function showView(id, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
-  if (btn) { document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-  if (id === 'articles') renderArticles();
-}
-
-// ── FAKE DATA (removed in L2) ──────────────────────────────────────────────
-const FAKE_ARTICLES = [
-  { id:1, source:'Global Watch',       title:'Strait of Hormuz: New Maritime Tensions Emerge',           topic:'Energy',   author:'R. Cardenas',  date:'2026-03-26', lang:'EN', excerpt:'Growing concerns over shipping lane security as regional powers contest access rights.' },
-  { id:2, source:'Global Watch',       title:'Gulf States Reposition on Nuclear Deterrence',              topic:'Defence',  author:'M. Al-Farsi',  date:'2026-03-25', lang:'EN', excerpt:'Saudi Arabia and UAE signal interest in bilateral defence frameworks outside NATO umbrella.' },
-  { id:3, source:'Global Watch',       title:'OPEC+ Emergency Session Called Amid Price Volatility',      topic:'Energy',   author:'L. Petrova',   date:'2026-03-24', lang:'EN', excerpt:'Cartel members divided on output strategy as Brent crude swings beyond historical ranges.' },
-  { id:4, source:'Meridian Brief',     title:'China-Russia Trade Corridor Hits Record Volume',            topic:'Trade',    author:'X. Liang',     date:'2026-03-26', lang:'EN', excerpt:'Bilateral trade reaches $240bn milestone, bypassing Western payment infrastructure entirely.' },
-  { id:5, source:'Meridian Brief',     title:'EU Carbon Border Tax: First Full Year Assessment',          topic:'Climate',  author:'F. Brandt',    date:'2026-03-23', lang:'EN', excerpt:'CBAM shows mixed results; steel and cement sectors report unexpected compliance costs.' },
-  { id:6, source:'Meridian Brief',     title:'Turkey Mediates Black Sea Grain Deal Extension',            topic:'Diplomacy',author:'S. Yilmaz',   date:'2026-03-22', lang:'EN', excerpt:'Ankara brokers renewed agreement covering Ukrainian port access through year end.' },
-  { id:7, source:'Meridian Brief',     title:'Rare Earth Dominance: Beijing Tightens Export Controls',   topic:'Trade',    author:'X. Liang',     date:'2026-03-20', lang:'EN', excerpt:'New licensing regime targets gallium and germanium, critical for semiconductor supply chains.' },
-  { id:8, source:'Stratford Post',     title:'NATO Eastern Flank: Baltic States Request Permanent Bases', topic:'Defence', author:'K. Kowalski',  date:'2026-03-25', lang:'EN', excerpt:'Poland and Lithuania push for permanent Allied presence beyond current rotational model.' },
-  { id:9, source:'Stratford Post',     title:'African Union Debt Relief Initiative Stalls in Brussels',  topic:'Diplomacy',author:'A. Diallo',   date:'2026-03-24', lang:'EN', excerpt:'EU creditors and AU negotiators fail to agree on restructuring terms for sovereign debt.' },
-  { id:10,source:'Stratford Post',     title:'Arctic Shipping Routes: Russia Doubles Icebreaker Fleet',  topic:'Energy',   author:'I. Petrov',    date:'2026-03-21', lang:'EN', excerpt:'Moscow accelerates Northern Sea Route infrastructure as summer ice coverage shrinks further.' },
-  { id:11,source:'AsiaPacific Monitor','title':'Taiwan Strait: Weekly Air Incursion Count Reaches High', topic:'Defence',  author:'C. Chen',      date:'2026-03-26', lang:'EN', excerpt:'PLA Air Force conducted 42 sorties in ADIZ over seven-day period, ROCAF confirms.' },
-  { id:12,source:'AsiaPacific Monitor','title':'ASEAN Summit: South China Sea Code of Conduct Delayed',  topic:'Diplomacy',author:'P. Nguyen',  date:'2026-03-23', lang:'EN', excerpt:'Members fail to agree on binding enforcement mechanisms, pushing resolution to 2027.' },
-  { id:13,source:'AsiaPacific Monitor','title':'Japan Green Hydrogen: $50bn Investment Plan Unveiled',   topic:'Climate',  author:'H. Tanaka',    date:'2026-03-19', lang:'EN', excerpt:'Tokyo commits to domestic production capacity targeting 3 million tonnes annually by 2030.' },
-  { id:14,source:'Global Watch',       title:'Sanctions Architecture: US Treasury Targets Iranian Proxies', topic:'Trade', author:'R. Cardenas',  date:'2026-02-28', lang:'EN', excerpt:'Treasury OFAC designates 14 entities linked to funding networks across Lebanon and Iraq.' },
-  { id:15,source:'Meridian Brief',     title:'IMF Special Drawing Rights: Reform Proposal Gains Traction', topic:'Trade', author:'F. Brandt',    date:'2026-02-15', lang:'EN', excerpt:'G20 bloc supports basket reweighting to increase yuan share from current 10.9 percent.' },
-];
-
-let currentTopicFilter = '';
-let currentViewMode = 'list';
-
-function topicClass(topic) {
-  return 'tag-' + topic.toLowerCase();
-}
-
-function filterArticles(val) {
-  renderArticles();
-}
-
-function toggleTopic(el, topic) {
-  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentTopicFilter = topic;
-  renderArticles();
-}
-
-function setArticleView(mode) {
-  currentViewMode = mode;
-  document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none';
-  document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none';
-  document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
-  document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree');
-  renderArticles();
-}
-
-function getFilteredArticles() {
-  const q = (document.getElementById('art-search')?.value || '').toLowerCase();
-  const src = document.getElementById('art-src-filter')?.value || '';
-  const topic = document.getElementById('art-topic-filter')?.value || '';
-  const activeTopic = currentTopicFilter;
-  return FAKE_ARTICLES.filter(a => {
-    if (src && a.source !== src) return false;
-    if (topic && a.topic !== topic) return false;
-    if (activeTopic && a.topic !== activeTopic) return false;
-    if (q && !a.title.toLowerCase().includes(q) && !a.excerpt.toLowerCase().includes(q)) return false;
-    return true;
-  });
-}
-
-function renderArticles() {
-  if (currentViewMode === 'list') renderListView();
-  else renderTreeView();
-}
-
-function renderListView() {
-  const articles = getFilteredArticles();
-  const container = document.getElementById('articles-list');
-  if (!articles.length) {
-    container.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><div>No articles match your filters.</div></div>';
-    return;
-  }
-  container.innerHTML = articles.map(a => `
-    <div class="article-card">
-      <div class="art-topics">
-        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
-      </div>
-      <div class="art-meta">
-        <span class="art-source">${a.source}</span>
-        <span class="art-lang">${a.lang}</span>
-        <span class="art-author">${a.author}</span>
-        <span class="art-date">${a.date}</span>
-      </div>
-      <div class="art-title">${a.title}</div>
-      <div class="art-excerpt">${a.excerpt}</div>
-    </div>
-  `).join('');
-}
-
-function renderTreeView() {
-  const articles = getFilteredArticles();
-  const container = document.getElementById('articles-tree');
-
-  // Group: source → year → month → articles
-  const tree = {};
-  articles.forEach(a => {
-    const d = new Date(a.date);
-    const yr = d.getFullYear();
-    const mo = d.toLocaleString('en', { month: 'long' });
-    if (!tree[a.source]) tree[a.source] = {};
-    if (!tree[a.source][yr]) tree[a.source][yr] = {};
-    if (!tree[a.source][yr][mo]) tree[a.source][yr][mo] = [];
-    tree[a.source][yr][mo].push(a);
-  });
-
-  const sourceCount = src => Object.values(tree[src]).reduce((t, yr) => t + Object.values(yr).reduce((t2, mo) => t2 + mo.length, 0), 0);
-
-  container.innerHTML = Object.keys(tree).map((src, si) => `
-    <div class="tree-source">
-      <div class="tree-source-hdr" onclick="toggleTree('src-${si}')">
-        <span class="tree-chevron" id="chev-src-${si}">▶</span>
-        <span class="tree-source-name">${src}</span>
-        <span class="tree-count">${sourceCount(src)} articles</span>
-      </div>
-      <div class="tree-body" id="src-${si}">
-        ${Object.keys(tree[src]).sort((a,b) => b-a).map((yr, yi) => `
-          <div class="tree-year">
-            <div class="tree-year-hdr" onclick="toggleTree('yr-${si}-${yi}')">
-              <span class="tree-chevron" id="chev-yr-${si}-${yi}">▶</span>
-              <span style="flex:1">${yr}</span>
-              <span class="tree-count">${Object.values(tree[src][yr]).reduce((t,m) => t+m.length,0)}</span>
-            </div>
-            ${Object.keys(tree[src][yr]).map((mo, mi) => `
-              <div class="tree-month">
-                <div class="tree-month-hdr" onclick="toggleTree('mo-${si}-${yi}-${mi}')">
-                  <span class="tree-chevron" id="chev-mo-${si}-${yi}-${mi}">▶</span>
-                  <span style="flex:1">${mo}</span>
-                  <span class="tree-count">${tree[src][yr][mo].length}</span>
-                </div>
-                <div class="tree-articles" id="mo-${si}-${yi}-${mi}">
-                  ${tree[src][yr][mo].map(a => `
-                    <div class="tree-article">
-                      <div class="tree-article-title">${a.title}</div>
-                      <div class="tree-article-meta">
-                        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
-                        <span class="art-date">${a.date}</span>
-                        <span class="art-author">${a.author}</span>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-function toggleTree(id) {
-  const el = document.getElementById(id);
-  const chev = document.getElementById('chev-' + id);
-  if (!el) return;
-  el.classList.toggle('open');
-  if (chev) chev.classList.toggle('open');
-}
-
-// TOAST
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast ' + (type||'');
-  void t.offsetWidth; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-</script>
-
-</body>
-</html>
