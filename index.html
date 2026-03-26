@@ -77,7 +77,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .status-indicator { display:flex; align-items:center; gap:6px; font-size:11px; color:var(–text3); }
 .status-dot { width:6px; height:6px; border-radius:50%; background:var(–green); box-shadow:0 0 6px var(–green); animation:pulse 2s infinite; }
 .status-dot.idle { background:var(–text3); box-shadow:none; animation:none; }
-.status-dot.error { background:var(–red); box-shadow:0 0 6px var(–red); animation:none; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
 
 /* VIEWS */
@@ -99,17 +98,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .stat-value { font-family:var(–sans); font-size:32px; font-weight:700; color:#fff; line-height:1; }
 .stat-sub { font-size:11px; color:var(–text2); margin-top:6px; }
 
-/* ACTIVITY */
-.activity-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(–border); align-items:flex-start; }
-.activity-item:last-child { border-bottom:none; }
-.activity-tag { font-size:9px; letter-spacing:1px; text-transform:uppercase; padding:3px 7px; border-radius:2px; white-space:nowrap; flex-shrink:0; }
-.tag-new { background:var(–accent-dim); color:var(–accent); border:1px solid var(–accent2); }
-.tag-ok { background:var(–green-dim); color:var(–green); border:1px solid rgba(0,255,136,0.3); }
-.tag-warn { background:var(–amber-dim); color:var(–amber); border:1px solid rgba(255,170,0,0.3); }
-.tag-err { background:var(–red-dim); color:var(–red); border:1px solid rgba(255,68,102,0.3); }
-.activity-text { color:var(–text); line-height:1.5; flex:1; font-size:12px; }
-.activity-time { color:var(–text3); font-size:11px; white-space:nowrap; }
-
 /* DASHBOARD GRID */
 .dashboard-grid { display:grid; grid-template-columns:1fr 320px; gap:16px; }
 .sched-row { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(–border); }
@@ -118,8 +106,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .progress-fill { height:100%; background:var(–accent); transition:width .3s linear; width:0%; }
 .btn-run { width:100%; background:none; border:1px solid var(–accent); color:var(–accent); font-family:var(–mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; padding:10px; cursor:pointer; margin-top:14px; transition:all .2s; }
 .btn-run:hover { background:var(–accent-dim); }
-.btn-run:disabled { opacity:0.4; cursor:not-allowed; }
-
 .toggle-btn { background:none; border:1px solid var(–border); color:var(–text3); font-family:var(–mono); font-size:10px; letter-spacing:2px; padding:4px 10px; cursor:pointer; transition:all .2s; min-width:72px; text-align:center; }
 .toggle-btn.active { border-color:var(–green); color:var(–green); background:var(–green-dim); }
 
@@ -129,11 +115,12 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .search-input:focus { border-color:var(–accent); }
 .search-input::placeholder { color:var(–text3); }
 .table-wrap { background:var(–surface); border:1px solid var(–border); overflow:hidden; }
-.table-header { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 100px; padding:10px 18px; border-bottom:1px solid var(–border); background:var(–surface2); }
+.table-header { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 120px; padding:10px 18px; border-bottom:1px solid var(–border); background:var(–surface2); }
 .th { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(–text3); }
-.table-row { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 100px; padding:11px 18px; border-bottom:1px solid var(–border); align-items:center; transition:background .15s; }
+.table-row { display:grid; grid-template-columns:2.5fr 1fr 80px 1fr 80px 120px; padding:11px 18px; border-bottom:1px solid var(–border); align-items:center; transition:background .15s; }
 .table-row:last-child { border-bottom:none; }
 .table-row:hover { background:var(–surface2); }
+.row-toggle { margin-right:8px; }
 .row-actions { display:flex; gap:6px; align-items:center; }
 
 /* ARTICLES */
@@ -153,7 +140,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .article-excerpt { color:var(–text2); line-height:1.7; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:12px; }
 .empty-state { text-align:center; padding:60px 20px; color:var(–text3); }
 .empty-state .es-icon { font-size:32px; margin-bottom:12px; }
-.empty-state .es-text { font-size:13px; }
 
 /* QUERY */
 .query-box { background:var(–surface); border:1px solid var(–border); padding:20px; }
@@ -166,8 +152,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .query-answer { font-family:var(–sans); font-size:15px; color:#fff; line-height:1.8; margin-bottom:20px; }
 .query-sources { border-top:1px solid var(–border); padding-top:16px; }
 .query-sources-title { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(–text3); margin-bottom:10px; }
-.source-chip { display:inline-flex; align-items:center; gap:6px; background:var(–surface2); border:1px solid var(–border); padding:4px 10px; font-size:11px; color:var(–text2); margin:3px; cursor:pointer; transition:all .15s; }
-.source-chip:hover { border-color:var(–accent); color:var(–accent); }
+.source-chip { display:inline-flex; align-items:center; gap:6px; background:var(–surface2); border:1px solid var(–border); padding:4px 10px; font-size:11px; color:var(–text2); margin:3px; }
 .chip-dot { width:5px; height:5px; border-radius:50%; background:var(–accent); flex-shrink:0; }
 
 /* CONFIG */
@@ -176,16 +161,17 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .form-row label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(–text3); }
 .form-row input, .form-row select { background:var(–bg); border:1px solid var(–border); color:var(–text); font-family:var(–mono); font-size:13px; padding:9px 12px; outline:none; transition:border-color .2s; width:100%; }
 .form-row input:focus, .form-row select:focus { border-color:var(–accent); }
-.form-row select option { background:var(–surface2); }
 .config-item { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(–border); }
 .config-item:last-child { border-bottom:none; }
 .config-label { color:var(–text2); font-size:12px; }
 .config-val { color:var(–accent); font-size:12px; }
-.inline-input { background:var(–bg); border:1px solid var(–border); color:var(–text); font-family:var(–mono); font-size:12px; padding:5px 10px; outline:none; width:140px; text-align:right; transition:border-color .2s; }
+.inline-input { background:var(–bg); border:1px solid var(–border); color:var(–text); font-family:var(–mono); font-size:12px; padding:5px 10px; outline:none; width:160px; text-align:right; transition:border-color .2s; }
 .inline-input:focus { border-color:var(–accent); }
 .api-row { display:flex; gap:8px; align-items:center; }
 .api-row input { flex:1; background:var(–bg); border:1px solid var(–border); color:var(–text); font-family:var(–mono); font-size:12px; padding:8px 12px; outline:none; transition:border-color .2s; }
-.api-row input:focus { border-color:var(–accent); }
+.info-box { background:var(–bg); border:1px solid var(–border); padding:12px 14px; font-size:11px; color:var(–text3); line-height:1.7; }
+.info-box strong { color:var(–text2); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 
 /* MODAL */
 .modal-overlay { position:fixed; inset:0; background:rgba(8,12,16,0.88); z-index:500; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
@@ -198,23 +184,9 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .btn-close:hover { color:var(–red); }
 .modal-body { padding:24px; display:flex; flex-direction:column; gap:16px; }
 .modal-footer { padding:16px 24px; border-top:1px solid var(–border); display:flex; gap:10px; justify-content:flex-end; position:sticky; bottom:0; background:var(–surface); }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .checkbox-row { display:flex; align-items:center; gap:10px; cursor:pointer; }
 .checkbox-row input[type=checkbox] { width:16px; height:16px; accent-color:var(–accent); cursor:pointer; }
 .checkbox-row span { color:var(–text2); font-size:12px; }
-.creds-section { background:var(–bg); border:1px solid rgba(255,170,0,0.3); padding:14px; display:none; }
-.creds-section.visible { display:block; }
-.creds-title { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(–amber); margin-bottom:12px; }
-.info-box { background:var(–bg); border:1px solid var(–border); padding:12px 14px; font-size:11px; color:var(–text3); line-height:1.7; }
-.info-box strong { color:var(–text2); }
-
-/* DISCOVER */
-.discover-results { display:flex; flex-direction:column; gap:8px; }
-.discover-item { background:var(–bg); border:1px solid var(–border); padding:14px; display:flex; align-items:flex-start; gap:14px; }
-.discover-info { flex:1; }
-.discover-url { color:var(–accent); font-size:12px; margin-bottom:4px; }
-.discover-desc { color:var(–text2); font-size:11px; line-height:1.5; }
-.discover-lang { font-size:10px; color:var(–text3); margin-top:4px; }
 
 /* ARTICLE DETAIL */
 .article-detail { background:var(–surface); border:1px solid var(–border); padding:28px; }
@@ -222,20 +194,31 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .detail-title { font-family:var(–sans); font-size:22px; font-weight:700; color:#fff; line-height:1.3; margin-bottom:16px; }
 .detail-content { color:var(–text2); line-height:1.9; font-size:13px; white-space:pre-wrap; }
 .detail-divider { border:none; border-top:1px solid var(–border); margin:16px 0; }
-.translated-badge { font-size:10px; background:var(–amber-dim); border:1px solid rgba(255,170,0,0.3); color:var(–amber); padding:3px 8px; }
 
-/* LOADING SPINNER */
+/* DISCOVER */
+.discover-results { display:flex; flex-direction:column; gap:8px; }
+.discover-item { background:var(–bg); border:1px solid var(–border); padding:14px; display:flex; align-items:flex-start; gap:14px; }
+.discover-info { flex:1; }
+.discover-url { color:var(–accent); font-size:12px; margin-bottom:4px; }
+.discover-desc { color:var(–text2); font-size:11px; line-height:1.5; }
+
+/* SELECT MODE */
+.article-card.selected { border-color:var(–accent); background:var(–accent-dim); }
+.article-card.selected::before { background:var(–accent); }
+.select-bar { display:none; align-items:center; gap:10px; background:var(–surface2); border:1px solid var(–accent); padding:10px 16px; }
+.select-bar.visible { display:flex; }
+.select-count { color:var(–accent); font-size:12px; flex:1; }
+.btn-delete-sel { background:var(–red); border:none; color:#fff; font-family:var(–mono); font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; }
+.btn-delete-all { background:none; border:1px solid var(–red); color:var(–red); font-family:var(–mono); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; }
+
+/* SPINNER / TOAST / LOG */
 .spinner { display:inline-block; width:14px; height:14px; border:2px solid var(–border); border-top-color:var(–accent); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
 @keyframes spin { to{transform:rotate(360deg)} }
-
-/* TOAST */
 .toast { position:fixed; bottom:24px; right:24px; background:var(–surface); border:1px solid var(–border); border-left:3px solid var(–accent); padding:12px 18px; font-size:12px; color:var(–text); z-index:999; transform:translateY(80px); opacity:0; transition:all .3s; max-width:360px; line-height:1.5; }
 .toast.show { transform:translateY(0); opacity:1; }
 .toast.green { border-left-color:var(–green); }
 .toast.red { border-left-color:var(–red); }
 .toast.amber { border-left-color:var(–amber); }
-
-/* LOG PANEL */
 .log-panel { background:var(–bg); border:1px solid var(–border); padding:12px 16px; max-height:180px; overflow-y:auto; font-size:11px; line-height:1.8; }
 .log-line { display:flex; gap:10px; }
 .log-time { color:var(–text3); flex-shrink:0; }
@@ -244,19 +227,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 .log-msg.warn { color:var(–amber); }
 .log-msg.err { color:var(–red); }
 .log-msg.info { color:var(–accent); }
-
-/* MULTI-SELECT */
-.article-card.selected { border-color:var(–accent); background:var(–accent-dim); }
-.article-card.selected::before { background:var(–accent); }
-.article-checkbox { width:16px; height:16px; accent-color:var(–accent); cursor:pointer; flex-shrink:0; margin-right:4px; }
-.select-bar { display:none; align-items:center; gap:10px; background:var(–surface2); border:1px solid var(–accent); padding:10px 16px; }
-.select-bar.visible { display:flex; }
-.select-count { color:var(–accent); font-size:12px; flex:1; }
-.btn-delete-sel { background:var(–red); border:none; color:#fff; font-family:var(–mono); font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; transition:opacity .2s; }
-.btn-delete-sel:hover { opacity:0.85; }
-.btn-delete-all { background:none; border:1px solid var(–red); color:var(–red); font-family:var(–mono); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; padding:7px 16px; cursor:pointer; transition:all .2s; }
-.btn-delete-all:hover { background:var(–red-dim); }
-
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:var(–bg); }
 ::-webkit-scrollbar-thumb { background:var(–border2); border-radius:3px; }
@@ -271,7 +241,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v17.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v18.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +255,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v17.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v18.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -319,9 +289,9 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
         <div class="stat-sub" id="stat-sources-sub">loading…</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Languages</div>
-        <div class="stat-value" id="stat-langs" style="color:var(--green)">—</div>
-        <div class="stat-sub">auto-translated to EN/IT</div>
+        <div class="stat-label">Claude Calls</div>
+        <div class="stat-value" id="stat-claude" style="color:var(--green)">0</div>
+        <div class="stat-sub" id="stat-cost-sub">$0.000 est. cost</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Next Run</div>
@@ -404,16 +374,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
       <select class="filter-select" id="art-source-filter" onchange="filterArticles()">
         <option value="">All sources</option>
       </select>
-      <select class="filter-select" id="art-lang-filter" onchange="filterArticles()">
-        <option value="">All languages</option>
-        <option value="en">EN</option>
-        <option value="it">IT</option>
-        <option value="fr">FR</option>
-        <option value="de">DE</option>
-        <option value="es">ES</option>
-        <option value="ar">AR</option>
-        <option value="zh">ZH</option>
-      </select>
       <select class="filter-select" id="art-days-filter" onchange="filterArticles()">
         <option value="7">Last 7 days</option>
         <option value="30" selected>Last 30 days</option>
@@ -433,7 +393,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
     </div>
   </div>
 
-  <!-- ARTICLE DETAIL (hidden by default) -->
+  <!-- ARTICLE DETAIL -->
 
   <div class="view" id="view-article-detail">
     <button class="btn-outline" style="width:fit-content" onclick="switchView('articles', document.querySelector('nav button:nth-child(3)'))">← Back to Articles</button>
@@ -445,13 +405,11 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
   <div class="view" id="view-query">
     <div class="query-box">
       <div class="query-input-row">
-        <textarea class="query-textarea" id="query-input" placeholder="Ask a question on the knowledge base… e.g. 'What are the latest developments on China-Russia relations?'"></textarea>
+        <textarea class="query-textarea" id="query-input" placeholder="Ask a question on the knowledge base…"></textarea>
         <button class="btn-accent" style="padding:0 24px" onclick="runQuery()">ASK</button>
       </div>
       <div class="query-filters">
-        <select class="filter-select" id="q-source-filter">
-          <option value="">All sources</option>
-        </select>
+        <select class="filter-select" id="q-source-filter"><option value="">All sources</option></select>
         <select class="filter-select" id="q-days-filter">
           <option value="7">Last 7 days</option>
           <option value="30" selected>Last 30 days</option>
@@ -525,35 +483,12 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             <input type="number" class="inline-input" id="cfg-max-art" value="50"/>
           </div>
           <div class="config-item">
-            <span class="config-label">Auto-translate</span>
-            <label class="checkbox-row" style="margin:0">
-              <input type="checkbox" id="cfg-translate" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer"/>
-            </label>
-          </div>
-          <div class="config-item">
             <span class="config-label">Auto-embed</span>
             <label class="checkbox-row" style="margin:0">
               <input type="checkbox" id="cfg-embed" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer"/>
             </label>
           </div>
           <button class="btn-accent" style="width:100%;margin-top:16px" onclick="saveConfig()">SAVE SETTINGS</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header"><div class="panel-title">App Security</div></div>
-        <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="info-box">
-            <strong>Site credentials</strong> are stored as Supabase Edge Function Secrets — never in the database or in this app. To add credentials for a site requiring login, use the <strong>Add Source</strong> form and note the secret name shown.
-          </div>
-          <div class="form-row">
-            <label>New App Password</label>
-            <input type="password" id="cfg-new-pwd" placeholder="New password…"/>
-          </div>
-          <div class="form-row">
-            <label>Confirm Password</label>
-            <input type="password" id="cfg-confirm-pwd" placeholder="Confirm…"/>
-          </div>
-          <button class="btn-accent" style="width:100%" onclick="changePassword()">CHANGE PASSWORD</button>
         </div>
       </div>
       <div class="panel">
@@ -583,10 +518,22 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             <span class="config-label">Est. cost (session)</span>
             <span class="config-val" id="cfg-est-cost">$0.000</span>
           </div>
-          <button class="btn-outline" style="width:100%;margin-top:8px" onclick="resetSessionStats()">Reset Session Stats</button>
-          <div style="margin-top:8px">
-            <button class="btn-outline" style="width:100%;color:var(--red);border-color:var(--red)" onclick="deleteAllArticles()">⚠ DELETE ALL ARTICLES</button>
+          <button class="btn-outline" style="width:100%;margin-top:4px" onclick="resetSessionStats()">Reset Session Stats</button>
+          <button class="btn-outline" style="width:100%;color:var(--red);border-color:var(--red)" onclick="deleteAllArticles()">⚠ DELETE ALL ARTICLES</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">App Security</div></div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
+          <div class="form-row">
+            <label>New App Password</label>
+            <input type="password" id="cfg-new-pwd" placeholder="New password…"/>
           </div>
+          <div class="form-row">
+            <label>Confirm Password</label>
+            <input type="password" id="cfg-confirm-pwd" placeholder="Confirm…"/>
+          </div>
+          <button class="btn-accent" style="width:100%" onclick="changePassword()">CHANGE PASSWORD</button>
         </div>
       </div>
     </div>
@@ -605,7 +552,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
       <input type="hidden" id="edit-source-id"/>
       <div class="form-row">
         <label>Display Name</label>
-        <input type="text" id="src-name" placeholder="e.g. Foreign Affairs"/>
+        <input type="text" id="src-name" placeholder="e.g. Foreign Policy"/>
       </div>
       <div class="form-row">
         <label>URL</label>
@@ -625,7 +572,6 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
         <div class="form-row">
           <label>Source Language</label>
           <select id="src-lang">
-            <option value="auto">Auto-detect</option>
             <option value="en">EN</option>
             <option value="it">IT</option>
             <option value="fr">FR</option>
@@ -633,29 +579,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             <option value="es">ES</option>
             <option value="ar">AR</option>
             <option value="zh">ZH</option>
-            <option value="ru">RU</option>
           </select>
-        </div>
-      </div>
-      <label class="checkbox-row">
-        <input type="checkbox" id="chk-login" onchange="toggleCreds()"/>
-        <span>This site requires login credentials</span>
-      </label>
-      <div class="creds-section" id="creds-section">
-        <div class="creds-title">⚠ Credentials are NOT stored in the database</div>
-        <p style="color:var(--text3);font-size:11px;margin-bottom:12px;line-height:1.6">
-          After saving, go to <strong style="color:var(--text2)">Supabase → Edge Functions → geo-scrape → Secrets</strong> and add two secrets:<br/>
-          <span style="color:var(--accent)">SITE_[NAME]_USER</span> and <span style="color:var(--accent)">SITE_[NAME]_PWD</span><br/>
-          Replace [NAME] with the identifier shown below.
-        </p>
-        <div class="form-row">
-          <label>Secret identifier (your choice, no spaces)</label>
-          <input type="text" id="src-secret-name" placeholder="e.g. LIMES" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_]/g,'')"/>
-        </div>
-        <div class="info-box" style="margin-top:8px">
-          Add to Supabase Secrets:<br/>
-          <span style="color:var(--accent)" id="secret-hint-user">SITE__USER</span><br/>
-          <span style="color:var(--accent)" id="secret-hint-pwd">SITE__PWD</span>
         </div>
       </div>
     </div>
@@ -677,10 +601,10 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
     <div class="modal-body">
       <div class="form-row">
         <label>Describe your focus area</label>
-        <input type="text" id="discover-input" placeholder="e.g. Middle East energy security, Indo-Pacific tensions…"/>
+        <input type="text" id="discover-input" placeholder="e.g. Middle East energy security…"/>
       </div>
       <button class="btn-accent" style="width:100%" onclick="runDiscover()" id="btn-discover">SEARCH WITH AI</button>
-      <div class="discover-results" id="discover-results" style="display:none;flex-direction:column;gap:8px"></div>
+      <div class="discover-results" id="discover-results" style="display:none"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-outline" onclick="closeModal('modal-discover')">Close</button>
@@ -695,56 +619,40 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 // CONFIG & STATE
 // ═══════════════════════════════════════════════════════
 let CFG = {
-  sbUrl: '',
-  sbKey: '',
-  antKey: '',
-  freq: 4,
-  maxArt: 50,
-  autoTranslate: true,
-  autoEmbed: true,
+  sbUrl: '', sbKey: '', antKey: '',
+  freq: 4, maxArt: 50, autoEmbed: true,
   appPasswordHash: ''
 };
 
-let SESSION_STATS = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
-
-function updateSessionStats() {
-  document.getElementById('cfg-claude-calls').textContent = SESSION_STATS.claudeCalls;
-  document.getElementById('cfg-tokens-used').textContent = (SESSION_STATS.tokensIn + SESSION_STATS.tokensOut).toLocaleString();
-  // Haiku pricing: $0.80/M input, $4/M output
-  const cost = (SESSION_STATS.tokensIn * 0.0000008) + (SESSION_STATS.tokensOut * 0.000004);
-  document.getElementById('cfg-est-cost').textContent = '$' + cost.toFixed(4);
-}
-
-function resetSessionStats() {
-  SESSION_STATS = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
-  updateSessionStats();
-  showToast('Session stats reset.', 'green');
-}
+let SESSION = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
 
 let STATE = {
-  stopRequested: false,
   running: false,
+  stopRequested: false,
   schedulerTimer: null,
   nextRunTime: null,
+  sources: [],
   articles: [],
-  sources: []
+  selectMode: false,
+  selectedIds: new Set()
 };
 
 function loadConfig() {
-  const saved = localStorage.getItem('geointel_cfg');
-  if (saved) {
-    try { CFG = { ...CFG, ...JSON.parse(saved) }; } catch(e) {}
-  }
+  try { const s = localStorage.getItem('geointel_cfg'); if (s) CFG = { ...CFG, ...JSON.parse(s) }; } catch(e) {}
 }
 
 function saveConfigToStorage() {
   localStorage.setItem('geointel_cfg', JSON.stringify(CFG));
 }
 
-// Simple hash for password
 async function hashStr(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function urlHash(url) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(url));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').substring(0,64);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -755,7 +663,6 @@ async function doLogin() {
   if (!pwd) return;
   const hash = await hashStr(pwd);
   if (!CFG.appPasswordHash) {
-    // First time — set password
     CFG.appPasswordHash = hash;
     saveConfigToStorage();
     bootApp();
@@ -766,14 +673,12 @@ async function doLogin() {
     document.getElementById('login-pwd').value = '';
   }
 }
-
 document.getElementById('login-pwd').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 function doLogout() {
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-pwd').value = '';
-  document.getElementById('login-error').textContent = '';
 }
 
 function bootApp() {
@@ -782,67 +687,18 @@ function bootApp() {
   loadConfigToForm();
   if (CFG.sbUrl && CFG.sbKey) {
     loadDashboard();
-    loadSources().then(() => seedDefaultSources());
+    loadSources();
     loadArticles();
     loadConfigStats();
     startScheduler();
   } else {
-    showToast('Configure Supabase connection in Config tab first.', 'amber');
+    showToast('Configure Supabase connection in Config tab.', 'amber');
     switchView('config', document.querySelector('nav button:nth-child(5)'));
   }
 }
 
-// ── DEFAULT SOURCES ────────────────────────────────────
-const DEFAULT_SOURCES = [
-  // FULLY FREE
-  { name:'ECFR', url:'https://ecfr.eu/feed/', language:'en', requires_login:false, active:true },
-  { name:'ISPI', url:'https://www.ispionline.it/feed/', language:'it', requires_login:false, active:true },
-  { name:'CSIS', url:'https://www.csis.org/analysis', language:'en', requires_login:false, active:true },
-  { name:'Brookings', url:'https://www.brookings.edu/feed/', language:'en', requires_login:false, active:true },
-  { name:'Carnegie Endowment', url:'https://carnegieendowment.org/feed/', language:'en', requires_login:false, active:true },
-  { name:'Wilson Center', url:'https://www.wilsoncenter.org/feed/', language:'en', requires_login:false, active:true },
-  { name:'The Diplomat', url:'https://thediplomat.com/feed/', language:'en', requires_login:false, active:true },
-  { name:'War on the Rocks', url:'https://warontherocks.com/feed/', language:'en', requires_login:false, active:true },
-  { name:'Lawfare', url:'https://www.lawfaremedia.org/feed/', language:'en', requires_login:false, active:true },
-  { name:'E-International Relations', url:'https://www.e-ir.info/feed/', language:'en', requires_login:false, active:true },
-  { name:'Geopolitical Monitor', url:'https://www.geopoliticalmonitor.com/feed/', language:'en', requires_login:false, active:true },
-  { name:'The Geopolitics', url:'https://thegeopolitics.com/feed/', language:'en', requires_login:false, active:true },
-  { name:'Real Clear World', url:'https://www.realclearworld.com/index.xml', language:'en', requires_login:false, active:true },
-  { name:'Relief Web', url:'https://reliefweb.int/updates/rss.xml', language:'en', requires_login:false, active:true },
-  // PARTIALLY FREE
-  { name:'Foreign Affairs', url:'https://www.foreignaffairs.com/rss.xml', language:'en', requires_login:false, active:true },
-  { name:'CFR', url:'https://www.cfr.org/rss/feeds/publications.xml', language:'en', requires_login:false, active:true },
-  { name:'Chatham House', url:'https://www.chathamhouse.org/feed/', language:'en', requires_login:false, active:true },
-  { name:'Foreign Policy', url:'https://foreignpolicy.com/feed/', language:'en', requires_login:false, active:true },
-  { name:'Politico Europe', url:'https://www.politico.eu/feed/', language:'en', requires_login:false, active:true },
-  { name:'Le Monde Diplomatique', url:'https://www.monde-diplomatique.fr/feed/rss', language:'fr', requires_login:false, active:true },
-  { name:'IISS', url:'https://www.iiss.org/rss/', language:'en', requires_login:false, active:true },
-  // PAYWALL - credentials required
-  { name:'Limes', url:'https://www.limesonline.com/feed/', language:'it', requires_login:true, active:false },
-  { name:'Il Foglio', url:'https://www.ilfoglio.it/feed/', language:'it', requires_login:true, active:false },
-  { name:'Corriere della Sera', url:'https://xml2.corrieredellasera.it/rss/homepage.xml', language:'it', requires_login:true, active:false },
-];
-
-async function seedDefaultSources() {
-  if (!CFG.sbUrl || !CFG.sbKey) return;
-  if (STATE.sources && STATE.sources.length > 0) return;
-  if (localStorage.getItem('geointel_seeded')) return;
-  addLog('Loading default sources…', 'info');
-  let count = 0;
-  const freq = CFG.freq || 4;
-  for (const src of DEFAULT_SOURCES) {
-    const res = await sbFetch('geo_sources', 'POST', { ...src, frequency_hours: freq });
-    if (res) count++;
-  }
-  localStorage.setItem('geointel_seeded', '1');
-  addLog(count + ' default sources loaded.', 'ok');
-  showToast(count + ' default sources loaded. Review in Sources tab.', 'green');
-  loadSources();
-  loadDashboard();
-}
-
 // ═══════════════════════════════════════════════════════
-// SUPABASE API
+// SUPABASE
 // ═══════════════════════════════════════════════════════
 async function sbFetch(path, method='GET', body=null) {
   if (!CFG.sbUrl || !CFG.sbKey) return null;
@@ -873,10 +729,7 @@ async function sbEdge(action, payload) {
   try {
     const res = await fetch(CFG.sbUrl + '/functions/v1/geo-scrape', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + CFG.sbKey
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
       body: JSON.stringify({ action, payload })
     });
     if (!res.ok) { const e = await res.text(); throw new Error(e); }
@@ -888,340 +741,336 @@ async function sbEdge(action, payload) {
 }
 
 // ═══════════════════════════════════════════════════════
-// DASHBOARD
+// SESSION STATS
 // ═══════════════════════════════════════════════════════
-async function loadDashboard() {
-  // Articles count
-  const arts = await sbFetch('geo_articles?select=id,original_language,scraped_at');
-  if (arts) {
-    document.getElementById('stat-articles').textContent = arts.length.toLocaleString();
-    const today = arts.filter(a => {
-      const d = new Date(a.scraped_at);
-      const now = new Date();
-      return d.toDateString() === now.toDateString();
+function trackClaude(usage) {
+  if (!usage) return;
+  SESSION.tokensIn += (usage.input_tokens || 0);
+  SESSION.tokensOut += (usage.output_tokens || 0);
+  SESSION.claudeCalls++;
+  updateSessionStats();
+}
+
+function updateSessionStats() {
+  document.getElementById('cfg-claude-calls').textContent = SESSION.claudeCalls;
+  document.getElementById('cfg-tokens-used').textContent = (SESSION.tokensIn + SESSION.tokensOut).toLocaleString();
+  const cost = (SESSION.tokensIn * 0.0000008) + (SESSION.tokensOut * 0.000004);
+  document.getElementById('cfg-est-cost').textContent = '$' + cost.toFixed(4);
+  document.getElementById('stat-claude').textContent = SESSION.claudeCalls;
+  document.getElementById('stat-cost-sub').textContent = '$' + cost.toFixed(4) + ' est. cost';
+}
+
+function resetSessionStats() {
+  SESSION = { claudeCalls: 0, tokensIn: 0, tokensOut: 0 };
+  updateSessionStats();
+  showToast('Session stats reset.', 'green');
+}
+
+// ═══════════════════════════════════════════════════════
+// SITE MODULES — one per source type
+// ═══════════════════════════════════════════════════════
+// Each module defines how to:
+//   1. discover(url) → [{url, title, author, published_at}]
+//   2. extract(url, hints) → {title, author, published_at, content}
+//
+// Modules are matched by URL pattern in getSiteModule()
+
+const MODULES = {};
+
+// ── HELPERS shared across modules ────────────────────
+function parseXmlLocs(xml) {
+  const locs = [];
+  const matches = xml.match(/<loc>(https?:\/\/[^<]+)<\/loc>/gi) || [];
+  matches.forEach(m => locs.push(m.replace(/<\/?loc>/g,'').trim()));
+  return locs;
+}
+
+function parseRssItems(xml) {
+  const items = [];
+  const rawItems = xml.match(/<item[\s>][\s\S]*?<\/item>/gi) ||
+                   xml.match(/<entry[\s>][\s\S]*?<\/entry>/gi) || [];
+  for (const item of rawItems) {
+    const link = (item.match(/<link[^>]*>([^<]+)<\/link>/) ||
+                  item.match(/<link[^>]+href=["']([^"']+)["']/) ||
+                  item.match(/<guid[^>]*>([^<]+)<\/guid>/))?.[1]?.trim();
+    if (!link || !link.startsWith('http')) continue;
+    const title = (item.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i))?.[1]?.replace(/<[^>]+>/g,'').trim() || '';
+    const author = (item.match(/<(?:dc:creator|author)[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/(?:dc:creator|author)>/i))?.[1]?.replace(/<[^>]+>/g,'').trim() || 'N/A';
+    const date = (item.match(/<(?:pubDate|published|updated)[^>]*>([\s\S]*?)<\/(?:pubDate|published|updated)>/i))?.[1]?.trim() || null;
+    items.push({ url: link, title, author, published_at: date });
+  }
+  return items;
+}
+
+function stripHtml(html) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, ' ')
+    .replace(/<header[\s\S]*?<\/header>/gi, ' ')
+    .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')
+    .replace(/<aside[\s\S]*?<\/aside>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')
+    .replace(/\s{3,}/g,'\n\n').trim();
+}
+
+async function jinaFetch(url, extraHeaders) {
+  const headers = { 'Accept': 'text/plain', 'X-Return-Format': 'text', ...extraHeaders };
+  try {
+    const res = await fetch('https://r.jina.ai/' + url, { headers, signal: AbortSignal.timeout(12000) });
+    if (!res.ok) return '';
+    return await res.text();
+  } catch(e) { return ''; }
+}
+
+async function directFetch(url) {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) return '';
+    return await res.text();
+  } catch(e) { return ''; }
+}
+
+function isValidContent(text) {
+  if (!text || text.length < 400) return false;
+  const lower = text.toLowerCase();
+  if (lower.includes('this website uses cookies') && text.length < 6000) return false;
+  if (lower.includes('this website utilizes technologies') && text.length < 6000) return false;
+  return true;
+}
+
+// Extract article text from Jina output using text markers to cut boilerplate
+function extractFromJinaText(raw, hints) {
+  // Jina output has structured metadata at top and boilerplate below article
+  // Strategy: find article body between known markers
+  let content = raw;
+
+  // Remove everything before "Markdown Content:" section if present
+  const mdIdx = raw.indexOf('Markdown Content:');
+  if (mdIdx > 0) content = raw.substring(mdIdx + 17);
+
+  // Remove common FP/think-tank footer markers
+  const footerMarkers = [
+    'Join the Conversation', 'Read More On', 'Editors\' Picks',
+    'Stories Readers Liked', 'Latest\n', 'Trending\n', 'Footer navigation',
+    'FP SOLUTIONS', 'Subscription Services', 'ABOUT FP',
+    'All rights reserved', 'Powered by WordPress',
+    '\\* \\* \\*\n\n### Today\'s Most Read',
+  ];
+  for (const marker of footerMarkers) {
+    const idx = content.indexOf(marker);
+    if (idx > 800) { content = content.substring(0, idx); break; }
+  }
+
+  // Clean up markdown artifacts
+  content = content
+    .replace(/!\[Image[^\]]*\]\([^)]*\)/g, '') // remove image refs
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')    // convert links to text
+    .replace(/\*\*/g, '').replace(/##+ /g, '\n')
+    .replace(/\n{4,}/g, '\n\n').trim();
+
+  // Merge hints
+  let title = hints.title || '';
+  let author = hints.author || 'N/A';
+  let published_at = hints.published_at || null;
+
+  // Try to extract title from Jina header
+  const titleMatch = raw.match(/^Title:\s*(.+)$/m);
+  if (titleMatch && !title) title = titleMatch[1].trim();
+
+  // Try to extract date from Jina header
+  const dateMatch = raw.match(/^Published Time:\s*(.+)$/m);
+  if (dateMatch && !published_at) published_at = dateMatch[1].trim();
+
+  return { title, author, published_at, content };
+}
+
+async function claudeExtract(rawText, hints) {
+  if (!CFG.antKey) return null;
+  const prompt = [
+    'Extract ONLY the main article body from this text.',
+    'Ignore menus, navigation, footers, ads, related articles, comments.',
+    'Return ONLY raw JSON, no markdown:',
+    '{"title":"...","author":"...","published_at":"...","content":"..."}',
+    'content = complete article body text, no truncation.',
+    'author="N/A" if unknown, published_at=null if unknown.',
+    hints.title ? 'Hint title: "' + hints.title + '"' : '',
+    hints.author && hints.author !== 'N/A' ? 'Hint author: "' + hints.author + '"' : '',
+    'Text:\n' + rawText.substring(0, 20000)
+  ].filter(Boolean).join('\n');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CFG.antKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 8000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
-    document.getElementById('stat-articles-sub').textContent = '+' + today.length + ' today';
-    // Languages
-    const langs = [...new Set(arts.map(a => a.original_language).filter(Boolean))];
-    document.getElementById('stat-langs').textContent = langs.length || '—';
-  }
-  // Sources count
-  const srcs = await sbFetch('geo_sources?select=id,active,name,last_scraped_at');
-  if (srcs) {
-    const active = srcs.filter(s => s.active).length;
-    document.getElementById('stat-sources').textContent = active;
-    document.getElementById('stat-sources-sub').textContent = 'of ' + srcs.length + ' configured';
-    // Top sources
-    const counts = {};
-    if (arts) arts.forEach(a => { counts[a.source_id] = (counts[a.source_id]||0)+1; });
-    const topPanel = document.getElementById('top-sources-panel');
-    const topSrcs = srcs.sort((a,b) => (counts[b.id]||0)-(counts[a.id]||0)).slice(0,5);
-    if (topSrcs.length) {
-      topPanel.innerHTML = topSrcs.map(s =>
-        `<div class="sched-row"><span style="color:var(--text2);font-size:12px">${s.name}</span><span style="color:var(--green);font-size:11px">${counts[s.id]||0} art.</span></div>`
-      ).join('');
+    if (!res.ok) return null;
+    const data = await res.json();
+    trackClaude(data.usage);
+    const parsed = safeParseJSON(data.content[0].text);
+    return parsed;
+  } catch(e) { return null; }
+}
+
+function safeParseJSON(text) {
+  text = text.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
+  try { return JSON.parse(text); } catch(e) {}
+  const s1 = text.indexOf('{'); const e1 = text.lastIndexOf('}');
+  if (s1 >= 0 && e1 > s1) { try { return JSON.parse(text.substring(s1, e1+1)); } catch(e) {} }
+  throw new Error('No JSON');
+}
+
+// ── MODULE: Foreign Policy ────────────────────────────
+// Discovery: news-sitemap.xml (browser-side, updated daily)
+// Extraction: Jina → text markers extraction → Claude fallback only if needed
+// Cost: ~$0/article (Jina) or ~$0.010 (Claude fallback, rare)
+MODULES['foreignpolicy'] = {
+  name: 'Foreign Policy',
+  matchUrl: url => url.includes('foreignpolicy.com'),
+
+  async discover(source) {
+    addLog(source.name + ': reading news-sitemap…', 'info');
+    // Read sitemap directly from browser (not Edge Function — avoids bot detection)
+    const xml = await directFetch('https://foreignpolicy.com/news-sitemap.xml');
+    if (!xml || xml.length < 100) {
+      addLog(source.name + ': sitemap failed, trying RSS…', 'warn');
+      const rssXml = await directFetch('https://foreignpolicy.com/feed/');
+      if (!rssXml) return [];
+      return parseRssItems(rssXml);
     }
-  }
-  // Scheduler
-  document.getElementById('sched-freq').textContent = 'Every ' + CFG.freq + 'h';
-  const lastRun = localStorage.getItem('geointel_last_run');
-  document.getElementById('sched-last').textContent = lastRun ? new Date(parseInt(lastRun)).toLocaleTimeString() : 'Never';
-  updateNextRunDisplay();
-}
-
-function updateNextRunDisplay() {
-  if (STATE.nextRunTime) {
-    const diff = STATE.nextRunTime - Date.now();
-    if (diff > 0) {
-      const h = Math.floor(diff/3600000);
-      const m = Math.floor((diff%3600000)/60000);
-      document.getElementById('sched-next').textContent = h + 'h ' + m + 'm';
-      document.getElementById('stat-next').textContent = h + 'h ' + m + 'm';
-      document.getElementById('stat-freq-sub').textContent = 'every ' + CFG.freq + ' hours';
+    const urls = parseXmlLocs(xml);
+    // Sitemap has <news:news> entries — extract titles and dates too
+    const articles = [];
+    const newsItems = xml.match(/<url>[\s\S]*?<\/url>/gi) || [];
+    for (const item of newsItems) {
+      const loc = (item.match(/<loc>(https?:\/\/[^<]+)<\/loc>/))?.[1]?.trim();
+      if (!loc) continue;
+      const title = (item.match(/<news:title>([\s\S]*?)<\/news:title>/))?.[1]?.replace(/<[^>]+>/g,'').trim() || '';
+      const date = (item.match(/<news:publication_date>([\s\S]*?)<\/news:publication_date>/))?.[1]?.trim() || null;
+      articles.push({ url: loc, title, author: 'N/A', published_at: date });
     }
-  } else {
-    document.getElementById('sched-next').textContent = '—';
+    return articles.length > 0 ? articles : urls.map(u => ({ url: u, title: '', author: 'N/A', published_at: null }));
+  },
+
+  async extract(url, hints) {
+    // Step 1: Jina with cookie consent
+    const jinaText = await jinaFetch(url, {
+      'X-Set-Cookie': 'CookieConsent=true'
+    });
+
+    if (isValidContent(jinaText)) {
+      const extracted = extractFromJinaText(jinaText, hints);
+      if (extracted.content && extracted.content.length > 400) {
+        return extracted;
+      }
+    }
+
+    // Step 2: Claude fallback — fetch direct + strip + Claude extract
+    addLog('  [fp] Jina insufficient, using Claude fallback…', 'warn');
+    const html = await directFetch(url);
+    if (!html) return null;
+    const stripped = stripHtml(html);
+    return await claudeExtract(stripped, hints);
   }
-}
+};
 
-// ═══════════════════════════════════════════════════════
-// SOURCES
-// ═══════════════════════════════════════════════════════
-async function loadSources() {
-  const rows = await sbFetch('geo_sources?order=created_at.desc');
-  STATE.sources = rows || [];
-  renderSourcesTable(STATE.sources);
-  populateSourceFilters(STATE.sources);
-}
+// ── MODULE: Generic RSS + Jina ────────────────────────
+// Fallback for any source not matched by a specific module
+// Discovery: try RSS feed URL directly
+// Extraction: Jina with cookie header → Claude fallback
+MODULES['generic'] = {
+  name: 'Generic',
+  matchUrl: () => true,
 
-function renderSourcesTable(sources) {
-  const container = document.getElementById('sources-rows');
-  if (!sources.length) {
-    container.innerHTML = '<div style="padding:28px;text-align:center;color:var(--text3)">No sources configured yet. Click + ADD SOURCE to begin.</div>';
-    return;
+  async discover(source) {
+    const url = source.url;
+
+    // If URL ends in .xml → treat as sitemap
+    if (url.endsWith('.xml') && !/(feed|rss|atom)/i.test(url)) {
+      addLog(source.name + ': reading sitemap…', 'info');
+      const xml = await directFetch(url);
+      if (!xml) return [];
+      const locs = parseXmlLocs(xml);
+      // Check if it's a sitemap index
+      if (xml.includes('<sitemapindex')) {
+        // Find most recent sitemap and read it
+        const sitemapUrls = locs.filter(u => u.endsWith('.xml'));
+        if (sitemapUrls.length > 0) {
+          const subXml = await directFetch(sitemapUrls[0]);
+          if (subXml) return parseXmlLocs(subXml).map(u => ({ url: u, title: '', author: 'N/A', published_at: null }));
+        }
+      }
+      return locs.map(u => ({ url: u, title: '', author: 'N/A', published_at: null }));
+    }
+
+    // Try as RSS/Atom
+    addLog(source.name + ': reading feed…', 'info');
+    const xml = await directFetch(url);
+    if (!xml || xml.length < 100) return [];
+    if (xml.includes('<rss') || xml.includes('<feed') || xml.includes('<atom')) {
+      return parseRssItems(xml);
+    }
+
+    // If not XML, try to guess RSS URL
+    const origin = new URL(url).origin;
+    for (const guess of [url + '/feed/', origin + '/feed/', origin + '/rss.xml']) {
+      const rss = await directFetch(guess);
+      if (rss && (rss.includes('<rss') || rss.includes('<feed'))) {
+        return parseRssItems(rss);
+      }
+    }
+
+    return [];
+  },
+
+  async extract(url, hints) {
+    // Step 1: Jina with cookiebot consent
+    const cookieHeader = 'CookieConsent=true; CookieConsent={stamp:%27-1%27%2Cnecessary:true%2Cpreferences:true%2Cstatistics:true%2Cmarketing:true}';
+    const jinaText = await jinaFetch(url, { 'X-Set-Cookie': cookieHeader });
+
+    if (isValidContent(jinaText)) {
+      const extracted = extractFromJinaText(jinaText, hints);
+      if (extracted.content && extracted.content.length > 400) return extracted;
+    }
+
+    // Step 2: Direct browser fetch + Claude
+    const html = await directFetch(url);
+    if (html && html.length > 500) {
+      const stripped = stripHtml(html);
+      if (stripped.length > 400) {
+        const result = await claudeExtract(stripped, hints);
+        if (result) return result;
+      }
+    }
+
+    // Step 3: Jina without cookie (last resort)
+    const jinaRaw = await jinaFetch(url, {});
+    if (isValidContent(jinaRaw)) {
+      const extracted = extractFromJinaText(jinaRaw, hints);
+      if (extracted.content && extracted.content.length > 200) return extracted;
+    }
+
+    return null;
   }
-  container.innerHTML = sources.map(s => {
-    const lastScraped = s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : 'Never';
-    const langColor = ['it','en'].includes((s.language||'').toLowerCase()) ? 'var(--accent)' : 'var(--amber)';
-    return `<div class="table-row">
-      <div>
-        <div style="color:var(--text)">${escHtml(s.name)}</div>
-        <div style="color:var(--text3);font-size:11px">${escHtml(s.url)}</div>
-        ${s.requires_login ? '<div style="color:var(--amber);font-size:10px;margin-top:2px">🔒 Login required</div>' : ''}
-      </div>
-      <div style="color:var(--text2)">Every ${s.frequency_hours}h</div>
-      <div style="color:${langColor};text-transform:uppercase">${s.language||'auto'}</div>
-      <div style="color:var(--text2);font-size:11px">${lastScraped}</div>
-      <button class="toggle-btn ${s.active?'active':''}" onclick="toggleSource('${s.id}',${s.active},this)">${s.active?'ACTIVE':'INACTIVE'}</button>
-      <div class="row-actions">
-        <button class="btn-sm" onclick="editSource('${s.id}')">Edit</button>
-        <button class="btn-red" onclick="deleteSource('${s.id}')">Del</button>
-      </div>
-    </div>`;
-  }).join('');
-}
+};
 
-function filterSources(q) {
-  const filtered = STATE.sources.filter(s =>
-    s.name.toLowerCase().includes(q.toLowerCase()) ||
-    s.url.toLowerCase().includes(q.toLowerCase())
-  );
-  renderSourcesTable(filtered);
-}
-
-async function saveSource() {
-  const id = document.getElementById('edit-source-id').value;
-  const data = {
-    name: document.getElementById('src-name').value.trim(),
-    url: document.getElementById('src-url').value.trim(),
-    frequency_hours: parseInt(document.getElementById('src-freq').value),
-    language: document.getElementById('src-lang').value,
-    requires_login: document.getElementById('chk-login').checked,
-    active: true
-  };
-  if (!data.name || !data.url) { showToast('Name and URL are required.', 'red'); return; }
-
-  if (id) {
-    await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data);
-    showToast('Source updated.', 'green');
-  } else {
-    await sbFetch('geo_sources', 'POST', data);
-    showToast('Source added.', 'green');
+function getSiteModule(source) {
+  for (const key of Object.keys(MODULES)) {
+    if (key === 'generic') continue;
+    if (MODULES[key].matchUrl(source.url)) return MODULES[key];
   }
-  closeModal('modal-source');
-  loadSources();
-  loadDashboard();
-}
-
-function editSource(id) {
-  const s = STATE.sources.find(x => x.id === id);
-  if (!s) return;
-  document.getElementById('edit-source-id').value = s.id;
-  document.getElementById('modal-source-title').textContent = 'Edit Source';
-  document.getElementById('src-name').value = s.name;
-  document.getElementById('src-url').value = s.url;
-  document.getElementById('src-freq').value = s.frequency_hours;
-  document.getElementById('src-lang').value = s.language || 'auto';
-  document.getElementById('chk-login').checked = s.requires_login;
-  toggleCreds();
-  openModal('modal-source');
-}
-
-async function deleteSource(id) {
-  if (!confirm('Delete this source? Articles will remain in the database.')) return;
-  await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
-  showToast('Source deleted.', 'amber');
-  loadSources();
-  loadDashboard();
-}
-
-async function toggleSource(id, current, btn) {
-  const newVal = !current;
-  if (btn) {
-    btn.classList.toggle('active', newVal);
-    btn.textContent = newVal ? 'ACTIVE' : 'INACTIVE';
-    btn.setAttribute('onclick', `toggleSource('${id}',${newVal},this)`);
-  }
-  const src = STATE.sources.find(s => s.id === id);
-  if (src) src.active = newVal;
-  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newVal });
-  loadDashboard();
-}
-
-function openAddSource() {
-  document.getElementById('edit-source-id').value = '';
-  document.getElementById('modal-source-title').textContent = 'Add Source';
-  document.getElementById('src-name').value = '';
-  document.getElementById('src-url').value = '';
-  document.getElementById('src-freq').value = '4';
-  document.getElementById('src-lang').value = 'auto';
-  document.getElementById('chk-login').checked = false;
-  document.getElementById('creds-section').classList.remove('visible');
-  openModal('modal-source');
-}
-
-function toggleCreds() {
-  const chk = document.getElementById('chk-login').checked;
-  document.getElementById('creds-section').classList.toggle('visible', chk);
-}
-
-document.getElementById('src-secret-name').addEventListener('input', function() {
-  document.getElementById('secret-hint-user').textContent = 'SITE_' + (this.value||'[NAME]') + '_USER';
-  document.getElementById('secret-hint-pwd').textContent = 'SITE_' + (this.value||'[NAME]') + '_PWD';
-});
-
-// ═══════════════════════════════════════════════════════
-// ARTICLES
-// ═══════════════════════════════════════════════════════
-async function loadArticles() {
-  const arts = await sbFetch('geo_articles?order=scraped_at.desc&select=id,title,author,original_language,translated,scraped_at,published_at,source_id,url,content_original,content_translated');
-  STATE.articles = arts || [];
-  renderArticles(STATE.articles);
-}
-
-let selectMode = false;
-let selectedIds = new Set();
-
-function toggleSelectMode() {
-  selectMode = !selectMode;
-  selectedIds.clear();
-  const btn = document.getElementById('btn-select-mode');
-  const bar = document.getElementById('select-bar');
-  btn.textContent = selectMode ? '✕ Cancel' : '☐ Select';
-  btn.style.borderColor = selectMode ? 'var(--accent)' : '';
-  btn.style.color = selectMode ? 'var(--accent)' : '';
-  bar.classList.toggle('visible', selectMode);
-  filterArticles();
-}
-
-function toggleArticleSelect(id, el, e) {
-  e.stopPropagation();
-  if (selectedIds.has(id)) {
-    selectedIds.delete(id);
-    el.classList.remove('selected');
-  } else {
-    selectedIds.add(id);
-    el.classList.add('selected');
-  }
-  document.getElementById('select-count').textContent = selectedIds.size + ' selected';
-}
-
-function selectAllArticles() {
-  document.querySelectorAll('.article-card').forEach(card => {
-    const id = card.dataset.id;
-    if (id) { selectedIds.add(id); card.classList.add('selected'); }
-  });
-  document.getElementById('select-count').textContent = selectedIds.size + ' selected';
-}
-
-function deselectAll() {
-  selectedIds.clear();
-  document.querySelectorAll('.article-card').forEach(card => card.classList.remove('selected'));
-  document.getElementById('select-count').textContent = '0 selected';
-}
-
-async function deleteSelected() {
-  if (!selectedIds.size) { showToast('No articles selected.', 'amber'); return; }
-  if (!confirm(`Delete ${selectedIds.size} selected article(s)? This cannot be undone.`)) return;
-  let deleted = 0;
-  for (const id of selectedIds) {
-    await sbFetch('geo_embeddings?article_id=eq.' + id, 'DELETE');
-    await sbFetch('geo_articles?id=eq.' + id, 'DELETE');
-    deleted++;
-  }
-  showToast(deleted + ' articles deleted.', 'green');
-  selectedIds.clear();
-  toggleSelectMode();
-  loadArticles();
-  loadDashboard();
-  loadConfigStats();
-}
-
-async function deleteAllArticles() {
-  if (!confirm('Delete ALL articles and embeddings? This cannot be undone.')) return;
-  await sbFetch('geo_embeddings?id=gte.00000000-0000-0000-0000-000000000000', 'DELETE');
-  await sbFetch('geo_articles?id=gte.00000000-0000-0000-0000-000000000000', 'DELETE');
-  showToast('All articles deleted.', 'amber');
-  selectedIds.clear();
-  if (selectMode) toggleSelectMode();
-  loadArticles();
-  loadDashboard();
-  loadConfigStats();
-}
-
-function renderArticles(articles) {
-  const container = document.getElementById('articles-list');
-  if (!articles.length) {
-    container.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><div class="es-text">No articles yet. Add sources and run a scrape.</div></div>';
-    return;
-  }
-  container.innerHTML = articles.map(a => {
-    const src = STATE.sources.find(s => s.id === a.source_id);
-    const srcName = src ? src.name : 'Unknown';
-    const lang = (a.original_language || '—').toUpperCase();
-    const langDisplay = a.translated ? lang + ' → EN' : lang;
-    const date = a.scraped_at ? new Date(a.scraped_at).toLocaleDateString() : '—';
-    const isSelected = selectedIds.has(a.id);
-    const hasContent = a.content_original || a.content_translated;
-    return `<div class="article-card ${isSelected?'selected':''}" data-id="${a.id}"
-      onclick="${selectMode ? `toggleArticleSelect('${a.id}',this,event)` : `viewArticle('${a.id}')`}">
-      <div class="article-meta">
-        ${selectMode ? `<input type="checkbox" class="article-checkbox" ${isSelected?'checked':''} onclick="toggleArticleSelect('${a.id}',this.closest('.article-card'),event)"/>` : ''}
-        <span class="article-source">${escHtml(srcName)}</span>
-        <span class="article-lang">${langDisplay}</span>
-        ${a.author && a.author !== 'N/A' ? `<span class="article-author">by ${escHtml(a.author)}</span>` : ''}
-        ${!hasContent ? '<span style="color:var(--amber);font-size:10px;background:var(--amber-dim);padding:2px 6px;border:1px solid rgba(255,170,0,0.3)">⚠ empty</span>' : ''}
-        <span class="article-date">${date}</span>
-      </div>
-      <div class="article-title">${escHtml(a.title || 'Untitled')}</div>
-    </div>`;
-  }).join('');
-}
-
-function filterArticles() {
-  const q = document.getElementById('art-search').value.toLowerCase();
-  const srcFilter = document.getElementById('art-source-filter').value;
-  const langFilter = document.getElementById('art-lang-filter').value;
-  const days = parseInt(document.getElementById('art-days-filter').value);
-  const cutoff = Date.now() - days * 86400000;
-  const filtered = STATE.articles.filter(a => {
-    if (q && !(a.title||'').toLowerCase().includes(q) && !(a.author||'').toLowerCase().includes(q)) return false;
-    if (srcFilter && a.source_id !== srcFilter) return false;
-    if (langFilter && (a.original_language||'').toLowerCase() !== langFilter) return false;
-    if (a.scraped_at && new Date(a.scraped_at).getTime() < cutoff) return false;
-    return true;
-  });
-  renderArticles(filtered);
-}
-
-async function viewArticle(id) {
-  const data = await sbFetch('geo_articles?id=eq.' + id + '&select=*');
-  if (!data || !data.length) return;
-  const a = data[0];
-  const src = STATE.sources.find(s => s.id === a.source_id);
-  const content = a.content_translated || a.content_original || 'No content available.';
-  document.getElementById('article-detail-content').innerHTML = `
-    <div class="detail-meta">
-      <span class="article-source">${escHtml(src?.name||'Unknown')}</span>
-      <span class="article-lang">${(a.original_language||'?').toUpperCase()}</span>
-      ${a.translated ? '<span class="translated-badge">Translated to EN</span>' : ''}
-      <span class="article-date">${a.scraped_at ? new Date(a.scraped_at).toLocaleString() : '—'}</span>
-    </div>
-    <div class="detail-title">${escHtml(a.title||'Untitled')}</div>
-    <div style="color:var(--text3);font-size:11px;margin-bottom:16px">
-      Author: ${escHtml(a.author||'N/A')} · 
-      <a href="${escHtml(a.url)}" target="_blank" style="color:var(--accent)">Original source ↗</a>
-    </div>
-    <hr class="detail-divider"/>
-    <div class="detail-content">${escHtml(content)}</div>
-  `;
-  switchView('article-detail', null);
-}
-
-function populateSourceFilters(sources) {
-  const opts = sources.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
-  document.getElementById('art-source-filter').innerHTML = '<option value="">All sources</option>' + opts;
-  document.getElementById('q-source-filter').innerHTML = '<option value="">All sources</option>' + opts;
+  return MODULES['generic'];
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1245,294 +1094,123 @@ async function runScrape() {
   }
 
   addLog('Found ' + sources.length + ' active source(s).', 'ok');
-  let totalNew = 0;
-  let pct = 0;
-  const step = 100 / sources.length;
 
-  // Build URL cache to avoid duplicates without per-article DB queries
-  addLog('Building URL cache…', 'info');
+  // Build URL cache
   const existingUrls = new Set();
   const existingData = await sbFetch('geo_articles?select=url');
   if (existingData) existingData.forEach(a => existingUrls.add(a.url));
   addLog('Cache ready — ' + existingUrls.size + ' existing articles.', 'ok');
 
+  let totalNew = 0;
+  const CONCURRENCY = 3;
+
   for (const source of sources) {
+    if (STATE.stopRequested) { addLog('Stopped by user.', 'warn'); break; }
+
     addLog('Scraping: ' + source.name + '…', 'info');
-    animateProgress(pct, pct + step);
-    pct += step;
+    const mod = getSiteModule(source);
 
-    const result = await sbEdge('scrape', {
-      url: source.url,
-      source_id: source.id,
-      secret_name: source.requires_login ? (source.credentials_encrypted || '') : null
-    });
-
-    if (!result || !result.articles) {
-      addLog('Failed to scrape ' + source.name, 'err');
-      continue;
+    // ── DISCOVERY ──
+    let articles = [];
+    try { articles = await mod.discover(source); } catch(e) {
+      addLog(source.name + ': discovery error — ' + e.message, 'err');
     }
 
-    let articles = result.articles.slice(0, CFG.maxArt);
-    let method = result.method || 'unknown';
-
-    // If RSS returned very few articles, also try sitemap via Edge Function
-    if (articles.length < 5 && method.includes('rss')) {
-      addLog(source.name + ': few RSS results, trying sitemap…', 'info');
-      const sitemapResult = await sbEdge('scrape_sitemap', { url: source.url });
-      if (sitemapResult && sitemapResult.articles && sitemapResult.articles.length > articles.length) {
-        articles = sitemapResult.articles.slice(0, CFG.maxArt);
-        method = method + '+sitemap';
-        addLog(source.name + ': sitemap found ' + articles.length + ' total articles', 'ok');
-      }
-    }
-
+    articles = articles.slice(0, CFG.maxArt);
     const newArticles = articles.filter(a => a.url && !existingUrls.has(a.url));
     const skipped = articles.length - newArticles.length;
-    addLog(`${source.name}: ${articles.length} found via [${method}] — ${newArticles.length} new, ${skipped} skipped`, 'ok');
+    addLog(source.name + ': ' + articles.length + ' found [' + (mod.name || 'generic') + '] — ' + newArticles.length + ' new, ' + skipped + ' skipped', 'ok');
 
-    let newCount = 0;
-    const CONCURRENCY = 4;
+    if (!newArticles.length) continue;
     newArticles.forEach(a => existingUrls.add(a.url));
 
-    async function safeParseJSON(text) {
-      text = text.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
-      try { return JSON.parse(text); } catch(e) {}
-      const s1 = text.indexOf('[');
-      const e1 = text.lastIndexOf(']');
-      if (s1 >= 0 && e1 > s1) {
-        try { return JSON.parse(text.substring(s1, e1+1)); } catch(e) {}
-      }
-      const s2 = text.indexOf('{');
-      const e2 = text.lastIndexOf('}');
-      if (s2 >= 0 && e2 > s2) {
-        try { return JSON.parse(text.substring(s2, e2+1)); } catch(e) {}
-      }
-      throw new Error('No valid JSON found');
-    }
+    let newCount = 0;
 
+    // ── EXTRACTION & SAVE ──
     async function processArticle(art) {
+      if (STATE.stopRequested) return;
       try {
-        // Step 1: Jina with cookie consent headers — handles JS rendering + cookie banners
-        let rawContent = '';
-        const cookieConsent = 'CookieConsent=true; CookieConsent={stamp:%27-1%27%2Cnecessary:true%2Cpreferences:true%2Cstatistics:true%2Cmarketing:true}';
-        try {
-          const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
-            headers: {
-              'Accept': 'text/plain',
-              'X-Return-Format': 'text',
-              'X-Set-Cookie': cookieConsent
-            },
-            signal: AbortSignal.timeout(12000)
-          });
-          if (jinaRes.ok) {
-            const t = await jinaRes.text();
-            // Validate: reject if content looks like cookie banner or is too short
-            const isCookieBanner = t.toLowerCase().includes('this website uses cookies') && t.length < 5000;
-            if (t.length > 300 && !isCookieBanner) rawContent = t;
-          }
-        } catch(e) {}
+        // Extract using site-specific module
+        let extracted = null;
+        try { extracted = await mod.extract(art.url, { title: art.title, author: art.author, published_at: art.published_at }); }
+        catch(e) { addLog('  extract error: ' + e.message.substring(0,60), 'err'); }
 
-        // Step 2: fallback to direct browser fetch (browser sends real headers incl cookies)
-        if (!rawContent) {
-          try {
-            const dRes = await fetch(art.url, { signal: AbortSignal.timeout(10000) });
-            if (dRes.ok) {
-              const t = await dRes.text();
-              if (t.length > 300) rawContent = t;
-            }
-          } catch(e) {}
-        }
-
-        // Step 3: last resort — Jina without cookie header
-        if (!rawContent) {
-          try {
-            const jinaRes2 = await fetch('https://r.jina.ai/' + art.url, {
-              headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
-              signal: AbortSignal.timeout(10000)
-            });
-            if (jinaRes2.ok) {
-              const t = await jinaRes2.text();
-              if (t.length > 300) rawContent = t;
-            }
-          } catch(e) {}
-        }
-
-        if (!rawContent || rawContent.length < 100) {
-          addLog('  skip (no content): ' + art.url.substring(0,60), 'warn');
+        if (!extracted || !extracted.content || extracted.content.trim().length < 100) {
+          addLog('  skip (no content): ' + art.url.substring(0,55), 'warn');
           return;
         }
 
-        // Step 3: extract content — Jina gives clean text directly, no Claude needed
-        // Strip HTML for direct fetch content
-        function stripHtml(html) {
-          return html
-            .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-            .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"').replace(/\s{3,}/g, '\n\n').trim();
-        }
-
-        const isHtml = rawContent.trim().startsWith('<') || rawContent.includes('<html');
-        let cleanedContent = isHtml ? stripHtml(rawContent) : rawContent;
-
-        // If content came from Jina it's already clean text with metadata hints
-        // Try to extract title/author from Jina output directly (no Claude needed)
-        let extracted = { title: art.title || '', author: art.author || 'N/A', published_at: art.published_at || null, content: '' };
-
-        // Jina format: first line is often "Title: ..." or the title itself
-        if (cleanedContent.length > 100) {
-          const lines = cleanedContent.split('\n').filter(l => l.trim().length > 0);
-          // Extract title from first meaningful line if not from RSS
-          if (!extracted.title || extracted.title === 'Untitled') {
-            extracted.title = lines[0].replace(/^Title:\s*/i, '').trim().substring(0, 200);
-          }
-          // Extract author if pattern found
-          if (extracted.author === 'N/A') {
-            const authorLine = lines.find(l => /^(By|Author|Di|Autore):/i.test(l));
-            if (authorLine) extracted.author = authorLine.replace(/^(By|Author|Di|Autore):\s*/i, '').trim();
-          }
-          // Content is everything after the first few header lines
-          extracted.content = lines.slice(1).join('\n').trim().substring(0, 32000);
-        }
-
-        // Fallback: use Claude ONLY if content is too short or clearly wrong
-        if (!extracted.content || extracted.content.trim().length < 200) {
-          const prompt = [
-            'Extract the article from this text.',
-            'Return ONLY a raw JSON object, no markdown.',
-            'Format: {"title":"...","author":"...","published_at":"...","content":"..."}',
-            'IMPORTANT: content must be the COMPLETE full article, do not truncate.',
-            'author="N/A" if unknown, published_at=null if unknown.',
-            art.title ? 'Hint title: "' + art.title + '"' : '',
-            'Text:', cleanedContent.substring(0, 20000)
-          ].filter(Boolean).join('\n');
-
-          try {
-            const cRes = await fetch('https://api.anthropic.com/v1/messages', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': CFG.antKey,
-                'anthropic-version': '2023-06-01',
-                'anthropic-dangerous-direct-browser-access': 'true'
-              },
-              body: JSON.stringify({
-                model: 'claude-haiku-4-5-20251001',
-                max_tokens: 8000,
-                messages: [{ role: 'user', content: prompt }]
-              })
-            });
-            if (cRes.ok) {
-              const cData = await cRes.json();
-              // Track token usage
-              if (cData.usage) {
-                SESSION_STATS.tokensIn += (cData.usage.input_tokens || 0);
-                SESSION_STATS.tokensOut += (cData.usage.output_tokens || 0);
-                SESSION_STATS.claudeCalls += 1;
-                updateSessionStats();
-              }
-              const claudeExtracted = await safeParseJSON(cData.content[0].text).catch(() => null);
-              if (claudeExtracted && claudeExtracted.content && claudeExtracted.content.length > 200) {
-                extracted = claudeExtracted;
-              }
-            }
-          } catch(e) {}
-        }
-
-        if (!extracted.content || extracted.content.trim().length < 50) {
-          addLog('  skip (empty): ' + art.url.substring(0,60), 'warn'); return;
-        }
-
-        // Apply RSS hints for missing metadata
+        // Apply RSS hints for metadata
         if ((!extracted.title || extracted.title === 'Untitled') && art.title) extracted.title = art.title;
-        if ((!extracted.author || extracted.author === 'N/A') && art.author) extracted.author = art.author;
+        if ((!extracted.author || extracted.author === 'N/A') && art.author && art.author !== 'N/A') extracted.author = art.author;
         if (!extracted.published_at && art.published_at) extracted.published_at = art.published_at;
 
-        // Language: use source config, no Claude detection needed
-        const detectedLang = (source.language && source.language !== 'auto') ? source.language : 'en';
-        // Translation disabled — saved in original language, translated at query time
-        const translated = false;
-        const content_translated = null;
-
-        // Step 6: upsert to Supabase from browser (handles duplicates gracefully)
-        // Use proper hash to avoid collisions from truncation
-        const msgBuffer = new TextEncoder().encode(art.url);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const urlHash = hashArray.map(b => b.toString(16).padStart(2,'0')).join('').substring(0,64);
+        // Save to Supabase
+        const hash = await urlHash(art.url);
         const saveRes = await sbFetch('geo_articles?on_conflict=url_hash', 'POST', {
           source_id: source.id,
           url: art.url,
-          url_hash: urlHash,
-          title: extracted.title || art.title || 'Untitled',
-          author: extracted.author || art.author || 'N/A',
-          original_language: detectedLang || 'en',
-          content_original: extracted.content,
-          content_translated,
-          translated,
-          published_at: extracted.published_at || art.published_at || null
+          url_hash: hash,
+          title: extracted.title || 'Untitled',
+          author: extracted.author || 'N/A',
+          original_language: source.language || 'en',
+          content_original: extracted.content.trim(),
+          content_translated: null,
+          translated: false,
+          published_at: extracted.published_at || null
         });
 
-        if (!saveRes) { addLog('  skip (null response): ' + art.url.substring(0,60), 'warn'); return; }
-        if (!saveRes[0]) { addLog('  skip (no id returned): ' + art.url.substring(0,60), 'warn'); return; }
-        const articleId = saveRes[0].id;
+        if (!saveRes || !saveRes[0]) {
+          addLog('  skip (save failed): ' + art.url.substring(0,55), 'warn');
+          return;
+        }
+
         newCount++;
         totalNew++;
-        addLog('  + ' + (extracted.title || art.url).substring(0,60), 'ok');
+        addLog('  + ' + (extracted.title || art.url).substring(0,58), 'ok');
 
-        // Step 7: embed if enabled
-        if (CFG.autoEmbed && articleId && extracted.content.length > 50) {
-          await sbEdge('embed', { article_id: articleId, text: extracted.content });
+        // Embed if enabled
+        if (CFG.autoEmbed && saveRes[0].id) {
+          await sbEdge('embed', { article_id: saveRes[0].id, text: extracted.content });
         }
 
       } catch(e) {
-        addLog('  error: ' + e.message.substring(0,80), 'err');
+        addLog('  error: ' + e.message.substring(0,70), 'err');
       }
     }
 
-    // Run in parallel batches with stop support
+    // Run in batches
     for (let i = 0; i < newArticles.length; i += CONCURRENCY) {
-      if (STATE.stopRequested) {
-        addLog(source.name + ': stopped by user.', 'warn');
-        break;
-      }
+      if (STATE.stopRequested) { addLog(source.name + ': stopped.', 'warn'); break; }
       const batch = newArticles.slice(i, i + CONCURRENCY);
-      addLog(source.name + ': batch ' + (Math.floor(i/CONCURRENCY)+1) + '/' + Math.ceil(newArticles.length/CONCURRENCY) + ' — ' + batch.length + ' articles', 'info');
-      await Promise.all(batch.map(art => processArticle(art)));
+      const batchNum = Math.floor(i/CONCURRENCY) + 1;
+      const totalBatches = Math.ceil(newArticles.length/CONCURRENCY);
+      addLog(source.name + ': batch ' + batchNum + '/' + totalBatches + ' — ' + batch.length + ' articles', 'info');
+      await Promise.all(batch.map(processArticle));
     }
 
-
-        addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
+    addLog(source.name + ': ' + newCount + ' new articles indexed', newCount > 0 ? 'ok' : 'info');
     await sbFetch('geo_sources?id=eq.' + source.id, 'PATCH', { last_scraped_at: new Date().toISOString() });
   }
 
   localStorage.setItem('geointel_last_run', Date.now().toString());
   addLog('Run complete — ' + totalNew + ' new articles total', 'ok');
-  showToast('Run complete — ' + totalNew + ' new articles indexed', 'green');
+  showToast('Run complete — ' + totalNew + ' new articles', 'green');
 
-  setRunningUI(false);
   STATE.running = false;
+  setRunningUI(false);
   document.getElementById('progress-fill').style.width = '0%';
-
   loadDashboard();
   loadArticles();
 }
 
 function setRunningUI(running) {
-  const dot = document.getElementById('status-dot');
-  const txt = document.getElementById('status-text');
-  const btnH = document.getElementById('btn-run-header');
-  const btnD = document.getElementById('btn-run-dash');
-  const stopH = document.getElementById('btn-stop-header');
-  const stopD = document.getElementById('btn-stop-dash');
-  dot.className = 'status-dot' + (running ? '' : ' idle');
-  txt.textContent = running ? 'Running…' : 'Idle';
-  btnH.style.display = running ? 'none' : '';
-  btnD.style.display = running ? 'none' : '';
-  stopH.style.display = running ? '' : 'none';
-  stopD.style.display = running ? '' : 'none';
+  document.getElementById('status-dot').className = 'status-dot' + (running ? '' : ' idle');
+  document.getElementById('status-text').textContent = running ? 'Running…' : 'Idle';
+  document.getElementById('btn-run-header').style.display = running ? 'none' : '';
+  document.getElementById('btn-run-dash').style.display = running ? 'none' : '';
+  document.getElementById('btn-stop-header').style.display = running ? '' : 'none';
+  document.getElementById('btn-stop-dash').style.display = running ? '' : 'none';
 }
 
 function stopScrape() {
@@ -1542,31 +1220,277 @@ function stopScrape() {
   document.getElementById('btn-stop-dash').disabled = true;
 }
 
-function animateProgress(from, to) {
-  const fill = document.getElementById('progress-fill');
-  fill.style.width = to + '%';
-}
-
 // ═══════════════════════════════════════════════════════
 // SCHEDULER
 // ═══════════════════════════════════════════════════════
 function startScheduler() {
   if (STATE.schedulerTimer) clearInterval(STATE.schedulerTimer);
-  const lastRun = parseInt(localStorage.getItem('geointel_last_run') || '0');
   const interval = CFG.freq * 3600000;
-  const nextRun = lastRun + interval;
-  STATE.nextRunTime = nextRun > Date.now() ? nextRun : Date.now() + interval;
-
+  const lastRun = parseInt(localStorage.getItem('geointel_last_run') || '0');
+  STATE.nextRunTime = Math.max(lastRun + interval, Date.now() + 60000);
+  document.getElementById('sched-freq').textContent = 'Every ' + CFG.freq + 'h';
+  updateNextRunDisplay();
   STATE.schedulerTimer = setInterval(() => {
     updateNextRunDisplay();
     if (Date.now() >= STATE.nextRunTime && !STATE.running) {
       STATE.nextRunTime = Date.now() + interval;
       runScrape();
     }
-  }, 60000);
+  }, 30000);
+}
 
-  // Also update display every minute
-  setInterval(updateNextRunDisplay, 60000);
+function updateNextRunDisplay() {
+  const last = parseInt(localStorage.getItem('geointel_last_run') || '0');
+  document.getElementById('sched-last').textContent = last ? new Date(last).toLocaleTimeString() : 'Never';
+  if (!STATE.nextRunTime) return;
+  const diff = STATE.nextRunTime - Date.now();
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const label = diff <= 0 ? 'Now' : (h > 0 ? h + 'h ' : '') + m + 'm';
+  document.getElementById('sched-next').textContent = label;
+  document.getElementById('stat-next').textContent = label;
+  document.getElementById('stat-freq-sub').textContent = 'every ' + CFG.freq + 'h';
+  const fill = Math.max(0, Math.min(100, 100 - (diff / (CFG.freq * 3600000)) * 100));
+  document.getElementById('progress-fill').style.width = fill + '%';
+}
+
+// ═══════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════
+async function loadDashboard() {
+  const arts = await sbFetch('geo_articles?select=id,original_language,scraped_at,source_id');
+  if (arts) {
+    document.getElementById('stat-articles').textContent = arts.length.toLocaleString();
+    const today = arts.filter(a => new Date(a.scraped_at).toDateString() === new Date().toDateString());
+    document.getElementById('stat-articles-sub').textContent = '+' + today.length + ' today';
+
+    // Top sources
+    const counts = {};
+    arts.forEach(a => { counts[a.source_id] = (counts[a.source_id] || 0) + 1; });
+    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
+    const srcs = STATE.sources.length ? STATE.sources : (await sbFetch('geo_sources?select=id,name') || []);
+    document.getElementById('top-sources-panel').innerHTML = sorted.map(([id, cnt]) => {
+      const s = srcs.find(s => s.id === parseInt(id));
+      return `<div class="sched-row"><span style="color:var(--text2);font-size:12px">${escHtml(s?.name||'?')}</span><span style="color:var(--accent);font-size:12px">${cnt}</span></div>`;
+    }).join('') || '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px">No data yet</div>';
+  }
+
+  const srcs = await sbFetch('geo_sources?active=eq.true&select=id');
+  if (srcs) {
+    document.getElementById('stat-sources').textContent = srcs.length;
+    document.getElementById('stat-sources-sub').textContent = srcs.length + ' active';
+  }
+  updateNextRunDisplay();
+}
+
+// ═══════════════════════════════════════════════════════
+// SOURCES
+// ═══════════════════════════════════════════════════════
+async function loadSources() {
+  const data = await sbFetch('geo_sources?order=name.asc');
+  if (!data) return;
+  STATE.sources = data;
+  renderSources(data);
+  populateSourceFilters(data);
+}
+
+function renderSources(sources) {
+  if (!sources.length) {
+    document.getElementById('sources-rows').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">No sources. Add one above.</div>';
+    return;
+  }
+  document.getElementById('sources-rows').innerHTML = sources.map(s => `
+    <div class="table-row">
+      <div>
+        <div style="color:var(--text);font-size:12px;font-weight:500">${escHtml(s.name)}</div>
+        <div style="color:var(--text3);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">${escHtml(s.url)}</div>
+      </div>
+      <div style="color:var(--text2);font-size:11px">Every ${s.frequency_hours}h</div>
+      <div style="color:var(--text3);font-size:11px">${(s.language||'?').toUpperCase()}</div>
+      <div style="color:var(--text3);font-size:11px">${s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '—'}</div>
+      <div>
+        <button class="toggle-btn ${s.active?'active':''}" onclick="toggleSource(${s.id}, ${!s.active})">${s.active?'ON':'OFF'}</button>
+      </div>
+      <div class="row-actions">
+        <button class="btn-sm" onclick="editSource(${s.id})">Edit</button>
+        <button class="btn-red" onclick="deleteSource(${s.id})">Del</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterSources(q) {
+  const filtered = STATE.sources.filter(s => !q || s.name.toLowerCase().includes(q.toLowerCase()) || s.url.includes(q));
+  renderSources(filtered);
+}
+
+async function toggleSource(id, active) {
+  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active });
+  loadSources();
+  loadDashboard();
+}
+
+function editSource(id) {
+  const s = STATE.sources.find(s => s.id === id);
+  if (!s) return;
+  document.getElementById('edit-source-id').value = id;
+  document.getElementById('modal-source-title').textContent = 'Edit Source';
+  document.getElementById('src-name').value = s.name;
+  document.getElementById('src-url').value = s.url;
+  document.getElementById('src-freq').value = s.frequency_hours || 4;
+  document.getElementById('src-lang').value = s.language || 'en';
+  openModal('modal-source');
+}
+
+async function saveSource() {
+  const id = document.getElementById('edit-source-id').value;
+  const data = {
+    name: document.getElementById('src-name').value.trim(),
+    url: document.getElementById('src-url').value.trim(),
+    frequency_hours: parseInt(document.getElementById('src-freq').value),
+    language: document.getElementById('src-lang').value,
+    active: true,
+    requires_login: false
+  };
+  if (!data.name || !data.url) { showToast('Name and URL required.', 'red'); return; }
+  if (id) {
+    await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data);
+  } else {
+    await sbFetch('geo_sources', 'POST', data);
+  }
+  document.getElementById('edit-source-id').value = '';
+  document.getElementById('modal-source-title').textContent = 'Add Source';
+  ['src-name','src-url'].forEach(f => document.getElementById(f).value = '');
+  closeModal('modal-source');
+  loadSources();
+  loadDashboard();
+  showToast('Source saved.', 'green');
+}
+
+async function deleteSource(id) {
+  if (!confirm('Delete this source?')) return;
+  await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
+  loadSources();
+  loadDashboard();
+}
+
+// ═══════════════════════════════════════════════════════
+// ARTICLES
+// ═══════════════════════════════════════════════════════
+async function loadArticles() {
+  const days = parseInt(document.getElementById('art-days-filter')?.value || '30');
+  const since = new Date(Date.now() - days * 86400000).toISOString();
+  const data = await sbFetch('geo_articles?order=scraped_at.desc&scraped_at=gte.' + since + '&select=id,title,author,url,original_language,scraped_at,source_id,content_original&limit=200');
+  if (!data) return;
+  STATE.articles = data;
+  filterArticles();
+}
+
+function filterArticles() {
+  const q = document.getElementById('art-search')?.value?.toLowerCase() || '';
+  const srcFilter = document.getElementById('art-source-filter')?.value || '';
+  const days = parseInt(document.getElementById('art-days-filter')?.value || '30');
+  const since = Date.now() - days * 86400000;
+  const filtered = STATE.articles.filter(a => {
+    if (srcFilter && String(a.source_id) !== srcFilter) return false;
+    if (new Date(a.scraped_at).getTime() < since) return false;
+    if (q && !a.title?.toLowerCase().includes(q) && !a.content_original?.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  renderArticles(filtered);
+}
+
+function renderArticles(articles) {
+  const container = document.getElementById('articles-list');
+  if (!articles.length) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><div class="es-text">No articles match your filters.</div></div>';
+    return;
+  }
+  container.innerHTML = articles.map(a => {
+    const src = STATE.sources.find(s => s.id === a.source_id);
+    const excerpt = (a.content_original || '').substring(0, 200).replace(/\n/g,' ');
+    const sel = STATE.selectedIds.has(a.id);
+    return `<div class="article-card${sel?' selected':''}" onclick="viewArticle(${a.id})">
+      <div class="article-meta">
+        <span class="article-source">${escHtml(src?.name||'?')}</span>
+        <span class="article-lang">${(a.original_language||'?').toUpperCase()}</span>
+        <span class="article-author">${escHtml(a.author||'N/A')}</span>
+        <span class="article-date">${a.scraped_at ? new Date(a.scraped_at).toLocaleDateString() : '—'}</span>
+      </div>
+      <div class="article-title">${escHtml(a.title||'Untitled')}</div>
+      <div class="article-excerpt">${escHtml(excerpt)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function viewArticle(id) {
+  const data = await sbFetch('geo_articles?id=eq.' + id + '&select=*');
+  if (!data?.[0]) return;
+  const a = data[0];
+  const src = STATE.sources.find(s => s.id === a.source_id);
+  document.getElementById('article-detail-content').innerHTML = `
+    <div class="detail-meta">
+      <span class="article-source">${escHtml(src?.name||'?')}</span>
+      <span class="article-lang">${(a.original_language||'?').toUpperCase()}</span>
+      <span class="article-date">${a.scraped_at ? new Date(a.scraped_at).toLocaleString() : '—'}</span>
+    </div>
+    <div class="detail-title">${escHtml(a.title||'Untitled')}</div>
+    <div style="color:var(--text3);font-size:11px;margin-bottom:16px">
+      Author: ${escHtml(a.author||'N/A')} · 
+      <a href="${escHtml(a.url)}" target="_blank" style="color:var(--accent)">Original ↗</a>
+    </div>
+    <hr class="detail-divider"/>
+    <div class="detail-content">${escHtml(a.content_original||'No content.')}</div>
+  `;
+  switchView('article-detail', null);
+}
+
+function toggleSelectMode() {
+  STATE.selectMode = !STATE.selectMode;
+  STATE.selectedIds.clear();
+  document.getElementById('select-bar').classList.toggle('visible', STATE.selectMode);
+  document.getElementById('btn-select-mode').textContent = STATE.selectMode ? '✕ Cancel' : '☐ Select';
+  filterArticles();
+}
+
+function selectAllArticles() {
+  STATE.articles.forEach(a => STATE.selectedIds.add(a.id));
+  document.getElementById('select-count').textContent = STATE.selectedIds.size + ' selected';
+  filterArticles();
+}
+
+function deselectAll() {
+  STATE.selectedIds.clear();
+  document.getElementById('select-count').textContent = '0 selected';
+  filterArticles();
+}
+
+async function deleteSelected() {
+  if (!STATE.selectedIds.size) return;
+  if (!confirm('Delete ' + STATE.selectedIds.size + ' articles?')) return;
+  for (const id of STATE.selectedIds) {
+    await sbFetch('geo_articles?id=eq.' + id, 'DELETE');
+  }
+  STATE.selectedIds.clear();
+  toggleSelectMode();
+  loadDashboard();
+  loadArticles();
+}
+
+async function deleteAllArticles() {
+  if (!confirm('Delete ALL articles? This cannot be undone.')) return;
+  await sbFetch('geo_embeddings?id=gt.0', 'DELETE');
+  await sbFetch('geo_articles?id=gt.0', 'DELETE');
+  showToast('All articles deleted.', 'amber');
+  loadDashboard();
+  loadArticles();
+  loadConfigStats();
+}
+
+function populateSourceFilters(sources) {
+  const opts = sources.map(s => `<option value="${s.id}">${escHtml(s.name)}</option>`).join('');
+  document.getElementById('art-source-filter').innerHTML = '<option value="">All sources</option>' + opts;
+  document.getElementById('q-source-filter').innerHTML = '<option value="">All sources</option>' + opts;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1574,37 +1498,27 @@ function startScheduler() {
 // ═══════════════════════════════════════════════════════
 async function runQuery() {
   const q = document.getElementById('query-input').value.trim();
-  if (!q) return;
-  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure connection first.', 'red'); return; }
+  if (!q || !CFG.antKey) { showToast('Enter question and configure API key.', 'red'); return; }
 
   document.getElementById('query-result-wrap').style.display = 'none';
   document.getElementById('query-loading').style.display = 'flex';
 
-  // Generate embedding for query
-  const embedRes = await sbEdge('embed_query', { text: q });
-  let context = '';
-  let sourcesUsed = [];
+  // Get context from DB
+  const days = document.getElementById('q-days-filter').value;
+  const srcFilter = document.getElementById('q-source-filter').value;
+  const since = new Date(Date.now() - parseInt(days) * 86400000).toISOString();
+  let url = 'geo_articles?order=scraped_at.desc&scraped_at=gte.' + since + '&select=title,content_original,source_id,scraped_at&limit=15';
+  if (srcFilter) url += '&source_id=eq.' + srcFilter;
+  const articles = await sbFetch(url);
 
-  if (embedRes && embedRes.chunks) {
-    // Use semantic search
-    context = embedRes.chunks.map(c => `[${c.source_name} · ${c.scraped_at?.split('T')[0]}]\n${c.chunk_text}`).join('\n\n');
-    sourcesUsed = embedRes.chunks;
-  } else {
-    // Fallback: fetch recent articles as context
-    const recent = await sbFetch('geo_articles?order=scraped_at.desc&limit=10&select=title,content_translated,content_original,source_id,scraped_at');
-    if (recent) {
-      context = recent.map(a => {
-        const src = STATE.sources.find(s => s.id === a.source_id);
-        return `[${src?.name||'?'} · ${a.scraped_at?.split('T')[0]}]\n${a.title}\n${(a.content_translated||a.content_original||'').substring(0,800)}`;
-      }).join('\n\n');
-      sourcesUsed = recent.map(a => ({ source_name: STATE.sources.find(s=>s.id===a.source_id)?.name||'?', scraped_at: a.scraped_at }));
-    }
-  }
+  const context = (articles || []).map(a => {
+    const src = STATE.sources.find(s => s.id === a.source_id);
+    return `[${src?.name||'?'} · ${a.scraped_at?.split('T')[0]}]\n${a.title}\n${(a.content_original||'').substring(0,1200)}`;
+  }).join('\n\n---\n\n');
 
   const langOut = document.getElementById('q-lang-out').value;
-  const langInstruction = langOut === 'it' ? 'Answer in Italian.' : langOut === 'en' ? 'Answer in English.' : 'Answer in the same language as the question.';
+  const langInstr = langOut === 'it' ? 'Answer in Italian.' : langOut === 'en' ? 'Answer in English.' : 'Answer in the same language as the question.';
 
-  // Call Anthropic directly
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1616,45 +1530,31 @@ async function runQuery() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `You are a geopolitical intelligence analyst. Answer the question based ONLY on the provided knowledge base context. ${langInstruction}
-Be concise, analytical, and cite specific sources when relevant.
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: `You are a geopolitical intelligence analyst. Answer based ONLY on the context below. ${langInstr} Be analytical and cite sources.
 
 CONTEXT:
-${context || 'No context available — knowledge base may be empty.'}
+${context || 'Knowledge base is empty.'}
 
-QUESTION: ${q}`
-        }]
+QUESTION: ${q}` }]
       })
     });
     const data = await res.json();
-    if (data.usage) {
-      SESSION_STATS.tokensIn += (data.usage.input_tokens || 0);
-      SESSION_STATS.tokensOut += (data.usage.output_tokens || 0);
-      SESSION_STATS.claudeCalls += 1;
-      updateSessionStats();
-    }
-    const answer = data.content?.[0]?.text || 'Unable to generate answer.';
-
-    document.getElementById('query-answer').textContent = answer;
-    document.getElementById('query-sources-chips').innerHTML = [...new Map(sourcesUsed.map(s => [s.source_name, s])).values()]
-      .map(s => `<span class="source-chip"><span class="chip-dot"></span>${escHtml(s.source_name||'?')} · ${s.scraped_at?.split('T')[0]||'?'}</span>`)
-      .join('');
-
+    trackClaude(data.usage);
+    document.getElementById('query-answer').textContent = data.content?.[0]?.text || 'No answer.';
+    document.getElementById('query-sources-chips').innerHTML = (articles||[]).map(a => {
+      const src = STATE.sources.find(s => s.id === a.source_id);
+      return `<span class="source-chip"><span class="chip-dot"></span>${escHtml(src?.name||'?')} · ${a.scraped_at?.split('T')[0]||'?'}</span>`;
+    }).join('');
     document.getElementById('query-loading').style.display = 'none';
     document.getElementById('query-result-wrap').style.display = 'block';
   } catch(e) {
     addLog('Query error: ' + e.message, 'err');
-    showToast('Query failed. Check Anthropic API key in Config.', 'red');
+    showToast('Query failed.', 'red');
     document.getElementById('query-loading').style.display = 'none';
   }
 }
-
-document.getElementById('query-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runQuery(); }
-});
+document.getElementById('query-input').addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runQuery();} });
 
 // ═══════════════════════════════════════════════════════
 // DISCOVER
@@ -1663,52 +1563,31 @@ async function runDiscover() {
   const focus = document.getElementById('discover-input').value.trim();
   if (!focus) return;
   const btn = document.getElementById('btn-discover');
-  btn.disabled = true;
-  btn.textContent = 'Searching…';
-
+  btn.disabled = true; btn.textContent = 'Searching…';
   const result = await sbEdge('discover', { focus });
-  btn.disabled = false;
-  btn.textContent = 'SEARCH WITH AI';
-
+  btn.disabled = false; btn.textContent = 'SEARCH WITH AI';
   const container = document.getElementById('discover-results');
-  if (!result || !result.sources) {
-    container.innerHTML = '<div style="color:var(--red);font-size:12px">Search failed. Check connection.</div>';
-    container.style.display = 'flex';
-    return;
-  }
-
+  if (!result?.sources) { container.innerHTML = '<div style="color:var(--red);font-size:12px">Search failed.</div>'; container.style.display='flex'; return; }
+  window._discoverResults = result.sources;
   container.style.display = 'flex';
-  container.innerHTML = result.sources.map((s, i) => `
+  container.innerHTML = result.sources.map((s,i) => `
     <div class="discover-item">
       <div class="discover-info">
         <div class="discover-url">${escHtml(s.url)}</div>
         <div style="color:var(--text);font-size:12px;font-weight:600;margin-bottom:4px">${escHtml(s.name)}</div>
         <div class="discover-desc">${escHtml(s.description)}</div>
-        <div class="discover-lang">Language: ${escHtml(s.language||'?').toUpperCase()}</div>
       </div>
       <button class="btn-green" style="font-size:10px;padding:6px 12px" onclick="addDiscoveredSource(${i})">+ ADD</button>
-    </div>
-  `).join('');
-
-  // Store for later
-  window._discoverResults = result.sources;
+    </div>`).join('');
 }
 
 async function addDiscoveredSource(idx) {
   const s = window._discoverResults[idx];
   if (!s) return;
-  await sbFetch('geo_sources', 'POST', {
-    name: s.name,
-    url: s.url,
-    frequency_hours: 8,
-    language: s.language || 'auto',
-    active: true,
-    requires_login: false
-  });
-  showToast(s.name + ' added to sources!', 'green');
+  await sbFetch('geo_sources', 'POST', { name: s.name, url: s.url, frequency_hours: 8, language: s.language||'en', active: true, requires_login: false });
+  showToast(s.name + ' added!', 'green');
   closeModal('modal-discover');
-  loadSources();
-  loadDashboard();
+  loadSources(); loadDashboard();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1720,7 +1599,6 @@ function loadConfigToForm() {
   document.getElementById('cfg-ant-key').value = CFG.antKey || '';
   document.getElementById('cfg-freq').value = CFG.freq || 4;
   document.getElementById('cfg-max-art').value = CFG.maxArt || 50;
-  document.getElementById('cfg-translate').checked = CFG.autoTranslate !== false;
   document.getElementById('cfg-embed').checked = CFG.autoEmbed !== false;
 }
 
@@ -1730,77 +1608,54 @@ function saveConfig() {
   CFG.antKey = document.getElementById('cfg-ant-key').value.trim();
   CFG.freq = parseInt(document.getElementById('cfg-freq').value);
   CFG.maxArt = parseInt(document.getElementById('cfg-max-art').value);
-  CFG.autoTranslate = document.getElementById('cfg-translate').checked;
   CFG.autoEmbed = document.getElementById('cfg-embed').checked;
   saveConfigToStorage();
   showToast('Configuration saved.', 'green');
   startScheduler();
-  loadDashboard();
-  loadSources();
-  loadArticles();
-  loadConfigStats();
+  loadDashboard(); loadSources(); loadArticles(); loadConfigStats();
 }
 
 async function testConnection() {
   const url = document.getElementById('cfg-sb-url').value.trim().replace(/\/$/, '');
   const key = document.getElementById('cfg-sb-key').value.trim();
-  if (!url || !key) { showToast('Enter URL and key first.', 'red'); return; }
   try {
-    const res = await fetch(url + '/rest/v1/geo_sources?limit=1', {
-      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
-    });
-    if (res.ok) showToast('Supabase connection OK ✓', 'green');
-    else showToast('Connection failed: ' + res.status, 'red');
-  } catch(e) {
-    showToast('Connection error: ' + e.message, 'red');
-  }
+    const res = await fetch(url + '/rest/v1/geo_sources?limit=1', { headers: { 'apikey': key, 'Authorization': 'Bearer ' + key } });
+    showToast(res.ok ? 'Supabase OK ✓' : 'Connection failed: ' + res.status, res.ok ? 'green' : 'red');
+  } catch(e) { showToast('Error: ' + e.message, 'red'); }
 }
 
 async function testAnthropicKey() {
   const key = document.getElementById('cfg-ant-key').value.trim();
-  if (!key) { showToast('Enter API key first.', 'red'); return; }
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'Hi' }] })
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role:'user', content:'Hi' }] })
     });
-    if (res.ok) showToast('Anthropic API key OK ✓', 'green');
-    else showToast('API key invalid: ' + res.status, 'red');
-  } catch(e) {
-    showToast('API error: ' + e.message, 'red');
-  }
+    showToast(res.ok ? 'Anthropic API OK ✓' : 'Invalid key: ' + res.status, res.ok ? 'green' : 'red');
+  } catch(e) { showToast('Error: ' + e.message, 'red'); }
 }
 
 async function changePassword() {
   const p1 = document.getElementById('cfg-new-pwd').value;
   const p2 = document.getElementById('cfg-confirm-pwd').value;
-  if (!p1) { showToast('Enter a new password.', 'red'); return; }
-  if (p1 !== p2) { showToast('Passwords do not match.', 'red'); return; }
+  if (!p1 || p1 !== p2) { showToast(p1 ? 'Passwords do not match.' : 'Enter password.', 'red'); return; }
   CFG.appPasswordHash = await hashStr(p1);
   saveConfigToStorage();
   document.getElementById('cfg-new-pwd').value = '';
   document.getElementById('cfg-confirm-pwd').value = '';
-  showToast('Password changed successfully.', 'green');
+  showToast('Password changed.', 'green');
 }
 
 async function loadConfigStats() {
-  const arts = await sbFetch('geo_articles?select=id');
-  const embs = await sbFetch('geo_embeddings?select=id');
-  const srcs = await sbFetch('geo_sources?select=id');
+  const [arts, embs, srcs] = await Promise.all([
+    sbFetch('geo_articles?select=id'),
+    sbFetch('geo_embeddings?select=id'),
+    sbFetch('geo_sources?select=id')
+  ]);
   document.getElementById('cfg-total-art').textContent = arts?.length ?? '—';
   document.getElementById('cfg-total-emb').textContent = embs?.length ?? '—';
   document.getElementById('cfg-total-src').textContent = srcs?.length ?? '—';
-}
-
-async function confirmDeleteAll() {
-  if (!confirm('Delete ALL articles and embeddings? This cannot be undone.')) return;
-  await sbFetch('geo_embeddings', 'DELETE');
-  await sbFetch('geo_articles', 'DELETE');
-  showToast('All articles deleted.', 'amber');
-  loadDashboard();
-  loadArticles();
-  loadConfigStats();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1809,25 +1664,26 @@ async function confirmDeleteAll() {
 function switchView(id, btn) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
-  if (btn) {
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
+  if (btn) { document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  if (id === 'articles') loadArticles();
+  if (id === 'config') loadConfigStats();
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
-});
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'modal-source') {
+    document.getElementById('edit-source-id').value = '';
+    document.getElementById('modal-source-title').textContent = 'Add Source';
+    ['src-name','src-url'].forEach(f => document.getElementById(f).value='');
+  }
+}
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
 
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + type;
-  void t.offsetWidth;
-  t.classList.add('show');
+  t.textContent = msg; t.className = 'toast ' + type;
+  void t.offsetWidth; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
@@ -1841,22 +1697,15 @@ function addLog(msg, type='') {
   log.scrollTop = log.scrollHeight;
 }
 
-function clearLog() {
-  document.getElementById('run-log').innerHTML = '';
-}
+function clearLog() { document.getElementById('run-log').innerHTML = ''; }
 
 function copyLog() {
-  const log = document.getElementById('run-log');
-  const lines = Array.from(log.querySelectorAll('.log-line')).map(l => {
-    const time = l.querySelector('.log-time')?.textContent || '';
-    const msg = l.querySelector('.log-msg')?.textContent || '';
-    return time + '  ' + msg;
-  }).join('\n');
-  navigator.clipboard.writeText(lines).then(() => {
-    showToast('Log copied to clipboard.', 'green');
-  }).catch(() => {
-    showToast('Copy failed — try long-press on log text.', 'amber');
-  });
+  const lines = Array.from(document.getElementById('run-log').querySelectorAll('.log-line'))
+    .map(l => (l.querySelector('.log-time')?.textContent||'') + '  ' + (l.querySelector('.log-msg')?.textContent||''))
+    .join('\n');
+  navigator.clipboard.writeText(lines)
+    .then(() => showToast('Log copied.', 'green'))
+    .catch(() => showToast('Copy failed.', 'amber'));
 }
 
 function escHtml(str) {
@@ -1868,11 +1717,8 @@ function escHtml(str) {
 // INIT
 // ═══════════════════════════════════════════════════════
 loadConfig();
-
-// If no password set yet, first login sets it
 if (!CFG.appPasswordHash) {
-  const lbl = document.getElementById('login-label');
-  if (lbl) lbl.textContent = 'SET APP PASSWORD (FIRST RUN)';
+  document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
 }
 </script>
 
