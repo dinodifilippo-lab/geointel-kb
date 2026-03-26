@@ -344,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v0.13 · L0</div>
+  <div class="version">v1.0 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.13</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.0</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -443,8 +443,8 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 
   <div class="view" id="view-sources">
     <div class="toolbar">
-      <input class="search-input" placeholder="Filter sources…"/>
-      <button class="btn-accent">+ ADD SOURCE</button>
+      <input class="search-input" placeholder="Filter sources…" oninput="filterSourcesUI(this.value)"/>
+      <button class="btn-accent" onclick="openAddSource()">+ ADD SOURCE</button>
     </div>
     <div class="table-wrap">
       <div class="table-hdr">
@@ -452,6 +452,10 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
         <div class="th">Last scraped</div>
         <div class="th">Active</div>
         <div class="th">Actions</div>
+      </div>
+      <div id="sources-rows">
+        <div style="padding:24px;text-align:center;color:var(--text3)">Loading sources…</div>
+      </div>
       </div>
       <div class="table-row">
         <div>
@@ -560,12 +564,12 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel-hdr"><div class="panel-title">Connection</div></div>
       <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
         <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>Supabase URL</label><input type="text" placeholder="https://xxxx.supabase.co"/></div>
-          <div class="form-row"><label>Supabase Anon Key</label><div class="api-row"><input type="password" placeholder="eyJ…"/><button class="btn-outline">TEST</button></div></div>
+          <div class="form-row"><label>Supabase URL</label><input type="text" placeholder="https://xxxx.supabase.co" id="cfg-sb-url"/></div>
+          <div class="form-row"><label>Supabase Anon Key</label><div class="api-row"><input type="password" placeholder="eyJ…" id="cfg-sb-key"/><button class="btn-outline" onclick="testConnection()">TEST</button></div></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>Anthropic API Key</label><div class="api-row"><input type="password" placeholder="sk-ant-…"/><button class="btn-outline">TEST</button></div></div>
-          <button class="btn-accent" style="width:100%;margin-top:auto">SAVE CONNECTION</button>
+          <div class="form-row"><label>Anthropic API Key</label><div class="api-row"><input type="password" placeholder="sk-ant-…" id="cfg-ant-key"/><button class="btn-outline" onclick="testAnthropicKey()">TEST</button></div></div>
+          <button class="btn-accent" style="width:100%;margin-top:auto" onclick="saveConfig()">SAVE CONNECTION</button>
         </div>
       </div>
     </div>
@@ -573,17 +577,17 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Scheduler</div></div>
         <div class="panel-body" style="display:flex;flex-direction:column;gap:0">
-          <div class="config-item"><span class="config-label">Frequency (d:hh:mm)</span><input type="text" class="inline-input" placeholder="0:04:00" value="0:04:00" style="width:100px;text-align:center"/></div>
-          <div class="config-item"><span class="config-label">Max articles/run</span><input type="number" class="inline-input" value="50"/></div>
-          <button class="btn-accent" style="width:100%;margin-top:16px">SAVE</button>
+          <div class="config-item"><span class="config-label">Frequency (d:hh:mm)</span><input type="text" class="inline-input" placeholder="0:04:00" value="0:04:00" id="cfg-freq" style="width:100px;text-align:center"/></div>
+          <div class="config-item"><span class="config-label">Max articles/run</span><input type="number" class="inline-input" value="50" id="cfg-max-art"/></div>
+          <button class="btn-accent" style="width:100%;margin-top:16px" onclick="saveConfig()">SAVE</button>
         </div>
       </div>
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Security</div></div>
         <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…"/></div>
-          <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…"/></div>
-          <button class="btn-accent" style="width:100%;margin-top:auto">CHANGE PASSWORD</button>
+          <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…" id="cfg-new-pwd"/></div>
+          <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…" id="cfg-confirm-pwd"/></div>
+          <button class="btn-accent" style="width:100%;margin-top:auto" onclick="changePassword()">CHANGE PASSWORD</button>
         </div>
       </div>
     </div>
@@ -592,43 +596,252 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+let CFG = {
+  sbUrl: '',
+  sbKey: '',
+  antKey: '',
+  maxArt: 50,
+  freq: '0:04:00',
+  pwdHash: ''
+};
+
+function loadCFG() {
+  try {
+    const s = localStorage.getItem('gi_cfg');
+    if (s) CFG = { ...CFG, ...JSON.parse(s) };
+  } catch(e) {}
+}
+
+function saveCFG() {
+  localStorage.setItem('gi_cfg', JSON.stringify(CFG));
+}
+
+// ═══════════════════════════════════════════════════
 // AUTH
+// ═══════════════════════════════════════════════════
 async function hashStr(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
-let pwdHash = localStorage.getItem('gi_pwd') || '';
-if (!pwdHash) document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
 
 async function doLogin() {
   const pwd = document.getElementById('login-pwd').value;
   if (!pwd) return;
   const h = await hashStr(pwd);
-  if (!pwdHash) { pwdHash = h; localStorage.setItem('gi_pwd', h); showApp(); }
-  else if (h === pwdHash) { showApp(); }
-  else { document.getElementById('login-error').textContent = 'Invalid password.'; document.getElementById('login-pwd').value = ''; }
+  if (!CFG.pwdHash) {
+    CFG.pwdHash = h;
+    saveCFG();
+    bootApp();
+  } else if (h === CFG.pwdHash) {
+    bootApp();
+  } else {
+    document.getElementById('login-error').textContent = 'Invalid password.';
+    document.getElementById('login-pwd').value = '';
+  }
 }
-document.getElementById('login-pwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-function showApp() {
+document.getElementById('login-pwd').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function bootApp() {
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').classList.add('visible');
+  loadCFGtoForm();
+  if (CFG.sbUrl && CFG.sbKey) {
+    loadSources();
+  } else {
+    showToast('Configure Supabase connection in Config tab.', 'amber');
+    showView('config', document.querySelector('nav button:nth-child(5)'));
+  }
 }
+
 function doLogout() {
   document.getElementById('login').style.display = 'flex';
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-pwd').value = '';
 }
 
-// NAV
-function showView(id, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + id).classList.add('active');
-  if (btn) { document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-  if (id === 'articles') renderArticles();
+loadCFG();
+if (!CFG.pwdHash) {
+  document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
 }
 
-// ── FAKE DATA (removed in L2) ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════════════════
+async function sbFetch(path, method, body) {
+  method = method || 'GET';
+  if (!CFG.sbUrl || !CFG.sbKey) return null;
+  const isUpsert = path.includes('on_conflict');
+  const headers = {
+    'apikey': CFG.sbKey,
+    'Authorization': 'Bearer ' + CFG.sbKey,
+    'Content-Type': 'application/json',
+    'Prefer': method === 'POST'
+      ? (isUpsert ? 'return=representation,resolution=merge-duplicates' : 'return=representation')
+      : ''
+  };
+  const opts = { method, headers };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(CFG.sbUrl + '/rest/v1/' + path, opts);
+    if (!res.ok) {
+      const err = await res.text();
+      showToast('DB error: ' + res.status, 'red');
+      console.error('sbFetch error:', err);
+      return null;
+    }
+    const ct = res.headers.get('content-type') || '';
+    return ct.includes('json') ? await res.json() : null;
+  } catch(e) {
+    showToast('Connection error', 'red');
+    console.error('sbFetch exception:', e);
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// SOURCES -- L1
+// ═══════════════════════════════════════════════════
+let SOURCES = [];
+
+async function loadSources() {
+  const data = await sbFetch('geo_sources?order=name.asc');
+  if (!data) return;
+  SOURCES = data;
+  renderSources(SOURCES);
+}
+
+function renderSources(sources) {
+  const rows = document.getElementById('sources-rows');
+  if (!sources.length) {
+    rows.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">No sources yet. Add one above.</div>';
+    return;
+  }
+  rows.innerHTML = sources.map(s => {
+    const isOn = s.active === true;
+    return `<div class="table-row">
+      <div>
+        <div style="color:var(--text);font-size:12px;font-weight:500">${esc(s.name)}</div>
+        <div style="color:var(--text3);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:340px">${esc(s.url)}</div>
+      </div>
+      <div style="color:var(--text3);font-size:11px">${s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '--'}</div>
+      <div>
+        <button class="toggle-btn ${isOn ? 'on' : ''}"
+          data-id="${s.id}"
+          data-active="${isOn}"
+          onclick="toggleSource(this)">
+          ${isOn ? 'ON' : 'OFF'}
+        </button>
+      </div>
+      <div class="row-actions">
+        <button class="btn-edit" onclick="openEditSource('${s.id}')">Edit</button>
+        <button class="btn-del" onclick="deleteSource('${s.id}')">Del</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterSourcesUI(q) {
+  const filtered = SOURCES.filter(s =>
+    !q || s.name.toLowerCase().includes(q.toLowerCase()) || s.url.includes(q)
+  );
+  renderSources(filtered);
+}
+
+// Toggle ON/OFF -- uses data attributes, no string-to-boolean ambiguity
+async function toggleSource(btn) {
+  const id = btn.dataset.id;                          // UUID string -- never parseInt
+  const newActive = btn.dataset.active !== 'true';    // flip current value
+  // Immediate UI update
+  btn.textContent = newActive ? 'ON' : 'OFF';
+  btn.classList.toggle('on', newActive);
+  btn.dataset.active = String(newActive);
+  // Persist
+  const res = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newActive });
+  if (res === null) {
+    // Revert on failure
+    btn.textContent = newActive ? 'OFF' : 'ON';
+    btn.classList.toggle('on', !newActive);
+    btn.dataset.active = String(!newActive);
+    showToast('Failed to update source.', 'red');
+  } else {
+    // Update local state
+    const src = SOURCES.find(s => String(s.id) === String(id));
+    if (src) src.active = newActive;
+  }
+}
+
+// Add Source modal
+function openAddSource() {
+  document.getElementById('modal-src-title').textContent = 'Add Source';
+  document.getElementById('modal-src-id').value = '';
+  document.getElementById('modal-src-name').value = '';
+  document.getElementById('modal-src-url').value = '';
+  document.getElementById('modal-src-err').textContent = '';
+  openModal('modal-source');
+}
+
+function openEditSource(id) {
+  const src = SOURCES.find(s => String(s.id) === String(id));
+  if (!src) return;
+  document.getElementById('modal-src-title').textContent = 'Edit Source';
+  document.getElementById('modal-src-id').value = id;
+  document.getElementById('modal-src-name').value = src.name;
+  document.getElementById('modal-src-url').value = src.url;
+  document.getElementById('modal-src-err').textContent = '';
+  openModal('modal-source');
+}
+
+async function saveSource() {
+  const id = document.getElementById('modal-src-id').value;
+  const name = document.getElementById('modal-src-name').value.trim();
+  const url = document.getElementById('modal-src-url').value.trim();
+  const errEl = document.getElementById('modal-src-err');
+
+  if (!name || !url) {
+    errEl.textContent = 'Name and URL are required.';
+    return;
+  }
+  if (!url.startsWith('http')) {
+    errEl.textContent = 'URL must start with http(s)://';
+    return;
+  }
+
+  const data = { name, url, active: true };
+
+  let res;
+  if (id) {
+    res = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data);
+  } else {
+    res = await sbFetch('geo_sources', 'POST', data);
+  }
+
+  if (res === null && !id) {
+    errEl.textContent = 'Failed to save. Check connection.';
+    return;
+  }
+
+  closeModal('modal-source');
+  showToast(id ? 'Source updated.' : 'Source added.', 'green');
+  await loadSources();
+}
+
+async function deleteSource(id) {
+  if (!confirm('Delete this source? This cannot be undone.')) return;
+  await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
+  SOURCES = SOURCES.filter(s => String(s.id) !== String(id));
+  renderSources(SOURCES);
+  showToast('Source deleted.', 'amber');
+}
+
+// ═══════════════════════════════════════════════════
+// ARTICLES -- fake data until L2
+// ═══════════════════════════════════════════════════
 const FAKE_ARTICLES = [
   { id:1, source:'Global Watch',       title:'Strait of Hormuz: New Maritime Tensions Emerge',           topic:'Energy',   author:'R. Cardenas',  date:'2026-03-26', lang:'EN', excerpt:'Growing concerns over shipping lane security as regional powers contest access rights.' },
   { id:2, source:'Global Watch',       title:'Gulf States Reposition on Nuclear Deterrence',              topic:'Defence',  author:'M. Al-Farsi',  date:'2026-03-25', lang:'EN', excerpt:'Saudi Arabia and UAE signal interest in bilateral defence frameworks outside NATO umbrella.' },
@@ -640,11 +853,11 @@ const FAKE_ARTICLES = [
   { id:8, source:'Stratford Post',     title:'NATO Eastern Flank: Baltic States Request Permanent Bases', topic:'Defence', author:'K. Kowalski',  date:'2026-03-25', lang:'EN', excerpt:'Poland and Lithuania push for permanent Allied presence beyond current rotational model.' },
   { id:9, source:'Stratford Post',     title:'African Union Debt Relief Initiative Stalls in Brussels',  topic:'Diplomacy',author:'A. Diallo',   date:'2026-03-24', lang:'EN', excerpt:'EU creditors and AU negotiators fail to agree on restructuring terms for sovereign debt.' },
   { id:10,source:'Stratford Post',     title:'Arctic Shipping Routes: Russia Doubles Icebreaker Fleet',  topic:'Energy',   author:'I. Petrov',    date:'2026-03-21', lang:'EN', excerpt:'Moscow accelerates Northern Sea Route infrastructure as summer ice coverage shrinks further.' },
-  { id:11,source:'AsiaPacific Monitor','title':'Taiwan Strait: Weekly Air Incursion Count Reaches High', topic:'Defence',  author:'C. Chen',      date:'2026-03-26', lang:'EN', excerpt:'PLA Air Force conducted 42 sorties in ADIZ over seven-day period, ROCAF confirms.' },
-  { id:12,source:'AsiaPacific Monitor','title':'ASEAN Summit: South China Sea Code of Conduct Delayed',  topic:'Diplomacy',author:'P. Nguyen',  date:'2026-03-23', lang:'EN', excerpt:'Members fail to agree on binding enforcement mechanisms, pushing resolution to 2027.' },
-  { id:13,source:'AsiaPacific Monitor','title':'Japan Green Hydrogen: $50bn Investment Plan Unveiled',   topic:'Climate',  author:'H. Tanaka',    date:'2026-03-19', lang:'EN', excerpt:'Tokyo commits to domestic production capacity targeting 3 million tonnes annually by 2030.' },
-  { id:14,source:'Global Watch',       title:'Sanctions Architecture: US Treasury Targets Iranian Proxies', topic:'Trade', author:'R. Cardenas',  date:'2026-02-28', lang:'EN', excerpt:'Treasury OFAC designates 14 entities linked to funding networks across Lebanon and Iraq.' },
-  { id:15,source:'Meridian Brief',     title:'IMF Special Drawing Rights: Reform Proposal Gains Traction', topic:'Trade', author:'F. Brandt',    date:'2026-02-15', lang:'EN', excerpt:'G20 bloc supports basket reweighting to increase yuan share from current 10.9 percent.' },
+  { id:11,source:'AsiaPacific Monitor',title:'Taiwan Strait: Weekly Air Incursion Count Reaches High',   topic:'Defence',  author:'C. Chen',      date:'2026-03-26', lang:'EN', excerpt:'PLA Air Force conducted 42 sorties in ADIZ over seven-day period, ROCAF confirms.' },
+  { id:12,source:'AsiaPacific Monitor',title:'ASEAN Summit: South China Sea Code of Conduct Delayed',    topic:'Diplomacy',author:'P. Nguyen',  date:'2026-03-23', lang:'EN', excerpt:'Members fail to agree on binding enforcement mechanisms, pushing resolution to 2027.' },
+  { id:13,source:'AsiaPacific Monitor',title:'Japan Green Hydrogen: $50bn Investment Plan Unveiled',     topic:'Climate',  author:'H. Tanaka',    date:'2026-03-19', lang:'EN', excerpt:'Tokyo commits to domestic production capacity targeting 3 million tonnes annually by 2030.' },
+  { id:14,source:'Global Watch',       title:'Sanctions Architecture: US Treasury Targets Iranian Proxies',topic:'Trade',  author:'R. Cardenas',  date:'2026-02-28', lang:'EN', excerpt:'Treasury OFAC designates 14 entities linked to funding networks across Lebanon and Iraq.' },
+  { id:15,source:'Meridian Brief',     title:'IMF Special Drawing Rights: Reform Proposal Gains Traction',topic:'Trade',  author:'F. Brandt',    date:'2026-02-15', lang:'EN', excerpt:'G20 bloc supports basket reweighting to increase yuan share from current 10.9 percent.' },
 ];
 
 let currentTopicFilter = '';
@@ -654,9 +867,7 @@ function topicClass(topic) {
   return 'tag-' + topic.toLowerCase();
 }
 
-function filterArticles(val) {
-  renderArticles();
-}
+function filterArticles() { renderArticles(); }
 
 function toggleTopic(el, topic) {
   document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
@@ -678,11 +889,10 @@ function getFilteredArticles() {
   const q = (document.getElementById('art-search')?.value || '').toLowerCase();
   const src = document.getElementById('art-src-filter')?.value || '';
   const topic = document.getElementById('art-topic-filter')?.value || '';
-  const activeTopic = currentTopicFilter;
   return FAKE_ARTICLES.filter(a => {
     if (src && a.source !== src) return false;
     if (topic && a.topic !== topic) return false;
-    if (activeTopic && a.topic !== activeTopic) return false;
+    if (currentTopicFilter && a.topic !== currentTopicFilter) return false;
     if (q && !a.title.toLowerCase().includes(q) && !a.excerpt.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -702,9 +912,7 @@ function renderListView() {
   }
   container.innerHTML = articles.map(a => `
     <div class="article-card">
-      <div class="art-topics">
-        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
-      </div>
+      <div class="art-topics"><span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span></div>
       <div class="art-meta">
         <span class="art-source">${a.source}</span>
         <span class="art-lang">${a.lang}</span>
@@ -713,15 +921,12 @@ function renderListView() {
       </div>
       <div class="art-title">${a.title}</div>
       <div class="art-excerpt">${a.excerpt}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderTreeView() {
   const articles = getFilteredArticles();
   const container = document.getElementById('articles-tree');
-
-  // Group: source → year → month → articles
   const tree = {};
   articles.forEach(a => {
     const d = new Date(a.date);
@@ -732,15 +937,13 @@ function renderTreeView() {
     if (!tree[a.source][yr][mo]) tree[a.source][yr][mo] = [];
     tree[a.source][yr][mo].push(a);
   });
-
-  const sourceCount = src => Object.values(tree[src]).reduce((t, yr) => t + Object.values(yr).reduce((t2, mo) => t2 + mo.length, 0), 0);
-
+  const srcCount = src => Object.values(tree[src]).reduce((t, yr) => t + Object.values(yr).reduce((t2, mo) => t2 + mo.length, 0), 0);
   container.innerHTML = Object.keys(tree).map((src, si) => `
     <div class="tree-source">
       <div class="tree-source-hdr" onclick="toggleTree('src-${si}')">
         <span class="tree-chevron" id="chev-src-${si}">▶</span>
         <span class="tree-source-name">${src}</span>
-        <span class="tree-count">${sourceCount(src)} articles</span>
+        <span class="tree-count">${srcCount(src)} articles</span>
       </div>
       <div class="tree-body" id="src-${si}">
         ${Object.keys(tree[src]).sort((a,b) => b-a).map((yr, yi) => `
@@ -748,7 +951,7 @@ function renderTreeView() {
             <div class="tree-year-hdr" onclick="toggleTree('yr-${si}-${yi}')">
               <span class="tree-chevron" id="chev-yr-${si}-${yi}">▶</span>
               <span style="flex:1">${yr}</span>
-              <span class="tree-count">${Object.values(tree[src][yr]).reduce((t,m) => t+m.length,0)}</span>
+              <span class="tree-count">${Object.values(tree[src][yr]).reduce((t,m)=>t+m.length,0)}</span>
             </div>
             ${Object.keys(tree[src][yr]).map((mo, mi) => `
               <div class="tree-month">
@@ -766,16 +969,12 @@ function renderTreeView() {
                         <span class="art-date">${a.date}</span>
                         <span class="art-author">${a.author}</span>
                       </div>
-                    </div>
-                  `).join('')}
+                    </div>`).join('')}
                 </div>
-              </div>
-            `).join('')}
-          </div>
-        `).join('')}
+              </div>`).join('')}
+          </div>`).join('')}
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function toggleTree(id) {
@@ -786,12 +985,111 @@ function toggleTree(id) {
   if (chev) chev.classList.toggle('open');
 }
 
-// TOAST
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+function loadCFGtoForm() {
+  document.getElementById('cfg-sb-url').value = CFG.sbUrl || '';
+  document.getElementById('cfg-sb-key').value = CFG.sbKey || '';
+  document.getElementById('cfg-ant-key').value = CFG.antKey || '';
+  document.getElementById('cfg-max-art').value = CFG.maxArt || 50;
+  document.getElementById('cfg-freq').value = CFG.freq || '0:04:00';
+}
+
+function saveConfig() {
+  CFG.sbUrl = document.getElementById('cfg-sb-url').value.trim().replace(/\/$/, '');
+  CFG.sbKey = document.getElementById('cfg-sb-key').value.trim();
+  CFG.antKey = document.getElementById('cfg-ant-key').value.trim();
+  CFG.maxArt = parseInt(document.getElementById('cfg-max-art').value) || 50;
+  CFG.freq = document.getElementById('cfg-freq').value.trim() || '0:04:00';
+  saveCFG();
+  showToast('Configuration saved.', 'green');
+  if (CFG.sbUrl && CFG.sbKey) loadSources();
+}
+
+async function testConnection() {
+  const url = document.getElementById('cfg-sb-url').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('cfg-sb-key').value.trim();
+  if (!url || !key) { showToast('Enter URL and key first.', 'red'); return; }
+  try {
+    const res = await fetch(url + '/rest/v1/geo_sources?limit=1', {
+      headers: { 'apikey': key, 'Authorization': 'Bearer ' + key }
+    });
+    showToast(res.ok ? 'Supabase connection OK ✓' : 'Connection failed: ' + res.status, res.ok ? 'green' : 'red');
+  } catch(e) {
+    showToast('Connection error: ' + e.message, 'red');
+  }
+}
+
+async function testAnthropicKey() {
+  const key = document.getElementById('cfg-ant-key').value.trim();
+  if (!key) { showToast('Enter API key first.', 'red'); return; }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'Hi' }] })
+    });
+    showToast(res.ok ? 'Anthropic API key OK ✓' : 'Invalid key: ' + res.status, res.ok ? 'green' : 'red');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'red');
+  }
+}
+
+async function changePassword() {
+  const p1 = document.getElementById('cfg-new-pwd').value;
+  const p2 = document.getElementById('cfg-confirm-pwd').value;
+  if (!p1) { showToast('Enter a new password.', 'red'); return; }
+  if (p1 !== p2) { showToast('Passwords do not match.', 'red'); return; }
+  CFG.pwdHash = await hashStr(p1);
+  saveCFG();
+  document.getElementById('cfg-new-pwd').value = '';
+  document.getElementById('cfg-confirm-pwd').value = '';
+  showToast('Password changed.', 'green');
+}
+
+// ═══════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if (id === 'articles') renderArticles();
+}
+
+// ═══════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
 function showToast(msg, type) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast ' + (type||'');
-  void t.offsetWidth; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent = msg;
+  t.className = 'toast ' + (type || '');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 
