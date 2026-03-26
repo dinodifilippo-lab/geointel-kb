@@ -1309,7 +1309,7 @@ function renderSources(sources) {
       <div style="color:var(--text3);font-size:11px">${(s.language||'?').toUpperCase()}</div>
       <div style="color:var(--text3);font-size:11px">${s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '—'}</div>
       <div>
-        <button class="toggle-btn ${s.active?'active':''}" onclick="event.stopPropagation();toggleSource(${s.id}, ${s.active?'false':'true'})">${s.active?'ON':'OFF'}</button>
+        <button class="toggle-btn ${s.active?'active':''}" data-id="${s.id}" data-active="${s.active}" onclick="toggleSource(this)">${s.active?'ON':'OFF'}</button>
       </div>
       <div class="row-actions">
         <button class="btn-sm" onclick="editSource(${s.id})">Edit</button>
@@ -1324,12 +1324,19 @@ function filterSources(q) {
   renderSources(filtered);
 }
 
-async function toggleSource(id, active) {
-  const val = (active === true || active === 'true');
-  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: val });
+async function toggleSource(btn) {
+  const id = parseInt(btn.dataset.id);
+  const currentActive = btn.dataset.active === 'true';
+  const newActive = !currentActive;
+  // Immediate UI feedback
+  btn.textContent = newActive ? 'ON' : 'OFF';
+  btn.classList.toggle('active', newActive);
+  btn.dataset.active = String(newActive);
+  // Persist to DB
+  await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newActive });
+  // Update local state
   const src = STATE.sources.find(s => s.id === id);
-  if (src) src.active = val;
-  renderSources(STATE.sources);
+  if (src) src.active = newActive;
   loadDashboard();
 }
 
