@@ -153,7 +153,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .panel-hdr { padding: 12px 18px; border-bottom: 1px solid var(–border); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); }
 .panel-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text2); }
 .panel-body { padding: 16px 18px; }
-.log { background: #010406; border: 1px solid var(–border); padding: 12px 16px; max-height: 320px; overflow-y: auto; font-size: 11px; line-height: 1.8; }
+.log { background: #010406; border: 1px solid var(–border); padding: 12px 16px; max-height: 420px; overflow-y: auto; font-size: 11px; line-height: 1.8; }
 .log-line { display: flex; gap: 10px; }
 .log-time { color: var(–text3); flex-shrink: 0; }
 .log-msg { color: var(–text2); }
@@ -283,6 +283,11 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .stat-green { border-top-color: #00ff88; }
 .stat-amber { border-top-color: #ffaa00; }
 .stat-red   { border-top-color: #ff4466; }
+.action-bar { display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+.status-badge { display: flex; align-items: center; gap: 8px; background: var(–surface); border: 1px solid #2a4a6b; padding: 8px 16px; font-family: var(–mono); font-size: 11px; color: var(–text2); letter-spacing: 1px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(–text3); flex-shrink: 0; }
+.dot.live { background: var(–green); box-shadow: 0 0 8px var(–green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(–bg); }
 ::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
@@ -304,14 +309,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v0.7 · L0</div>
+  <div class="version">v0.8 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.7</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.8</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -320,11 +325,6 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <button onclick="showView('config',this)">Config</button>
     </nav>
     <div class="hdr-right">
-      <div class="status">
-        <div class="dot" id="status-dot"></div>
-        <span id="status-txt">Idle</span>
-      </div>
-      <button class="btn-hdr">▶ Run Now</button>
       <button class="btn-hdr" onclick="doLogout()">Logout</button>
     </div>
   </header>
@@ -353,6 +353,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
         <div class="stat-val" style="color:var(--amber)">--</div>
         <div class="stat-sub">every 4h</div>
       </div>
+    </div>
+    <div class="action-bar">
+      <div class="status-badge">
+        <div class="dot" id="status-dot"></div>
+        <span id="status-txt">IDLE</span>
+      </div>
+      <button class="btn-run" id="btn-run-dash" onclick="runScrape()" style="width:auto;margin-top:0;padding:8px 24px">▶ RUN NOW</button>
+      <button class="btn-stop" id="btn-stop-dash" style="display:none;width:auto;margin-top:0;padding:8px 24px;background:none;border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer" onclick="stopScrape()">■ STOP</button>
     </div>
     <div class="dash-grid">
       <div class="panel">
@@ -386,8 +394,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
               <span style="color:var(--text2);font-size:12px">Next run</span>
               <span style="color:var(--accent);font-size:12px">--</span>
             </div>
-            <div class="progress"><div class="progress-fill"></div></div>
-            <button class="btn-run">▶ RUN NOW</button>
+            <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
           </div>
         </div>
         <div class="panel">
