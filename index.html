@@ -288,6 +288,41 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(–text3); flex-shrink: 0; }
 .dot.live { background: var(–green); box-shadow: 0 0 8px var(–green); animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+.view-toggle { background: none; border: 1px solid var(–border); color: var(–text3); font-family: var(–mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; cursor: pointer; }
+.view-toggle.active { border-color: var(–accent); color: var(–accent); background: rgba(0,212,255,0.08); }
+.topic-chip { display: inline-flex; align-items: center; background: var(–surface2); border: 1px solid var(–border); color: var(–text3); font-family: var(–mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; cursor: pointer; transition: all .15s; }
+.topic-chip.active { border-color: var(–accent); color: var(–accent); background: rgba(0,212,255,0.08); }
+.topic-chip:hover { border-color: var(–text2); color: var(–text2); }
+.art-topics { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+.art-topic-tag { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 1px; }
+.tag-energy  { background: rgba(255,170,0,0.15);  color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
+.tag-defence { background: rgba(255,68,102,0.15);  color: #ff4466; border: 1px solid rgba(255,68,102,0.3); }
+.tag-trade   { background: rgba(0,212,255,0.15);   color: #00d4ff; border: 1px solid rgba(0,212,255,0.3); }
+.tag-diplomacy { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+.tag-climate { background: rgba(100,200,100,0.15); color: #80cc80; border: 1px solid rgba(100,200,100,0.3); }
+/* TREE VIEW */
+.tree-wrap { display: flex; flex-direction: column; gap: 4px; }
+.tree-source { background: var(–surface); border: 1px solid var(–border); border-left: 3px solid var(–accent); overflow: hidden; }
+.tree-source-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; user-select: none; }
+.tree-source-hdr:hover { background: var(–surface2); }
+.tree-chevron { color: var(–text3); font-size: 10px; transition: transform .2s; }
+.tree-chevron.open { transform: rotate(90deg); }
+.tree-source-name { color: var(–text); font-size: 12px; font-weight: 500; flex: 1; }
+.tree-count { color: var(–text3); font-size: 11px; }
+.tree-body { display: none; border-top: 1px solid var(–border); }
+.tree-body.open { display: block; }
+.tree-year { padding: 0; }
+.tree-year-hdr { display: flex; align-items: center; gap: 8px; padding: 8px 16px 8px 32px; cursor: pointer; color: var(–text2); font-size: 11px; letter-spacing: 1px; }
+.tree-year-hdr:hover { background: var(–surface2); }
+.tree-month { }
+.tree-month-hdr { display: flex; align-items: center; gap: 8px; padding: 7px 16px 7px 48px; cursor: pointer; color: var(–text3); font-size: 11px; }
+.tree-month-hdr:hover { background: var(–surface2); color: var(–text2); }
+.tree-articles { display: none; }
+.tree-articles.open { display: block; }
+.tree-article { padding: 8px 16px 8px 64px; border-top: 1px solid rgba(30,64,96,0.5); cursor: pointer; }
+.tree-article:hover { background: var(–surface2); }
+.tree-article-title { color: var(–text); font-size: 12px; line-height: 1.4; margin-bottom: 4px; }
+.tree-article-meta { display: flex; gap: 8px; align-items: center; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(–bg); }
 ::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
@@ -309,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v0.11 · L0</div>
+  <div class="version">v0.12 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.11</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v0.12</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -440,24 +475,53 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <!-- ARTICLES -->
 
   <div class="view" id="view-articles">
-    <div class="toolbar">
-      <input class="search-input" placeholder="Search articles…"/>
-      <select class="filter-select"><option>All sources</option></select>
-      <select class="filter-select"><option>Last 30 days</option></select>
-      <button class="btn-outline">☐ Select</button>
-    </div>
-    <div class="articles-list">
-      <div class="article-card">
-        <div class="art-meta">
-          <span class="art-source">Foreign Policy</span>
-          <span class="art-lang">EN</span>
-          <span class="art-author">Alexandra Sharp</span>
-          <span class="art-date">26 Mar 2026</span>
-        </div>
-        <div class="art-title">Iran Rejects Trump's 15-Point Peace Plan</div>
-        <div class="art-excerpt">Tehran issues a counterproposal that includes war reparations and Iranian control of the Strait of Hormuz.</div>
-      </div>
-    </div>
+
+```
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input class="search-input" placeholder="Search articles…" oninput="filterArticles(this.value)" id="art-search"/>
+  <select class="filter-select" onchange="filterArticles()" id="art-src-filter">
+    <option value="">All sources</option>
+    <option value="Global Watch">Global Watch</option>
+    <option value="Meridian Brief">Meridian Brief</option>
+    <option value="Stratford Post">Stratford Post</option>
+    <option value="AsiaPacific Monitor">AsiaPacific Monitor</option>
+  </select>
+  <select class="filter-select" onchange="filterArticles()" id="art-topic-filter">
+    <option value="">All topics</option>
+    <option value="Energy">Energy</option>
+    <option value="Defence">Defence</option>
+    <option value="Trade">Trade</option>
+    <option value="Diplomacy">Diplomacy</option>
+    <option value="Climate">Climate</option>
+  </select>
+  <div style="display:flex;gap:6px;margin-left:auto">
+    <button class="view-toggle active" id="btn-list-view" onclick="setArticleView('list')">≡ List</button>
+    <button class="view-toggle" id="btn-tree-view" onclick="setArticleView('tree')">⊞ Tree</button>
+  </div>
+</div>
+
+<!-- TOPIC CHIPS -->
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+  <span class="topic-chip active" onclick="toggleTopic(this,'')" data-topic="">All</span>
+  <span class="topic-chip" onclick="toggleTopic(this,'Energy')" data-topic="Energy">Energy</span>
+  <span class="topic-chip" onclick="toggleTopic(this,'Defence')" data-topic="Defence">Defence</span>
+  <span class="topic-chip" onclick="toggleTopic(this,'Trade')" data-topic="Trade">Trade</span>
+  <span class="topic-chip" onclick="toggleTopic(this,'Diplomacy')" data-topic="Diplomacy">Diplomacy</span>
+  <span class="topic-chip" onclick="toggleTopic(this,'Climate')" data-topic="Climate">Climate</span>
+</div>
+
+<!-- LIST VIEW -->
+<div id="articles-list-view">
+  <div class="articles-list" id="articles-list"></div>
+</div>
+
+<!-- TREE VIEW -->
+<div id="articles-tree-view" style="display:none">
+  <div class="tree-wrap" id="articles-tree"></div>
+</div>
+```
+
   </div>
 
   <!-- ARTICLE DETAIL -->
@@ -509,29 +573,27 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Scheduler</div></div>
         <div class="panel-body" style="display:flex;flex-direction:column">
-          <div class="config-item"><span class="config-label">Frequency</span><select class="inline-input" style="text-align:left"><option>Every 4 hours</option></select></div>
+          <div class="config-item">
+            <span class="config-label">Frequency (d:hh:mm)</span>
+            <input type="text" class="inline-input" placeholder="0:04:00" value="0:04:00" style="width:100px;text-align:center"/>
+          </div>
           <div class="config-item"><span class="config-label">Max articles/run</span><input type="number" class="inline-input" value="50"/></div>
           <button class="btn-accent" style="width:100%;margin-top:16px">SAVE</button>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-hdr"><div class="panel-title">Data</div></div>
-        <div class="panel-body" style="display:flex;flex-direction:column">
-          <div class="config-item"><span class="config-label">Total articles</span><span class="config-val">--</span></div>
-          <div class="config-item"><span class="config-label">Claude calls</span><span class="config-val">0</span></div>
-          <div class="config-item"><span class="config-label">Est. cost</span><span class="config-val">$0.000</span></div>
-          <button class="btn-outline" style="width:100%;margin-top:12px;color:var(--red);border-color:var(--red)">⚠ Delete All</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-hdr"><div class="panel-title">Security</div></div>
-        <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…"/></div>
-          <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…"/></div>
-          <button class="btn-accent" style="width:100%">CHANGE PASSWORD</button>
-        </div>
-      </div>
+
+```
+  <div class="panel">
+    <div class="panel-hdr"><div class="panel-title">Security</div></div>
+    <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-row"><label>New Password</label><input type="password" placeholder="New password…"/></div>
+      <div class="form-row"><label>Confirm</label><input type="password" placeholder="Confirm…"/></div>
+      <button class="btn-accent" style="width:100%">CHANGE PASSWORD</button>
     </div>
+  </div>
+</div>
+```
+
   </div>
 </div>
 
@@ -571,6 +633,165 @@ function showView(id, btn) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
   if (btn) { document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  if (id === 'articles') renderArticles();
+}
+
+// ── FAKE DATA (removed in L2) ──────────────────────────────────────────────
+const FAKE_ARTICLES = [
+  { id:1, source:'Global Watch',       title:'Strait of Hormuz: New Maritime Tensions Emerge',           topic:'Energy',   author:'R. Cardenas',  date:'2026-03-26', lang:'EN', excerpt:'Growing concerns over shipping lane security as regional powers contest access rights.' },
+  { id:2, source:'Global Watch',       title:'Gulf States Reposition on Nuclear Deterrence',              topic:'Defence',  author:'M. Al-Farsi',  date:'2026-03-25', lang:'EN', excerpt:'Saudi Arabia and UAE signal interest in bilateral defence frameworks outside NATO umbrella.' },
+  { id:3, source:'Global Watch',       title:'OPEC+ Emergency Session Called Amid Price Volatility',      topic:'Energy',   author:'L. Petrova',   date:'2026-03-24', lang:'EN', excerpt:'Cartel members divided on output strategy as Brent crude swings beyond historical ranges.' },
+  { id:4, source:'Meridian Brief',     title:'China-Russia Trade Corridor Hits Record Volume',            topic:'Trade',    author:'X. Liang',     date:'2026-03-26', lang:'EN', excerpt:'Bilateral trade reaches $240bn milestone, bypassing Western payment infrastructure entirely.' },
+  { id:5, source:'Meridian Brief',     title:'EU Carbon Border Tax: First Full Year Assessment',          topic:'Climate',  author:'F. Brandt',    date:'2026-03-23', lang:'EN', excerpt:'CBAM shows mixed results; steel and cement sectors report unexpected compliance costs.' },
+  { id:6, source:'Meridian Brief',     title:'Turkey Mediates Black Sea Grain Deal Extension',            topic:'Diplomacy',author:'S. Yilmaz',   date:'2026-03-22', lang:'EN', excerpt:'Ankara brokers renewed agreement covering Ukrainian port access through year end.' },
+  { id:7, source:'Meridian Brief',     title:'Rare Earth Dominance: Beijing Tightens Export Controls',   topic:'Trade',    author:'X. Liang',     date:'2026-03-20', lang:'EN', excerpt:'New licensing regime targets gallium and germanium, critical for semiconductor supply chains.' },
+  { id:8, source:'Stratford Post',     title:'NATO Eastern Flank: Baltic States Request Permanent Bases', topic:'Defence', author:'K. Kowalski',  date:'2026-03-25', lang:'EN', excerpt:'Poland and Lithuania push for permanent Allied presence beyond current rotational model.' },
+  { id:9, source:'Stratford Post',     title:'African Union Debt Relief Initiative Stalls in Brussels',  topic:'Diplomacy',author:'A. Diallo',   date:'2026-03-24', lang:'EN', excerpt:'EU creditors and AU negotiators fail to agree on restructuring terms for sovereign debt.' },
+  { id:10,source:'Stratford Post',     title:'Arctic Shipping Routes: Russia Doubles Icebreaker Fleet',  topic:'Energy',   author:'I. Petrov',    date:'2026-03-21', lang:'EN', excerpt:'Moscow accelerates Northern Sea Route infrastructure as summer ice coverage shrinks further.' },
+  { id:11,source:'AsiaPacific Monitor','title':'Taiwan Strait: Weekly Air Incursion Count Reaches High', topic:'Defence',  author:'C. Chen',      date:'2026-03-26', lang:'EN', excerpt:'PLA Air Force conducted 42 sorties in ADIZ over seven-day period, ROCAF confirms.' },
+  { id:12,source:'AsiaPacific Monitor','title':'ASEAN Summit: South China Sea Code of Conduct Delayed',  topic:'Diplomacy',author:'P. Nguyen',  date:'2026-03-23', lang:'EN', excerpt:'Members fail to agree on binding enforcement mechanisms, pushing resolution to 2027.' },
+  { id:13,source:'AsiaPacific Monitor','title':'Japan Green Hydrogen: $50bn Investment Plan Unveiled',   topic:'Climate',  author:'H. Tanaka',    date:'2026-03-19', lang:'EN', excerpt:'Tokyo commits to domestic production capacity targeting 3 million tonnes annually by 2030.' },
+  { id:14,source:'Global Watch',       title:'Sanctions Architecture: US Treasury Targets Iranian Proxies', topic:'Trade', author:'R. Cardenas',  date:'2026-02-28', lang:'EN', excerpt:'Treasury OFAC designates 14 entities linked to funding networks across Lebanon and Iraq.' },
+  { id:15,source:'Meridian Brief',     title:'IMF Special Drawing Rights: Reform Proposal Gains Traction', topic:'Trade', author:'F. Brandt',    date:'2026-02-15', lang:'EN', excerpt:'G20 bloc supports basket reweighting to increase yuan share from current 10.9 percent.' },
+];
+
+let currentTopicFilter = '';
+let currentViewMode = 'list';
+
+function topicClass(topic) {
+  return 'tag-' + topic.toLowerCase();
+}
+
+function filterArticles(val) {
+  renderArticles();
+}
+
+function toggleTopic(el, topic) {
+  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentTopicFilter = topic;
+  renderArticles();
+}
+
+function setArticleView(mode) {
+  currentViewMode = mode;
+  document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none';
+  document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none';
+  document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
+  document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree');
+  renderArticles();
+}
+
+function getFilteredArticles() {
+  const q = (document.getElementById('art-search')?.value || '').toLowerCase();
+  const src = document.getElementById('art-src-filter')?.value || '';
+  const topic = document.getElementById('art-topic-filter')?.value || '';
+  const activeTopic = currentTopicFilter;
+  return FAKE_ARTICLES.filter(a => {
+    if (src && a.source !== src) return false;
+    if (topic && a.topic !== topic) return false;
+    if (activeTopic && a.topic !== activeTopic) return false;
+    if (q && !a.title.toLowerCase().includes(q) && !a.excerpt.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderArticles() {
+  if (currentViewMode === 'list') renderListView();
+  else renderTreeView();
+}
+
+function renderListView() {
+  const articles = getFilteredArticles();
+  const container = document.getElementById('articles-list');
+  if (!articles.length) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><div>No articles match your filters.</div></div>';
+    return;
+  }
+  container.innerHTML = articles.map(a => `
+    <div class="article-card">
+      <div class="art-topics">
+        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
+      </div>
+      <div class="art-meta">
+        <span class="art-source">${a.source}</span>
+        <span class="art-lang">${a.lang}</span>
+        <span class="art-author">${a.author}</span>
+        <span class="art-date">${a.date}</span>
+      </div>
+      <div class="art-title">${a.title}</div>
+      <div class="art-excerpt">${a.excerpt}</div>
+    </div>
+  `).join('');
+}
+
+function renderTreeView() {
+  const articles = getFilteredArticles();
+  const container = document.getElementById('articles-tree');
+
+  // Group: source → year → month → articles
+  const tree = {};
+  articles.forEach(a => {
+    const d = new Date(a.date);
+    const yr = d.getFullYear();
+    const mo = d.toLocaleString('en', { month: 'long' });
+    if (!tree[a.source]) tree[a.source] = {};
+    if (!tree[a.source][yr]) tree[a.source][yr] = {};
+    if (!tree[a.source][yr][mo]) tree[a.source][yr][mo] = [];
+    tree[a.source][yr][mo].push(a);
+  });
+
+  const sourceCount = src => Object.values(tree[src]).reduce((t, yr) => t + Object.values(yr).reduce((t2, mo) => t2 + mo.length, 0), 0);
+
+  container.innerHTML = Object.keys(tree).map((src, si) => `
+    <div class="tree-source">
+      <div class="tree-source-hdr" onclick="toggleTree('src-${si}')">
+        <span class="tree-chevron" id="chev-src-${si}">▶</span>
+        <span class="tree-source-name">${src}</span>
+        <span class="tree-count">${sourceCount(src)} articles</span>
+      </div>
+      <div class="tree-body" id="src-${si}">
+        ${Object.keys(tree[src]).sort((a,b) => b-a).map((yr, yi) => `
+          <div class="tree-year">
+            <div class="tree-year-hdr" onclick="toggleTree('yr-${si}-${yi}')">
+              <span class="tree-chevron" id="chev-yr-${si}-${yi}">▶</span>
+              <span style="flex:1">${yr}</span>
+              <span class="tree-count">${Object.values(tree[src][yr]).reduce((t,m) => t+m.length,0)}</span>
+            </div>
+            ${Object.keys(tree[src][yr]).map((mo, mi) => `
+              <div class="tree-month">
+                <div class="tree-month-hdr" onclick="toggleTree('mo-${si}-${yi}-${mi}')">
+                  <span class="tree-chevron" id="chev-mo-${si}-${yi}-${mi}">▶</span>
+                  <span style="flex:1">${mo}</span>
+                  <span class="tree-count">${tree[src][yr][mo].length}</span>
+                </div>
+                <div class="tree-articles" id="mo-${si}-${yi}-${mi}">
+                  ${tree[src][yr][mo].map(a => `
+                    <div class="tree-article">
+                      <div class="tree-article-title">${a.title}</div>
+                      <div class="tree-article-meta">
+                        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
+                        <span class="art-date">${a.date}</span>
+                        <span class="art-author">${a.author}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleTree(id) {
+  const el = document.getElementById(id);
+  const chev = document.getElementById('chev-' + id);
+  if (!el) return;
+  el.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
 }
 
 // TOAST
