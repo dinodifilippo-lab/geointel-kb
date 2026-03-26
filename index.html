@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v16.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v17.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v16.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v17.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -299,6 +299,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
         <span id="status-text">Idle</span>
       </div>
       <button class="btn-icon" id="btn-run-header" onclick="runScrape()">▶ Run Now</button>
+      <button class="btn-icon" id="btn-stop-header" onclick="stopScrape()" style="display:none;border-color:var(--red);color:var(--red)">■ Stop</button>
       <button class="btn-icon" onclick="doLogout()">Logout</button>
     </div>
   </header>
@@ -359,6 +360,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
             </div>
             <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
             <button class="btn-run" id="btn-run-dash" onclick="runScrape()">▶ RUN NOW</button>
+            <button class="btn-run" id="btn-stop-dash" onclick="stopScrape()" style="display:none;border-color:var(--red);color:var(--red)">■ STOP</button>
           </div>
         </div>
         <div class="panel">
@@ -720,6 +722,7 @@ function resetSessionStats() {
 }
 
 let STATE = {
+  stopRequested: false,
   running: false,
   schedulerTimer: null,
   nextRunTime: null,
@@ -1229,6 +1232,7 @@ async function runScrape() {
   if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase connection first.', 'red'); return; }
 
   STATE.running = true;
+  STATE.stopRequested = false;
   setRunningUI(true);
   addLog('Starting scrape run…', 'info');
 
@@ -1308,27 +1312,48 @@ async function runScrape() {
 
     async function processArticle(art) {
       try {
-        // Step 1: fetch content via Jina from browser (no timeout limit)
+        // Step 1: Jina with cookie consent headers — handles JS rendering + cookie banners
         let rawContent = '';
+        const cookieConsent = 'CookieConsent=true; CookieConsent={stamp:%27-1%27%2Cnecessary:true%2Cpreferences:true%2Cstatistics:true%2Cmarketing:true}';
         try {
           const jinaRes = await fetch('https://r.jina.ai/' + art.url, {
-            headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
-            signal: AbortSignal.timeout(8000)
+            headers: {
+              'Accept': 'text/plain',
+              'X-Return-Format': 'text',
+              'X-Set-Cookie': cookieConsent
+            },
+            signal: AbortSignal.timeout(12000)
           });
           if (jinaRes.ok) {
             const t = await jinaRes.text();
-            if (t.length > 200) rawContent = t;
+            // Validate: reject if content looks like cookie banner or is too short
+            const isCookieBanner = t.toLowerCase().includes('this website uses cookies') && t.length < 5000;
+            if (t.length > 300 && !isCookieBanner) rawContent = t;
           }
         } catch(e) {}
 
-        // Step 2: fallback to direct fetch
+        // Step 2: fallback to direct browser fetch (browser sends real headers incl cookies)
         if (!rawContent) {
           try {
-            const dRes = await fetch(art.url, {
-              headers: { 'User-Agent': 'Mozilla/5.0' },
-              signal: AbortSignal.timeout(8000)
+            const dRes = await fetch(art.url, { signal: AbortSignal.timeout(10000) });
+            if (dRes.ok) {
+              const t = await dRes.text();
+              if (t.length > 300) rawContent = t;
+            }
+          } catch(e) {}
+        }
+
+        // Step 3: last resort — Jina without cookie header
+        if (!rawContent) {
+          try {
+            const jinaRes2 = await fetch('https://r.jina.ai/' + art.url, {
+              headers: { 'Accept': 'text/plain', 'X-Return-Format': 'text' },
+              signal: AbortSignal.timeout(10000)
             });
-            if (dRes.ok) rawContent = await dRes.text();
+            if (jinaRes2.ok) {
+              const t = await jinaRes2.text();
+              if (t.length > 300) rawContent = t;
+            }
           } catch(e) {}
         }
 
@@ -1467,8 +1492,12 @@ async function runScrape() {
       }
     }
 
-    // Run in parallel batches
+    // Run in parallel batches with stop support
     for (let i = 0; i < newArticles.length; i += CONCURRENCY) {
+      if (STATE.stopRequested) {
+        addLog(source.name + ': stopped by user.', 'warn');
+        break;
+      }
       const batch = newArticles.slice(i, i + CONCURRENCY);
       addLog(source.name + ': batch ' + (Math.floor(i/CONCURRENCY)+1) + '/' + Math.ceil(newArticles.length/CONCURRENCY) + ' — ' + batch.length + ' articles', 'info');
       await Promise.all(batch.map(art => processArticle(art)));
@@ -1496,10 +1525,21 @@ function setRunningUI(running) {
   const txt = document.getElementById('status-text');
   const btnH = document.getElementById('btn-run-header');
   const btnD = document.getElementById('btn-run-dash');
+  const stopH = document.getElementById('btn-stop-header');
+  const stopD = document.getElementById('btn-stop-dash');
   dot.className = 'status-dot' + (running ? '' : ' idle');
   txt.textContent = running ? 'Running…' : 'Idle';
-  btnH.disabled = running;
-  btnD.disabled = running;
+  btnH.style.display = running ? 'none' : '';
+  btnD.style.display = running ? 'none' : '';
+  stopH.style.display = running ? '' : 'none';
+  stopD.style.display = running ? '' : 'none';
+}
+
+function stopScrape() {
+  STATE.stopRequested = true;
+  addLog('Stop requested — finishing current batch…', 'warn');
+  document.getElementById('btn-stop-header').disabled = true;
+  document.getElementById('btn-stop-dash').disabled = true;
 }
 
 function animateProgress(from, to) {
