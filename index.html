@@ -271,7 +271,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 <div id="login-screen">
   <div class="login-logo">
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v11.0</span></div>
+    <div class="tagline">Geopolitical Intelligence · Knowledge Base · <span style="color:var(--accent)">v14.0</span></div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
@@ -285,7 +285,7 @@ nav button.active { color:var(–accent); background:var(–accent-dim); }
 
 <div id="app">
   <header>
-    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v11.0</span></div>
+    <div class="header-logo">Geo<span>Intel</span> <span style="font-size:10px;font-weight:400;color:var(--text3);letter-spacing:1px;font-family:var(--mono)">v14.0</span></div>
     <nav>
       <button class="active" onclick="switchView('dashboard',this)">Dashboard</button>
       <button onclick="switchView('sources',this)">Sources</button>
@@ -1411,7 +1411,11 @@ async function runScrape() {
         }
 
         // Step 6: upsert to Supabase from browser (handles duplicates gracefully)
-        const urlHash = btoa(encodeURIComponent(art.url)).substring(0,64);
+        // Use proper hash to avoid collisions from truncation
+        const msgBuffer = new TextEncoder().encode(art.url);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const urlHash = hashArray.map(b => b.toString(16).padStart(2,'0')).join('').substring(0,64);
         const saveRes = await sbFetch('geo_articles?on_conflict=url_hash', 'POST', {
           source_id: source.id,
           url: art.url,
@@ -1425,7 +1429,8 @@ async function runScrape() {
           published_at: extracted.published_at || art.published_at || null
         });
 
-        if (!saveRes || !saveRes[0]) { addLog('  skip (save error): ' + art.url.substring(0,60), 'warn'); return; }
+        if (!saveRes) { addLog('  skip (null response): ' + art.url.substring(0,60), 'warn'); return; }
+        if (!saveRes[0]) { addLog('  skip (no id returned): ' + art.url.substring(0,60), 'warn'); return; }
         const articleId = saveRes[0].id;
         newCount++;
         totalNew++;
