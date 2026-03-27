@@ -350,14 +350,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v2.10 · L0</div>
+  <div class="version">v2.11 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.10</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.11</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -1165,14 +1165,17 @@ function toggleArticleSelect(id) {
   if (currentViewMode === 'list') {
     renderRealListView();
   } else {
-    // In tree: update only the clicked element without re-rendering
-    var el = document.querySelector('[data-id="' + id + '"]');
-    if (el) {
-      el.classList.toggle('selected', isNowSelected);
-      var circle = el.querySelector('.sel-circle');
-      if (circle) {
-        circle.style.color = isNowSelected ? 'var(--accent)' : 'var(--text3)';
-        circle.textContent = isNowSelected ? '●' : '○';
+    // Find element by iterating all tree-article divs
+    var els = document.querySelectorAll('.tree-article');
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].getAttribute('data-id') === id) {
+        els[i].style.background = isNowSelected ? 'rgba(0,212,255,0.1)' : '';
+        var circle = els[i].querySelector('.sel-circle');
+        if (circle) {
+          circle.style.color = isNowSelected ? '#00d4ff' : '#3d5a73';
+          circle.textContent = isNowSelected ? '●' : '○';
+        }
+        break;
       }
     }
   }
