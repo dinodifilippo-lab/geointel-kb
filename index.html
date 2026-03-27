@@ -350,14 +350,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v3.4 · L0</div>
+  <div class="version">v3.5 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.4</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.5</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -622,7 +622,8 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="modal-body">
       <input type="hidden" id="modal-src-id"/>
       <div class="form-row"><label>Display Name</label><input type="text" id="modal-src-name" placeholder="e.g. Foreign Policy"/></div>
-      <div class="form-row"><label>URL</label><input type="text" id="modal-src-url" placeholder="https://..."/></div>
+      <div class="form-row"><label>URL / Sitemap</label><input type="text" id="modal-src-url" placeholder="https://..."/></div>
+      <div class="form-row"><label>Fetcher Function</label><input type="text" id="modal-src-fetcher" placeholder="e.g. fetch-foreignpolicy"/></div>
       <div id="modal-src-err" style="color:var(--red);font-size:11px;min-height:16px"></div>
     </div>
     <div class="modal-footer">
@@ -894,7 +895,11 @@ function renderSources(list) {
     html += '<div style="color:var(--text3);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">' + esc(s.url) + '</div></div>';
     html += '<div style="color:var(--text3);font-size:11px">' + (s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '&mdash;') + '</div>';
     html += '<div><button class="toggle-btn ' + (on ? 'on' : '') + '" data-id="' + esc(String(s.id)) + '" data-active="' + on + '" onclick="toggleSrc(this)">' + (on ? 'ON' : 'OFF') + '</button></div>';
-    html += '<div class="row-actions">';
+    var fStatus = s.fetcher_status || 'pending';
+    var fColor = fStatus === 'configured' || fStatus === 'ok' ? 'var(--green)' : fStatus === 'error' ? 'var(--red)' : 'var(--amber)';
+    var fLabel = fStatus === 'ok' ? 'OK' : fStatus === 'configured' ? 'Ready' : fStatus === 'error' ? 'Error' : 'Pending';
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:' + fColor + '">' + fLabel + '</span>';
     html += '<button class="btn-edit" data-id="' + esc(String(s.id)) + '" onclick="openEditSrc(this.dataset.id)">Edit</button>';
     html += '<button class="btn-del" data-id="' + esc(String(s.id)) + '" onclick="delSrc(this.dataset.id)">Del</button>';
     html += '</div></div>';
@@ -938,6 +943,7 @@ function openAddSrc() {
   document.getElementById('modal-src-id').value = '';
   document.getElementById('modal-src-name').value = '';
   document.getElementById('modal-src-url').value = '';
+  document.getElementById('modal-src-fetcher').value = '';
   document.getElementById('modal-src-err').textContent = '';
   openModal('modal-source');
 }
@@ -949,6 +955,8 @@ function openEditSrc(id) {
   document.getElementById('modal-src-id').value = id;
   document.getElementById('modal-src-name').value = s.name;
   document.getElementById('modal-src-url').value = s.url;
+  var fetcherId = (s.fetcher_config && s.fetcher_config.fetcher_id) ? s.fetcher_config.fetcher_id : '';
+  document.getElementById('modal-src-fetcher').value = fetcherId;
   document.getElementById('modal-src-err').textContent = '';
   openModal('modal-source');
 }
@@ -957,14 +965,18 @@ async function saveSrc() {
   var id = document.getElementById('modal-src-id').value;
   var name = document.getElementById('modal-src-name').value.trim();
   var url = document.getElementById('modal-src-url').value.trim();
+  var fetcherId = document.getElementById('modal-src-fetcher').value.trim();
   var err = document.getElementById('modal-src-err');
   if (!name || !url) { err.textContent = 'Name and URL required.'; return; }
   if (!url.startsWith('http')) { err.textContent = 'URL must start with http(s)://'; return; }
+  var fetcherConfig = fetcherId ? { fetcher_id: fetcherId, sitemap_url: url } : null;
+  var fetcherStatus = fetcherId ? 'configured' : 'pending';
+  var data = { name: name, url: url, fetcher_config: fetcherConfig, fetcher_status: fetcherStatus };
   var saveRes;
   if (id) {
-    saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { name: name, url: url });
+    saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data);
   } else {
-    saveRes = await sbFetch('geo_sources', 'POST', { name: name, url: url, active: true });
+    saveRes = await sbFetch('geo_sources', 'POST', Object.assign({ active: true }, data));
   }
   if (!saveRes.ok) { err.textContent = 'Failed to save. Check connection.'; return; }
   closeModal('modal-source');
@@ -1373,6 +1385,75 @@ showApp = function() {
   _origShowAppRefresh();
   startDashAutoRefresh();
 };
+
+// ═══ RUN NOW ════════════════════════════════════════════════════
+var isRunning = false;
+
+async function runScrape() {
+  if (isRunning) { showToast('Already running.', 'amber'); return; }
+  var activeSources = SOURCES.filter(function(s) {
+    return s.active === true && s.fetcher_config && s.fetcher_config.fetcher_id;
+  });
+  if (!activeSources.length) {
+    showToast('No active sources with fetcher configured.', 'amber');
+    return;
+  }
+  isRunning = true;
+  setRunningUI(true);
+  logRun('Starting run for ' + activeSources.length + ' source(s)...');
+  var totalSaved = 0;
+  var totalErrors = 0;
+  for (var i = 0; i < activeSources.length; i++) {
+    var src = activeSources[i];
+    logRun('Fetching: ' + src.name + '...');
+    try {
+      var res = await fetch(CFG.sbUrl + '/functions/v1/' + src.fetcher_config.fetcher_id, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
+        body: JSON.stringify({ source_id: src.id, max_articles: CFG.maxArt || 20 })
+      });
+      var data = await res.json();
+      if (res.ok) {
+        logRun(src.name + ': ' + data.fetched + ' new articles.', 'ok');
+        totalSaved += data.fetched || 0;
+      } else {
+        logRun(src.name + ': Error -- ' + (data.error || res.status), 'err');
+        totalErrors++;
+      }
+    } catch(e) {
+      logRun(src.name + ': Connection error', 'err');
+      totalErrors++;
+    }
+  }
+  logRun('Done. ' + totalSaved + ' articles saved, ' + totalErrors + ' errors.', totalErrors ? 'warn' : 'ok');
+  isRunning = false;
+  setRunningUI(false);
+  refreshDashboard();
+}
+
+function setRunningUI(running) {
+  var dot = document.getElementById('status-dot');
+  var statusTxt = document.getElementById('status-txt');
+  var btnRun = document.getElementById('btn-run-dash');
+  if (dot) { dot.style.background = running ? 'var(--amber)' : 'var(--text3)'; }
+  if (statusTxt) statusTxt.textContent = running ? 'Running...' : 'IDLE';
+  if (btnRun) {
+    btnRun.textContent = running ? '■  STOP' : '▶  RUN NOW';
+    btnRun.style.borderColor = running ? 'var(--red)' : 'var(--accent)';
+    btnRun.style.color = running ? 'var(--red)' : 'var(--accent)';
+  }
+}
+
+function logRun(msg, type) {
+  var log = document.getElementById('run-log');
+  if (!log) return;
+  var time = new Date().toLocaleTimeString();
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + msg + '</span>';
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
 </script>
 
 </body>
