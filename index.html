@@ -344,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v1.6 · L0</div>
+  <div class="version">v1.7 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.6</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.7</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -919,8 +919,8 @@ function renderSources(list) {
     html += '<div style="color:var(--text3);font-size:11px">' + (s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '&mdash;') + '</div>';
     html += '<div><button class="toggle-btn ' + (on ? 'on' : '') + '" data-id="' + esc(String(s.id)) + '" data-active="' + on + '" onclick="toggleSrc(this)">' + (on ? 'ON' : 'OFF') + '</button></div>';
     html += '<div class="row-actions">';
-    html += '<button class="btn-edit" onclick="openEditSrc(' + sid + ')">Edit</button>';
-    html += '<button class="btn-del" onclick="delSrc(' + sid + ')">Del</button>';
+    html += '<button class="btn-edit" data-id="' + esc(String(s.id)) + '" onclick="openEditSrc(this.dataset.id)">Edit</button>';
+    html += '<button class="btn-del" data-id="' + esc(String(s.id)) + '" onclick="delSrc(this.dataset.id)">Del</button>';
     html += '</div></div>';
   });
   el.innerHTML = html;
