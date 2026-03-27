@@ -350,14 +350,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v2.11 · L0</div>
+  <div class="version">v2.12 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.11</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.12</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -509,7 +509,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 <div class="select-action-bar" id="select-action-bar">
   <span class="select-count" id="select-count">0 selected</span>
   <button class="btn-sm" onclick="selectAllArticles()">All</button>
-  <button class="btn-sm" onclick="deselectAllArticles()">None</button>
+  <button class="btn-sm" onclick="deselectAllArticles()">none</button>
   <button class="btn-outline" onclick="deleteSelectedArticles()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete</button>
 </div>
 <!-- TOPIC CHIPS -->
@@ -1148,11 +1148,12 @@ function toggleSelectMode() {
   var btn = document.getElementById('btn-select-toggle');
   if (bar) bar.classList.toggle('visible', selectModeActive);
   if (btn) btn.textContent = selectModeActive ? 'Cancel' : '☐ Select';
-  if (ARTICLES.length > 0) {
+  updateSelectBar();
+  if (currentViewMode === 'list') {
     renderRealListView();
-    renderRealTreeView();
   } else {
-    loadArticles();
+    // Tree: inject or remove circles without re-rendering
+    refreshTreeSelectUI();
   }
 }
 
@@ -1199,10 +1200,48 @@ async function deleteSelectedArticles() {
 
 function selectAllArticles() {
   selectedArticleIds = ARTICLES.map(function(a) { return String(a.id); });
-  updateSelectBar(); renderRealListView();
+  updateSelectBar();
+  if (currentViewMode === 'list') {
+    renderRealListView();
+  } else {
+    refreshTreeSelectUI();
+  }
 }
 function deselectAllArticles() {
-  selectedArticleIds = []; updateSelectBar(); renderRealListView();
+  selectedArticleIds = [];
+  updateSelectBar();
+  if (currentViewMode === 'list') {
+    renderRealListView();
+  } else {
+    refreshTreeSelectUI();
+  }
+}
+function refreshTreeSelectUI() {
+  var els = document.querySelectorAll('.tree-article');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var aid = el.getAttribute('data-id');
+    var isSelected = selectedArticleIds.indexOf(aid) !== -1;
+    // Update background
+    el.style.background = (selectModeActive && isSelected) ? 'rgba(0,212,255,0.1)' : '';
+    // Update onclick
+    el.setAttribute('onclick', selectModeActive ? 'toggleArticleSelect(this.getAttribute(\'data-id\'))' : 'openArticle(this.getAttribute(\'data-id\'))');
+    // Add or remove circle
+    var existingCircle = el.querySelector('.sel-circle');
+    if (selectModeActive) {
+      if (!existingCircle) {
+        var span = document.createElement('span');
+        span.className = 'sel-circle';
+        span.style.cssText = 'font-size:16px;line-height:1;flex-shrink:0;pointer-events:none;';
+        el.insertBefore(span, el.firstChild);
+      }
+      var circle = el.querySelector('.sel-circle');
+      circle.style.color = isSelected ? '#00d4ff' : '#3d5a73';
+      circle.textContent = isSelected ? '●' : '○';
+    } else {
+      if (existingCircle) existingCircle.remove();
+    }
+  }
 }</script>
 
 </body>
