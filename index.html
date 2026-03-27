@@ -350,14 +350,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v3.7 · L0</div>
+  <div class="version">v3.8 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.7</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.8</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -1400,41 +1400,50 @@ async function runScrape() {
   }
   isRunning = true;
   setRunningUI(true);
-  logRun('Starting run for ' + activeSources.length + ' source(s)...');
+  logRun('Starting run for ' + activeSources.length + ' source(s)...', 'info');
+  var grandTotal = 0;
 
-  // Fire & forget -- launch all fetchers without waiting for response
   for (var i = 0; i < activeSources.length; i++) {
     var src = activeSources[i];
-    logRun('Launched: ' + src.name + ' -- running in background...', 'info');
-    fetch(CFG.sbUrl + '/functions/v1/' + src.fetcher_config.fetcher_id, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
-      body: JSON.stringify({ source_id: src.id, max_articles: 1000 })
-    }).then(function(res) {
-      return res.json();
-    }).then(function(data) {
-      logRun(data.source + ': ' + data.fetched + ' new articles saved.', 'ok');
-      refreshDashboard();
-    }).catch(function(e) {
-      logRun('A fetcher encountered an error: ' + e.message, 'err');
-    });
+    logRun(src.name + ': starting...', 'info');
+    var sourceSaved = 0;
+    var batch = 0;
+
+    while (true) {
+      batch++;
+      logRun(src.name + ': batch ' + batch + '...', 'info');
+      try {
+        var res = await fetch(CFG.sbUrl + '/functions/v1/' + src.fetcher_config.fetcher_id, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
+          body: JSON.stringify({ source_id: src.id, max_articles: 20 })
+        });
+        var data = await res.json();
+        if (!res.ok) {
+          logRun(src.name + ': error -- ' + (data.error || res.status), 'err');
+          break;
+        }
+        sourceSaved += data.fetched || 0;
+        logRun(src.name + ': batch ' + batch + ' → ' + (data.fetched || 0) + ' new (' + sourceSaved + ' total)', 'ok');
+        refreshDashboard();
+        // Stop if no new articles found
+        if (!data.fetched || data.fetched === 0) break;
+        // Safety cap
+        if (batch >= 100) { logRun(src.name + ': batch cap reached.', 'warn'); break; }
+      } catch(e) {
+        logRun(src.name + ': connection error -- ' + e.message, 'err');
+        break;
+      }
+    }
+
+    grandTotal += sourceSaved;
+    logRun(src.name + ': done -- ' + sourceSaved + ' articles saved.', 'ok');
   }
 
-  logRun('All fetchers launched. Results will appear as they complete.', 'info');
-  // Auto-refresh dashboard every 30s while running
-  var refreshCount = 0;
-  var autoRefresh = setInterval(function() {
-    refreshCount++;
-    refreshDashboard();
-    if (refreshCount >= 20) {
-      clearInterval(autoRefresh);
-      isRunning = false;
-      setRunningUI(false);
-      logRun('Auto-refresh stopped after 10 minutes.', 'info');
-    }
-  }, 30000);
+  logRun('Run complete. ' + grandTotal + ' total articles saved.', grandTotal > 0 ? 'ok' : 'info');
   isRunning = false;
   setRunningUI(false);
+  refreshDashboard();
 }
 
 function setRunningUI(running) {
