@@ -350,14 +350,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v2.12 · L0</div>
+  <div class="version">v3.1 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.12</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.1</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -375,7 +375,26 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <div class="view active" id="view-dashboard">
     <div class="stats">
       <div class="stat stat-cyan">
+        <div class="stat-lbl">New Articles</div>
+        <div class="stat-val" style="color:var(--accent)" id="stat-new-articles">--</div>
+        <div class="stat-sub" id="stat-new-articles-sub">from last run</div>
+      </div>
+      <div class="stat stat-green">
         <div class="stat-lbl">Total Articles</div>
+        <div class="stat-val" id="stat-total-articles">--</div>
+        <div class="stat-sub">in knowledge base</div>
+      </div>
+      <div class="stat stat-amber">
+        <div class="stat-lbl">Active Sources</div>
+        <div class="stat-val" id="stat-active-sources">--</div>
+        <div class="stat-sub">being monitored</div>
+      </div>
+      <div class="stat stat-red">
+        <div class="stat-lbl">Claude Calls</div>
+        <div class="stat-val" style="color:var(--green)">0</div>
+        <div class="stat-sub">$0.000 est. cost</div>
+      </div>
+    </div>
         <div class="stat-val" style="color:var(--accent)">--</div>
         <div class="stat-sub">loading…</div>
       </div>
@@ -426,11 +445,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
             </div>
             <div class="sched-row">
               <span style="color:var(--text2);font-size:12px">Last run</span>
-              <span style="color:var(--text2);font-size:12px">Never</span>
+              <span style="display:flex;align-items:center;gap:8px">
+                <span style="color:var(--text2);font-size:12px" id="sched-last-run">Never</span>
+                <span id="sched-run-badge" style="display:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;cursor:pointer" onclick="openRunDetail()"></span>
+              </span>
             </div>
             <div class="sched-row">
               <span style="color:var(--text2);font-size:12px">Next run</span>
-              <span style="color:var(--accent);font-size:12px">--</span>
+              <span style="color:var(--accent);font-size:12px" id="sched-next-run">--</span>
             </div>
             <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
           </div>
@@ -620,6 +642,16 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <button class="btn-outline" onclick="closeModal('modal-source')">Cancel</button>
       <button class="btn-accent" onclick="saveSrc()">Save</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-run-detail">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-run-title">Last Run Detail</div>
+      <button class="btn-close" onclick="closeModal('modal-run-detail')">&#215;</button>
+    </div>
+    <div class="modal-body" id="modal-run-body"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1242,7 +1274,88 @@ function refreshTreeSelectUI() {
       if (existingCircle) existingCircle.remove();
     }
   }
-}</script>
+}
+// ═══ DASHBOARD STATS ════════════════════════════════════════════
+var lastRunData = null;
+
+async function loadDashboardStats() {
+  if (!CFG.sbUrl || !CFG.sbKey) return;
+  try {
+    var r = await fetch(CFG.sbUrl + '/rest/v1/geo_articles?select=id', {
+      headers: { 'apikey': CFG.sbKey, 'Authorization': 'Bearer ' + CFG.sbKey, 'Prefer': 'count=exact', 'Range': '0-0' }
+    });
+    var range = r.headers.get('content-range') || '';
+    var total = range.split('/')[1] || '--';
+    var el = document.getElementById('stat-total-articles');
+    if (el) el.textContent = total;
+  } catch(e) {}
+
+  var resSrc = await sbFetch('geo_sources?active=eq.true&select=id');
+  if (resSrc.ok && resSrc.data) {
+    var el2 = document.getElementById('stat-active-sources');
+    if (el2) el2.textContent = resSrc.data.length;
+  }
+
+  var resRun = await sbFetch('geo_runs?order=started_at.desc&limit=1');
+  if (resRun.ok && resRun.data && resRun.data.length > 0) {
+    lastRunData = resRun.data[0];
+    updateRunUI(lastRunData);
+  }
+}
+
+function updateRunUI(run) {
+  var lastRunEl = document.getElementById('sched-last-run');
+  var badge = document.getElementById('sched-run-badge');
+  var newArtEl = document.getElementById('stat-new-articles');
+  var newArtSub = document.getElementById('stat-new-articles-sub');
+  if (lastRunEl && run.started_at) lastRunEl.textContent = new Date(run.started_at).toLocaleString();
+  if (badge) {
+    var isFull = run.sources_scraped >= run.sources_total;
+    badge.style.display = 'inline';
+    badge.textContent = isFull ? 'Full' : 'Partial';
+    badge.style.background = isFull ? 'rgba(0,255,136,0.15)' : 'rgba(255,170,0,0.15)';
+    badge.style.color = isFull ? 'var(--green)' : 'var(--amber)';
+    badge.style.border = '1px solid ' + (isFull ? 'rgba(0,255,136,0.3)' : 'rgba(255,170,0,0.3)');
+  }
+  if (newArtEl) newArtEl.textContent = run.articles_found !== null ? run.articles_found : '--';
+  if (newArtSub && run.started_at) newArtSub.textContent = 'run ' + new Date(run.started_at).toLocaleDateString();
+}
+
+function openRunDetail() {
+  if (!lastRunData) return;
+  var body = document.getElementById('modal-run-body');
+  var title = document.getElementById('modal-run-title');
+  if (!body) return;
+  var isFull = lastRunData.sources_scraped >= lastRunData.sources_total;
+  if (title) title.textContent = (isFull ? 'Full' : 'Partial') + ' Run -- ' + new Date(lastRunData.started_at).toLocaleString();
+  var detail = lastRunData.run_detail;
+  var html = '<div style="display:flex;flex-direction:column;gap:0">';
+  html += '<div style="display:grid;grid-template-columns:1fr auto;padding:8px 0;border-bottom:1px solid var(--border)">';
+  html += '<span style="color:var(--text3);font-size:10px;letter-spacing:2px;text-transform:uppercase">Source</span>';
+  html += '<span style="color:var(--text3);font-size:10px;letter-spacing:2px;text-transform:uppercase">Articles</span></div>';
+  if (detail && typeof detail === 'object' && Object.keys(detail).length > 0) {
+    Object.keys(detail).forEach(function(srcName) {
+      html += '<div style="display:grid;grid-template-columns:1fr auto;padding:10px 0;border-bottom:1px solid var(--border)">';
+      html += '<span style="color:var(--text);font-size:12px">' + esc(srcName) + '</span>';
+      html += '<span style="color:var(--accent);font-size:12px;font-weight:600">' + (detail[srcName] || 0) + '</span></div>';
+    });
+  } else {
+    html += '<div style="padding:20px 0;text-align:center;color:var(--text3)">No detail available.</div>';
+  }
+  html += '<div style="padding:12px 0;display:grid;grid-template-columns:1fr auto">';
+  html += '<span style="color:var(--text2);font-size:12px;font-weight:600">Total</span>';
+  html += '<span style="color:var(--accent);font-size:12px;font-weight:700">' + (lastRunData.articles_found || 0) + '</span></div>';
+  html += '</div>';
+  body.innerHTML = html;
+  openModal('modal-run-detail');
+}
+
+var _origShowAppDash = showApp;
+showApp = function() {
+  _origShowAppDash();
+  loadDashboardStats();
+};
+</script>
 
 </body>
 </html>
