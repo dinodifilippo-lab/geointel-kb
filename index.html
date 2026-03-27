@@ -275,6 +275,11 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .toast.amber { border-left-color: var(–amber); }
 
 /* SPINNER */
+.article-card.selected { border-color: var(–accent); background: rgba(0,212,255,0.06); }
+.article-card.selected::before { background: var(–accent); }
+.select-action-bar { display:none; align-items:center; gap:12px; background:var(–surface2); border:1px solid var(–accent); padding:10px 16px; }
+.select-action-bar.visible { display:flex; }
+.select-count { color:var(–accent); font-size:12px; flex:1; }
 .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(–border); border-top-color: var(–accent); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -344,14 +349,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v1.8 · L0</div>
+  <div class="version">v1.9 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.8</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.9</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -498,6 +503,11 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   </div>
 </div>
 
+<!-- SELECT BAR -->
+<div class="select-action-bar" id="select-action-bar">
+  <span class="select-count" id="select-count">0 selected</span>
+  <button class="btn-outline" onclick="deleteSelectedArticles()" style="color:var(--red);border-color:var(--red)">&#128465; Delete selected</button>
+</div>
 <!-- TOPIC CHIPS -->
 <div style="display:flex;gap:8px;flex-wrap:wrap">
   <span class="topic-chip active" onclick="toggleTopic(this,'')" data-topic="">All</span>
@@ -1062,7 +1072,9 @@ function renderRealListView() {
     var srcName = src ? src.name : 'Unknown';
     var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '--';
     var topic = a.topic || 'General';
-    html += '<div class="article-card" data-id="' + esc(String(a.id)) + '" onclick="openArticle(this.dataset.id)">';
+    var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
+    var clickFn = selectModeActive ? 'toggleArticleSelect(this.dataset.id)' : 'openArticle(this.dataset.id)';
+    html += '<div class="article-card' + (isSelected ? ' selected' : '') + '" data-id="' + esc(String(a.id)) + '" onclick="' + clickFn + '">';
     html += '<div class="art-topics"><span class="art-topic-tag tag-' + topic.toLowerCase() + '">' + esc(topic) + '</span></div>';
     html += '<div class="art-meta">';
     html += '<span class="art-source">' + esc(srcName) + '</span>';
@@ -1171,6 +1183,46 @@ renderArticles = function() {
 // Override filterArticles to reload from DB
 filterArticles = function() { articlePage = 0; loadArticles(); };
 
+// ═══ L2 PATCH: Select/Deselect + Tree fix ════════════════════════
+
+var selectedArticleIds = [];
+var selectModeActive = false;
+
+function toggleSelectMode() {
+  selectModeActive = !selectModeActive;
+  selectedArticleIds = [];
+  var bar = document.getElementById('select-action-bar');
+  var btn = document.getElementById('btn-select-toggle');
+  if (bar) bar.classList.toggle('visible', selectModeActive);
+  if (btn) btn.textContent = selectModeActive ? 'Cancel' : '\u2610 Select';
+  renderRealArticles();
+}
+
+function toggleArticleSelect(id) {
+  var idx = selectedArticleIds.indexOf(id);
+  if (idx === -1) { selectedArticleIds.push(id); }
+  else { selectedArticleIds.splice(idx, 1); }
+  updateSelectBar();
+  // Update card visual
+  var card = document.querySelector('.article-card[data-id="' + id + '"]');
+  if (card) card.classList.toggle('selected', selectedArticleIds.indexOf(id) !== -1);
+}
+
+function updateSelectBar() {
+  var countEl = document.getElementById('select-count');
+  if (countEl) countEl.textContent = selectedArticleIds.length + ' selected';
+}
+
+async function deleteSelectedArticles() {
+  if (!selectedArticleIds.length) return;
+  if (!confirm('Delete ' + selectedArticleIds.length + ' article(s)?')) return;
+  for (var i = 0; i < selectedArticleIds.length; i++) {
+    await sbFetch('geo_articles?id=eq.' + selectedArticleIds[i], 'DELETE');
+  }
+  selectedArticleIds = [];
+  showToast('Articles deleted.', 'amber');
+  await loadArticles();
+}
 </script>
 
 </body>
