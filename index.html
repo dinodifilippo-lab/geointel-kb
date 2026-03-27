@@ -349,14 +349,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v1.9 · L0</div>
+  <div class="version">v2.2 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.9</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v2.2</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -500,6 +500,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <div style="display:flex;gap:6px;margin-left:auto">
     <button class="view-toggle active" id="btn-list-view" onclick="setArticleView('list')">≡ List</button>
     <button class="view-toggle" id="btn-tree-view" onclick="setArticleView('tree')">⊞ Tree</button>
+    <button class="btn-outline" id="btn-select-toggle" onclick="toggleSelectMode()">&#9744; Select</button>
   </div>
 </div>
 
@@ -747,66 +748,9 @@ function renderListView() {
 }
 
 function renderTreeView() {
-  const articles = getFilteredArticles();
-  const container = document.getElementById('articles-tree');
-
-  // Group: source → year → month → articles
-  const tree = {};
-  articles.forEach(a => {
-    const d = new Date(a.date);
-    const yr = d.getFullYear();
-    const mo = d.toLocaleString('en', { month: 'long' });
-    if (!tree[a.source]) tree[a.source] = {};
-    if (!tree[a.source][yr]) tree[a.source][yr] = {};
-    if (!tree[a.source][yr][mo]) tree[a.source][yr][mo] = [];
-    tree[a.source][yr][mo].push(a);
-  });
-
-  const sourceCount = src => Object.values(tree[src]).reduce((t, yr) => t + Object.values(yr).reduce((t2, mo) => t2 + mo.length, 0), 0);
-
-  container.innerHTML = Object.keys(tree).map((src, si) => `
-    <div class="tree-source">
-      <div class="tree-source-hdr" onclick="toggleTree('src-${si}')">
-        <span class="tree-chevron" id="chev-src-${si}">▶</span>
-        <span class="tree-source-name">${src}</span>
-        <span class="tree-count">${sourceCount(src)} articles</span>
-      </div>
-      <div class="tree-body" id="src-${si}">
-        ${Object.keys(tree[src]).sort((a,b) => b-a).map((yr, yi) => `
-          <div class="tree-year">
-            <div class="tree-year-hdr" onclick="toggleTree('yr-${si}-${yi}')">
-              <span class="tree-chevron" id="chev-yr-${si}-${yi}">▶</span>
-              <span style="flex:1">${yr}</span>
-              <span class="tree-count">${Object.values(tree[src][yr]).reduce((t,m) => t+m.length,0)}</span>
-            </div>
-            ${Object.keys(tree[src][yr]).map((mo, mi) => `
-              <div class="tree-month">
-                <div class="tree-month-hdr" onclick="toggleTree('mo-${si}-${yi}-${mi}')">
-                  <span class="tree-chevron" id="chev-mo-${si}-${yi}-${mi}">▶</span>
-                  <span style="flex:1">${mo}</span>
-                  <span class="tree-count">${tree[src][yr][mo].length}</span>
-                </div>
-                <div class="tree-articles" id="mo-${si}-${yi}-${mi}">
-                  ${tree[src][yr][mo].map(a => `
-                    <div class="tree-article">
-                      <div class="tree-article-title">${a.title}</div>
-                      <div class="tree-article-meta">
-                        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
-                        <span class="art-date">${a.date}</span>
-                        <span class="art-author">${a.author}</span>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
+  // Replaced by renderRealTreeView in L2
+  renderRealTreeView();
 }
-
 function toggleTree(id) {
   const el = document.getElementById(id);
   const chev = document.getElementById('chev-' + id);
