@@ -344,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v1.5 · L0</div>
+  <div class="version">v1.6 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.5</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.6</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -877,22 +877,23 @@ function changePwd() {
 
 async function sbFetch(path, method, body) {
   method = method || 'GET';
-  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return null; }
+  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return { ok: false, noConn: true }; }
   var headers = { 'apikey': CFG.sbKey, 'Authorization': 'Bearer ' + CFG.sbKey, 'Content-Type': 'application/json', 'Prefer': method === 'POST' ? 'return=representation' : '' };
   var opts = { method: method, headers: headers };
   if (body) opts.body = JSON.stringify(body);
   try {
     var res = await fetch(CFG.sbUrl + '/rest/v1/' + path, opts);
-    if (!res.ok) { showToast('DB error: ' + res.status, 'red'); return null; }
+    if (!res.ok) { showToast('DB error: ' + res.status, 'red'); return { ok: false }; }
     var ct = res.headers.get('content-type') || '';
-    return ct.includes('json') ? await res.json() : null;
-  } catch(e) { showToast('Connection error', 'red'); return null; }
+    var data = ct.includes('json') ? await res.json() : null;
+    return { ok: true, data: data };
+  } catch(e) { showToast('Connection error', 'red'); return { ok: false }; }
 }
 
 async function loadSources() {
-  var data = await sbFetch('geo_sources?order=name.asc');
-  if (!data) return;
-  SOURCES = data;
+  var res = await sbFetch('geo_sources?order=name.asc');
+  if (!res.ok || !res.data) return;
+  SOURCES = res.data;
   renderSources(SOURCES);
 }
 
@@ -938,7 +939,7 @@ async function toggleSrc(btn) {
   btn.classList.toggle('on', newActive);
   btn.dataset.active = String(newActive);
   var res = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newActive });
-  if (res === null) {
+  if (!res.ok) {
     btn.textContent = !newActive ? 'ON' : 'OFF';
     btn.classList.toggle('on', !newActive);
     btn.dataset.active = String(!newActive);
@@ -975,11 +976,13 @@ async function saveSrc() {
   var err = document.getElementById('modal-src-err');
   if (!name || !url) { err.textContent = 'Name and URL required.'; return; }
   if (!url.startsWith('http')) { err.textContent = 'URL must start with http(s)://'; return; }
+  var saveRes;
   if (id) {
-    await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { name: name, url: url });
+    saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { name: name, url: url });
   } else {
-    await sbFetch('geo_sources', 'POST', { name: name, url: url, active: true });
+    saveRes = await sbFetch('geo_sources', 'POST', { name: name, url: url, active: true });
   }
+  if (!saveRes.ok) { err.textContent = 'Failed to save. Check connection.'; return; }
   closeModal('modal-source');
   showToast(id ? 'Source updated.' : 'Source added.', 'green');
   await loadSources();
@@ -987,7 +990,8 @@ async function saveSrc() {
 
 async function delSrc(id) {
   if (!confirm('Delete this source?')) return;
-  await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
+  var delRes = await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
+  if (!delRes.ok) { showToast('Delete failed.', 'red'); return; }
   SOURCES = SOURCES.filter(function(x) { return String(x.id) !== String(id); });
   renderSources(SOURCES);
   showToast('Source deleted.', 'amber');
