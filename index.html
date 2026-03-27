@@ -344,14 +344,14 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v1.7 · L0</div>
+  <div class="version">v1.8 · L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.7</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v1.8</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -924,6 +924,14 @@ function renderSources(list) {
     html += '</div></div>';
   });
   el.innerHTML = html;
+  // Populate source filter in Articles
+  var artSrcFilter = document.getElementById('art-src-filter');
+  if (artSrcFilter) {
+    artSrcFilter.innerHTML = '<option value="">All sources</option>';
+    list.forEach(function(s) {
+      artSrcFilter.innerHTML += '<option value="' + esc(String(s.id)) + '">' + esc(s.name) + '</option>';
+    });
+  }
 }
 
 function filterSrcUI(q) {
@@ -1006,8 +1014,163 @@ var _origShowApp = showApp;
 showApp = function() {
   _origShowApp();
   loadCFGtoForm();
-  if (CFG.sbUrl && CFG.sbKey) loadSources();
+  if (CFG.sbUrl && CFG.sbKey) {
+    loadSources();
+  }
 };
+// ═══ L2: ARTICLES FROM SUPABASE ═══════════════════════════════════
+
+var ARTICLES = [];
+var articlePage = 0;
+var articlePageSize = 50;
+var articleTotal = 0;
+
+async function loadArticles() {
+  var srcFilter = document.getElementById('art-src-filter') ? document.getElementById('art-src-filter').value : '';
+  var topicFilter = document.getElementById('art-topic-filter') ? document.getElementById('art-topic-filter').value : '';
+  var q = document.getElementById('art-search') ? document.getElementById('art-search').value.trim() : '';
+
+  var path = 'geo_articles?order=published_at.desc&limit=' + articlePageSize + '&offset=' + (articlePage * articlePageSize);
+  if (srcFilter) path += '&source_id=eq.' + srcFilter;
+  if (topicFilter) path += '&topic=eq.' + topicFilter;
+  if (q) path += '&title=ilike.*' + encodeURIComponent(q) + '*';
+
+  var el = document.getElementById('articles-list');
+  if (el) el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">Loading\u2026</div>';
+
+  var res = await sbFetch(path);
+  if (!res.ok || !res.data) return;
+  ARTICLES = res.data;
+  renderRealArticles();
+}
+
+function renderRealArticles() {
+  if (currentViewMode === 'list') renderRealListView();
+  else renderRealTreeView();
+}
+
+function renderRealListView() {
+  var container = document.getElementById('articles-list');
+  if (!container) return;
+  if (!ARTICLES.length) {
+    container.innerHTML = '<div class="empty-state"><div>No articles found.</div></div>';
+    return;
+  }
+  var html = '';
+  ARTICLES.forEach(function(a) {
+    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+    var srcName = src ? src.name : 'Unknown';
+    var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '--';
+    var topic = a.topic || 'General';
+    html += '<div class="article-card" data-id="' + esc(String(a.id)) + '" onclick="openArticle(this.dataset.id)">';
+    html += '<div class="art-topics"><span class="art-topic-tag tag-' + topic.toLowerCase() + '">' + esc(topic) + '</span></div>';
+    html += '<div class="art-meta">';
+    html += '<span class="art-source">' + esc(srcName) + '</span>';
+    html += '<span class="art-date">' + date + '</span>';
+    if (a.author) html += '<span class="art-author">' + esc(a.author) + '</span>';
+    html += '</div>';
+    html += '<div class="art-title">' + esc(a.title) + '</div>';
+    var excerpt = (a.content_translated || a.content_original || '').substring(0, 200);
+    if (excerpt) html += '<div class="art-excerpt">' + esc(excerpt) + '\u2026</div>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function renderRealTreeView() {
+  var container = document.getElementById('articles-tree');
+  if (!container) return;
+  var tree = {};
+  ARTICLES.forEach(function(a) {
+    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+    var srcName = src ? src.name : 'Unknown';
+    var d = a.published_at ? new Date(a.published_at) : new Date();
+    var yr = d.getFullYear();
+    var mo = d.toLocaleString('en', { month: 'long' });
+    if (!tree[srcName]) tree[srcName] = {};
+    if (!tree[srcName][yr]) tree[srcName][yr] = {};
+    if (!tree[srcName][yr][mo]) tree[srcName][yr][mo] = [];
+    tree[srcName][yr][mo].push(a);
+  });
+  var html = '';
+  Object.keys(tree).forEach(function(src, si) {
+    var srcCount = 0;
+    Object.keys(tree[src]).forEach(function(yr) {
+      Object.keys(tree[src][yr]).forEach(function(mo) { srcCount += tree[src][yr][mo].length; });
+    });
+    html += '<div class="tree-source">';
+    html += '<div class="tree-source-hdr" onclick="toggleTree(' + JSON.stringify('src-r-' + si) + ')">';
+    html += '<span class="tree-chevron" id="chev-src-r-' + si + '">\u25B6</span>';
+    html += '<span class="tree-source-name">' + esc(src) + '</span>';
+    html += '<span class="tree-count">' + srcCount + ' articles</span></div>';
+    html += '<div class="tree-body" id="src-r-' + si + '">';
+    Object.keys(tree[src]).sort(function(a,b){return b-a;}).forEach(function(yr, yi) {
+      var yrCount = 0;
+      Object.keys(tree[src][yr]).forEach(function(mo) { yrCount += tree[src][yr][mo].length; });
+      html += '<div class="tree-year">';
+      html += '<div class="tree-year-hdr" onclick="toggleTree(' + JSON.stringify('yr-r-' + si + '-' + yi) + ')">';
+      html += '<span class="tree-chevron" id="chev-yr-r-' + si + '-' + yi + '">\u25B6</span>';
+      html += '<span style="flex:1">' + yr + '</span><span class="tree-count">' + yrCount + '</span></div>';
+      Object.keys(tree[src][yr]).forEach(function(mo, mi) {
+        var moArr = tree[src][yr][mo];
+        html += '<div class="tree-month">';
+        html += '<div class="tree-month-hdr" onclick="toggleTree(' + JSON.stringify('mo-r-' + si + '-' + yi + '-' + mi) + ')">';
+        html += '<span class="tree-chevron" id="chev-mo-r-' + si + '-' + yi + '-' + mi + '">\u25B6</span>';
+        html += '<span style="flex:1">' + mo + '</span><span class="tree-count">' + moArr.length + '</span></div>';
+        html += '<div class="tree-articles" id="mo-r-' + si + '-' + yi + '-' + mi + '">';
+        moArr.forEach(function(a) {
+          html += '<div class="tree-article" data-id="' + esc(String(a.id)) + '" onclick="openArticle(this.dataset.id)">';
+          html += '<div class="tree-article-title">' + esc(a.title) + '</div>';
+          html += '<div class="tree-article-meta">';
+          if (a.topic) html += '<span class="art-topic-tag tag-' + a.topic.toLowerCase() + '">' + esc(a.topic) + '</span>';
+          html += '<span class="art-date">' + (a.published_at ? new Date(a.published_at).toLocaleDateString() : '--') + '</span>';
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+function openArticle(id) {
+  var a = ARTICLES.find(function(x) { return String(x.id) === String(id); });
+  if (!a) return;
+  var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+  var srcName = src ? src.name : 'Unknown';
+  var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '--';
+  var detail = document.getElementById('view-article-detail');
+  if (!detail) return;
+  detail.innerHTML =
+    '<button class="btn-outline" style="width:fit-content" onclick="showView(\'articles\', document.querySelector(\'nav button:nth-child(3)\'))">&#8592; Back</button>' +
+    '<div class="detail-wrap">' +
+    '<div class="detail-meta"><span class="art-source">' + esc(srcName) + '</span>' +
+    (a.topic ? '<span class="art-topic-tag tag-' + a.topic.toLowerCase() + '">' + esc(a.topic) + '</span>' : '') +
+    '<span class="art-date">' + date + '</span></div>' +
+    '<div class="detail-title">' + esc(a.title) + '</div>' +
+    (a.author ? '<div style="color:var(--text3);font-size:11px;margin-bottom:16px">Author: ' + esc(a.author) + '</div>' : '') +
+    (a.url ? '<div style="margin-bottom:16px"><a href="' + esc(a.url) + '" target="_blank" style="color:var(--accent);font-size:12px">Original article &#8599;</a></div>' : '') +
+    '<hr class="detail-divider"/>' +
+    '<div class="detail-content">' + esc(a.content_translated || a.content_original || 'No content available.') + '</div>' +
+    '</div>';
+  showView('article-detail', null);
+}
+
+// Override renderArticles to use real data when available
+var _origRenderArticles = renderArticles;
+renderArticles = function() {
+  if (ARTICLES.length > 0 || document.getElementById('art-search').value) {
+    renderRealArticles();
+  } else {
+    loadArticles();
+  }
+};
+
+// Override filterArticles to reload from DB
+filterArticles = function() { articlePage = 0; loadArticles(); };
+
 </script>
 
 </body>
