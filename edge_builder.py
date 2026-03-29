@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-“””
+"""
 GeoIntel KB — Edge Function Builder
 Dato un URL di sito, genera automaticamente la Edge Function Supabase.
-“””
+"""
 
 import sys
 import re
