@@ -350,7 +350,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v4.4 &middot; L0</div>
+  <div class="version">v4.5 &middot; L0</div>
 </div>
 
 <!-- APP -->
@@ -805,7 +805,7 @@ function renderSources(list) {
     // FIX 3: checkbox column
     html += '<div>';
     if (srcSelectMode) {
-      html += '<div class="src-checkbox ' + (isChecked ? 'checked' : '') + '" onclick="toggleSrcSelect(\'' + esc(String(s.id)) + '\')" style="margin:auto">' + (isChecked ? '<span style="color:var(--accent);font-size:12px">&#10003;</span>' : '') + '</div>';
+      html += '<span onclick="toggleSrcSelect(\'' + esc(String(s.id)) + '\')" style="font-size:16px;color:' + (isChecked ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0;display:inline-block">' + (isChecked ? '\u25CF' : '\u25CB') + '</span>';
     }
     html += '</div>';
     html += '<div><div style="color:var(--text);font-size:12px;font-weight:500">' + esc(s.name) + '</div>';
@@ -969,6 +969,9 @@ var currentTopicFilter = '';
 var currentViewMode = 'list';
 var selectedArticleIds = [];
 var selectModeActive = false;
+var treeOpenSrc = {};
+var treeOpenYr = {};
+var treeOpenMo = {};
 
 async function loadArticles() {
   var srcFilter = document.getElementById('art-src-filter') ? document.getElementById('art-src-filter').value : '';
@@ -1061,11 +1064,6 @@ function renderTreeView() {
   // This eliminates all click bubbling between levels.
   container.innerHTML = '';
 
-  // Track open/closed state
-  var openSrc = {};
-  var openYr = {};
-  var openMo = {};
-
   function rerender() {
     container.innerHTML = '';
     Object.keys(tree).forEach(function(srcId, si) {
@@ -1077,14 +1075,14 @@ function renderTreeView() {
         });
       });
       var srcCount = allSrcIds.length;
-      var srcOpen = !!openSrc[srcId];
+      var srcOpen = !!treeOpenSrc[srcId];
       var srcAllSel = selectModeActive && allSrcIds.length > 0 && allSrcIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
 
       // SOURCE ROW
       var srcRow = document.createElement('div');
       srcRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);margin-bottom:2px;user-select:none';
       srcRow.addEventListener('click', function() {
-        openSrc[srcId] = !openSrc[srcId];
+        treeOpenSrc[srcId] = !treeOpenSrc[srcId];
         rerender();
       });
 
@@ -1130,13 +1128,13 @@ function renderTreeView() {
         Object.keys(srcNode.years[yr]).forEach(function(mo){
           srcNode.years[yr][mo].forEach(function(a){ allYrIds.push(String(a.id)); });
         });
-        var yrOpen = !!openYr[yrKey];
+        var yrOpen = !!treeOpenYr[yrKey];
         var yrAllSel = selectModeActive && allYrIds.length > 0 && allYrIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
 
         var yrRow = document.createElement('div');
         yrRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 16px 8px 32px;cursor:pointer;color:var(--text2);font-size:11px;letter-spacing:1px;background:var(--surface);border-bottom:1px solid var(--border)';
         yrRow.addEventListener('click', function() {
-          openYr[yrKey] = !openYr[yrKey];
+          treeOpenYr[yrKey] = !treeOpenYr[yrKey];
           rerender();
         });
 
@@ -1179,12 +1177,12 @@ function renderTreeView() {
         Object.keys(srcNode.years[yr]).forEach(function(mo) {
           var moKey = yrKey + '_' + mo;
           var moArr = srcNode.years[yr][mo];
-          var moOpen = !!openMo[moKey];
+          var moOpen = !!treeOpenMo[moKey];
 
           var moRow = document.createElement('div');
           moRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 16px 7px 48px;cursor:pointer;color:var(--text3);font-size:11px;background:var(--surface);border-bottom:1px solid var(--border)';
           moRow.addEventListener('click', function() {
-            openMo[moKey] = !openMo[moKey];
+            treeOpenMo[moKey] = !treeOpenMo[moKey];
             rerender();
           });
 
@@ -1304,7 +1302,13 @@ function toggleArticleSelect(id) {
   if (idx === -1) selectedArticleIds.push(id);
   else selectedArticleIds.splice(idx, 1);
   updateSelectBar();
-  renderArticles();
+  // In tree mode, call rerender() inside the existing tree (preserves open state via globals)
+  // In list mode, re-render list
+  if (currentViewMode === 'tree') {
+    renderTreeView();
+  } else {
+    renderListView();
+  }
 }
 
 function updateSelectBar() {
