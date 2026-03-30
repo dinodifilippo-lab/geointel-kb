@@ -350,7 +350,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v4.0 &middot; L0</div>
+  <div class="version">v4.1 &middot; L0</div>
 </div>
 
 <!-- APP -->
@@ -1069,9 +1069,8 @@ function renderTreeView() {
     html += '<div class="tree-source">';
     html += '<div class="tree-source-hdr" style="display:flex;align-items:center;gap:10px">';
     if (selectModeActive) {
-      // FIX 5: select circle on Source
-      var srcIdsJson = JSON.stringify(allSrcIds);
-      html += '<span onclick="toggleGroupSelect(' + srcIdsJson + ')" style="font-size:16px;color:' + (srcAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (srcAllSelected ? '&#9679;' : '&#9675;') + '</span>';
+      // Use data-groupids attribute to avoid JSON quoting issues in onclick
+      html += '<span class="tree-group-sel" data-groupids="' + allSrcIds.join(',') + '" style="font-size:16px;color:' + (srcAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (srcAllSelected ? '&#9679;' : '&#9675;') + '</span>';
     }
     html += '<span class="tree-chevron" id="chev-' + sid + '" onclick="toggleTree(\'' + sid + '\')">&#9654;</span>';
     html += '<span class="tree-source-name" onclick="toggleTree(\'' + sid + '\')" style="flex:1">' + esc(srcNode.name) + '</span>';
@@ -1088,9 +1087,7 @@ function renderTreeView() {
       html += '<div class="tree-year">';
       html += '<div class="tree-year-hdr" style="display:flex;align-items:center;gap:8px">';
       if (selectModeActive) {
-        // FIX 5: select circle on Year
-        var yrIdsJson = JSON.stringify(allYrIds);
-        html += '<span onclick="toggleGroupSelect(' + yrIdsJson + ')" style="font-size:14px;color:' + (yrAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (yrAllSelected ? '&#9679;' : '&#9675;') + '</span>';
+        html += '<span class="tree-group-sel" data-groupids="' + allYrIds.join(',') + '" style="font-size:14px;color:' + (yrAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (yrAllSelected ? '&#9679;' : '&#9675;') + '</span>';
       }
       html += '<span class="tree-chevron" id="chev-' + yid + '" onclick="toggleTree(\'' + yid + '\')">&#9654;</span>';
       html += '<span onclick="toggleTree(\'' + yid + '\')" style="flex:1">' + yr + '</span>';
@@ -1107,7 +1104,8 @@ function renderTreeView() {
         moArr.forEach(function(a) {
           var aid = esc(String(a.id));
           var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
-          html += '<div class="tree-article' + (isSelected ? ' selected' : '') + '" data-id="' + aid + '" style="display:flex;align-items:center;gap:10px" onclick="' + (selectModeActive ? 'toggleArticleSelect(\'' + aid + '\')' : 'openArticle(\'' + aid + '\')') + '">';
+          // FIX: use data-aid and data-mode to avoid inline onclick issues; stopPropagation handled in delegated listener
+          html += '<div class="tree-article' + (isSelected ? ' selected' : '') + '" data-id="' + aid + '" data-selectmode="' + (selectModeActive ? '1' : '0') + '" style="display:flex;align-items:center;gap:10px">';
           if (selectModeActive) {
             html += '<span class="sel-circle" style="font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
           }
@@ -1125,18 +1123,36 @@ function renderTreeView() {
     html += '</div></div>';
   });
   container.innerHTML = html;
-}
 
-// FIX 5: toggle group (source or year)
-function toggleGroupSelect(ids) {
-  var allSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
-  if (allSelected) {
-    ids.forEach(function(id){ var idx = selectedArticleIds.indexOf(id); if (idx !== -1) selectedArticleIds.splice(idx,1); });
-  } else {
-    ids.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
-  }
-  updateSelectBar();
-  renderTreeView();
+  // Attach delegated event listeners after rendering
+  // Group selectors (source / year)
+  container.querySelectorAll('.tree-group-sel').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var ids = el.dataset.groupids ? el.dataset.groupids.split(',').filter(Boolean) : [];
+      var allSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+      if (allSelected) {
+        ids.forEach(function(id){ var idx = selectedArticleIds.indexOf(id); if (idx !== -1) selectedArticleIds.splice(idx,1); });
+      } else {
+        ids.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
+      }
+      updateSelectBar();
+      renderTreeView();
+    });
+  });
+
+  // Article clicks -- stopPropagation prevents tree collapse
+  container.querySelectorAll('.tree-article').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var aid = el.dataset.id;
+      if (el.dataset.selectmode === '1') {
+        toggleArticleSelect(aid);
+      } else {
+        openArticle(aid);
+      }
+    });
+  });
 }
 
 function toggleTree(id) {
