@@ -350,7 +350,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v4.2 &middot; L0</div>
+  <div class="version">v4.3 &middot; L0</div>
 </div>
 
 <!-- APP -->
@@ -1092,12 +1092,29 @@ function renderTreeView() {
     return chev;
   }
 
-  // Helper: toggle body open/closed
-  function bindToggle(hdr, body, chev) {
+  // Helper: bind toggle - only fires when clicking directly on hdr or its non-interactive children (chevron, label, count)
+  // Uses e.target check to ignore clicks bubbling from nested headers or articles
+  function bindToggle(hdr, body, chev, useDisplay) {
     hdr.addEventListener('click', function(e) {
+      // Only toggle if the click originated directly within this header, not from a deeper nested header
+      var t = e.target;
+      // Walk up from target: if we hit another hdr-class element before reaching our hdr, ignore
+      while (t && t !== hdr) {
+        var cls = t.className || '';
+        if (cls.indexOf('tree-source-hdr') !== -1 || cls.indexOf('tree-year-hdr') !== -1 || cls.indexOf('tree-month-hdr') !== -1 || cls.indexOf('tree-article') !== -1) {
+          return; // click came from a nested interactive element, ignore
+        }
+        t = t.parentElement;
+      }
       e.stopPropagation();
-      var isOpen = body.classList.toggle('open');
-      chev.classList.toggle('open', isOpen);
+      if (useDisplay) {
+        var open = body.style.display === 'block';
+        body.style.display = open ? 'none' : 'block';
+        chev.classList.toggle('open', !open);
+      } else {
+        var isOpen = body.classList.toggle('open');
+        chev.classList.toggle('open', isOpen);
+      }
     });
   }
 
@@ -1142,7 +1159,7 @@ function renderTreeView() {
     var srcBody = document.createElement('div');
     srcBody.className = 'tree-body';
 
-    bindToggle(srcHdr, srcBody, srcChev);
+    bindToggle(srcHdr, srcBody, srcChev, false);
     srcDiv.appendChild(srcHdr);
     srcDiv.appendChild(srcBody);
 
@@ -1176,18 +1193,9 @@ function renderTreeView() {
       yrHdr.appendChild(yrCount);
 
       var yrBody = document.createElement('div');
-      // reuse tree-body class for collapsible
       yrBody.style.display = 'none';
 
-      bindToggle(yrHdr, yrBody, yrChev);
-      // Override bindToggle for year: use display none/block instead of class
-      yrHdr.removeEventListener('click', yrHdr._toggle);
-      yrHdr.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var open = yrBody.style.display === 'block';
-        yrBody.style.display = open ? 'none' : 'block';
-        yrChev.classList.toggle('open', !open);
-      });
+      bindToggle(yrHdr, yrBody, yrChev, true);
 
       yrDiv.appendChild(yrHdr);
       yrDiv.appendChild(yrBody);
