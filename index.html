@@ -7,7 +7,6 @@
 <meta name="color-scheme" content="dark">
 <title>GeoIntel KB</title>
 <style>
-/* SAFARI RESET -- force dark theme, block all browser defaults */
 html {
   background: #080c10 !important;
   color: #c8d8e8 !important;
@@ -24,37 +23,34 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* Block Safari default styles on interactive elements */
 button, input, select, textarea {
--webkit-appearance: none;
-appearance: none;
-border-radius: 0;
-font-family: ui-monospace, ‘Courier New’, monospace;
-font-size: 13px;
-background: transparent;
-color: #c8d8e8;
-outline: none;
-margin: 0;
-padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 13px;
+  background: transparent;
+  color: #c8d8e8;
+  outline: none;
+  margin: 0;
+  padding: 0;
 }
 a { color: inherit; text-decoration: none; }
-
 :root {
-–bg: #020507;
-–surface: #0a1929;
-–surface2: #0d2035;
-–border: #1a4a72;
-–border2: #1a4a72;
-–accent: #00d4ff;
-–green: #00ff88;
-–amber: #ffaa00;
-–red: #ff4466;
-–text: #c8d8e8;
-–text2: #7a9ab8;
-–text3: #3d5a73;
-–mono: ui-monospace, ‘Courier New’, monospace;
-–sans: -apple-system, BlinkMacSystemFont, sans-serif;
+  --bg: #020507;
+  --surface: #0a1929;
+  --surface2: #0d2035;
+  --border: #1a4a72;
+  --border2: #1a4a72;
+  --accent: #00d4ff;
+  --green: #00ff88;
+  --amber: #ffaa00;
+  --red: #ff4466;
+  --text: #c8d8e8;
+  --text2: #7a9ab8;
+  --text3: #3d5a73;
+  --mono: ui-monospace, 'Courier New', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* LOGIN */
@@ -181,9 +177,9 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .search-input::placeholder { color: var(–text3); }
 .search-input:focus { border-color: var(–accent); }
 .table-wrap { background: var(–surface); border: 1px solid var(–border); overflow: hidden; }
-.table-hdr { display: grid; grid-template-columns: 2.5fr 1.5fr 90px 120px; padding: 10px 18px; border-bottom: 1px solid var(–border); background: var(–surface2); }
+.table-hdr { display: grid; grid-template-columns: 36px 2.5fr 1.5fr 90px 120px; padding: 10px 18px; border-bottom: 1px solid var(–border); background: var(–surface2); }
 .th { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); }
-.table-row { display: grid; grid-template-columns: 2.5fr 1.5fr 90px 120px; padding: 11px 18px; border-bottom: 1px solid var(–border); align-items: center; }
+.table-row { display: grid; grid-template-columns: 36px 2.5fr 1.5fr 90px 120px; padding: 11px 18px; border-bottom: 1px solid var(–border); align-items: center; }
 .table-row:last-child { border-bottom: none; }
 .table-row:hover { background: var(–surface2); }
 .toggle-btn { background: none; border: 1px solid var(–border); color: var(–text3); font-family: var(–mono); font-size: 10px; letter-spacing: 2px; padding: 4px 10px; cursor: pointer; min-width: 52px; text-align: center; }
@@ -193,6 +189,10 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .btn-edit:hover { border-color: var(–accent); color: var(–accent); }
 .btn-del { background: none; border: 1px solid var(–border); color: var(–text3); font-family: var(–mono); font-size: 10px; padding: 3px 8px; cursor: pointer; }
 .btn-del:hover { border-color: var(–red); color: var(–red); }
+
+/* SOURCE SELECT BAR */
+.src-select-bar { display: none; align-items: center; gap: 10px; background: var(–surface2); border: 1px solid var(–accent); padding: 10px 16px; margin-bottom: 4px; }
+.src-select-bar.visible { display: flex; }
 
 /* ARTICLES */
 .filter-select { background: var(–surface); border: 1px solid var(–border); color: var(–text2); font-family: var(–mono); font-size: 11px; padding: 7px 12px; outline: none; cursor: pointer; }
@@ -212,8 +212,8 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .empty-state { text-align: center; padding: 60px 20px; color: var(–text3); }
 
 /* SELECT BAR */
-.select-bar { display: none; align-items: center; gap: 10px; background: var(–surface2); border: 1px solid var(–accent); padding: 10px 16px; }
-.select-bar.visible { display: flex; }
+.select-action-bar { display: none; align-items: center; gap: 10px; background: var(–surface2); border: 1px solid var(–accent); padding: 10px 16px; }
+.select-action-bar.visible { display: flex; }
 .select-count { color: var(–accent); font-size: 12px; flex: 1; }
 .btn-del-sel { background: var(–red); border: none; color: #fff; font-family: var(–mono); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 16px; cursor: pointer; }
 .btn-del-all { background: none; border: 1px solid var(–red); color: var(–red); font-family: var(–mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 16px; cursor: pointer; }
@@ -232,11 +232,6 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .query-input:focus { border-color: var(–accent); }
 .query-input::placeholder { color: var(–text3); }
 .query-filters { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-.query-result { background: var(–surface); border: 1px solid var(–border); padding: 24px; }
-.query-answer { font-family: var(–sans); font-size: 15px; color: #fff; line-height: 1.8; margin-bottom: 20px; }
-.query-sources-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); margin-bottom: 10px; border-top: 1px solid var(–border); padding-top: 16px; }
-.source-chip { display: inline-flex; align-items: center; gap: 6px; background: var(–surface2); border: 1px solid var(–border); padding: 4px 10px; font-size: 11px; color: var(–text2); margin: 3px; }
-.chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(–accent); flex-shrink: 0; }
 
 /* CONFIG */
 .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -244,7 +239,6 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .form-row label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); }
 .form-row input, .form-row select { background: var(–bg); border: 1px solid var(–border); color: var(–text); font-family: var(–mono); font-size: 13px; padding: 9px 12px; outline: none; width: 100%; }
 .form-row input:focus, .form-row select:focus { border-color: var(–accent); }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .api-row { display: flex; gap: 8px; align-items: center; }
 .api-row input { flex: 1; background: var(–bg); border: 1px solid var(–border); color: var(–text); font-family: var(–mono); font-size: 12px; padding: 8px 12px; outline: none; }
 .api-row input:focus { border-color: var(–accent); }
@@ -274,7 +268,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .toast.red { border-left-color: var(–red); }
 .toast.amber { border-left-color: var(–amber); }
 
-/* SPINNER */
+/* ARTICLE CARDS */
 .article-card.selected { border-color: var(–accent); background: rgba(0,212,255,0.06); }
 .tree-article.selected { background: rgba(0,212,255,0.06); }
 .article-card.selected::before { background: var(–accent); }
@@ -284,7 +278,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(–border); border-top-color: var(–accent); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* SCROLLBAR */
+/* STATUS */
 .stat-cyan  { border-top-color: #00d4ff; }
 .stat-green { border-top-color: #00ff88; }
 .stat-amber { border-top-color: #ffaa00; }
@@ -306,6 +300,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .tag-trade   { background: rgba(0,212,255,0.15);   color: #00d4ff; border: 1px solid rgba(0,212,255,0.3); }
 .tag-diplomacy { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
 .tag-climate { background: rgba(100,200,100,0.15); color: #80cc80; border: 1px solid rgba(100,200,100,0.3); }
+
 /* TREE VIEW */
 .tree-wrap { display: flex; flex-direction: column; gap: 4px; }
 .tree-source { background: var(–surface); border: 1px solid var(–border); border-left: 3px solid var(–accent); overflow: hidden; }
@@ -329,6 +324,11 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 .tree-article:hover { background: var(–surface2); }
 .tree-article-title { color: var(–text); font-size: 12px; line-height: 1.4; margin-bottom: 4px; }
 .tree-article-meta { display: flex; gap: 8px; align-items: center; }
+
+/* CHECKBOX */
+.src-checkbox { width: 14px; height: 14px; border: 1px solid var(–border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.src-checkbox.checked { border-color: var(–accent); background: rgba(0,212,255,0.15); }
+
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(–bg); }
 ::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
@@ -342,22 +342,22 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 <div id="login">
   <div>
     <div class="wordmark">Geo<span>Intel</span> KB</div>
-    <div class="tagline">Geopolitical Intelligence · Knowledge Base</div>
+    <div class="tagline">Geopolitical Intelligence &middot; Knowledge Base</div>
   </div>
   <div class="login-box">
     <label id="login-label">Access Password</label>
-    <input type="password" id="login-pwd" placeholder="••••••••••••" autocomplete="current-password"/>
+    <input type="password" id="login-pwd" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"/>
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v3.9 · L0</div>
+  <div class="version">v4.0 &middot; L0</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v3.9</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v4.0</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -400,9 +400,9 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 
 ```
 <div class="action-bar">
-  <div class="status-badge" style="min-width:160px;justify-content:center">■ &nbsp;IDLE</div>
-  <button class="btn-run" id="btn-run-dash" onclick="runScrape()" style="width:auto;margin-top:0;padding:8px 24px;min-width:160px;justify-content:center">▶ &nbsp;RUN NOW</button>
-  <button class="btn-stop" id="btn-stop-dash" style="display:none;width:auto;margin-top:0;padding:8px 24px;background:none;border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer" onclick="stopScrape()">■ STOP</button>
+  <!-- FIX 1: IDLE -> STOP -->
+  <div class="status-badge" id="status-badge" style="min-width:160px;justify-content:center">&#9632; &nbsp;STOP</div>
+  <button class="btn-run" id="btn-run-dash" onclick="runScrape()" style="width:auto;margin-top:0;padding:8px 24px;min-width:160px">&#9654; &nbsp;RUN NOW</button>
 </div>
 <div class="dash-grid">
   <div class="panel" style="display:flex;flex-direction:column;flex:1">
@@ -426,7 +426,8 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel-body">
         <div class="sched-row">
           <span style="color:var(--text2);font-size:12px">Frequency</span>
-          <span style="color:var(--accent);font-size:12px">Every 4h</span>
+          <!-- FIX 2: frequency reads from config -->
+          <span style="color:var(--accent);font-size:12px" id="sched-frequency">--</span>
         </div>
         <div class="sched-row">
           <span style="color:var(--text2);font-size:12px">Last run</span>
@@ -458,69 +459,63 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 
   <div class="view" id="view-sources">
     <div class="toolbar">
-      <input class="search-input" placeholder="Filter sources…" oninput="filterSrcUI(this.value)"/>
+      <input class="search-input" placeholder="Filter sources&hellip;" oninput="filterSrcUI(this.value)"/>
       <button class="btn-accent" onclick="openAddSrc()">+ ADD SOURCE</button>
+      <!-- FIX 3: select mode toggle for sources -->
+      <button class="btn-outline" id="btn-src-select" onclick="toggleSrcSelectMode()">&#9744; Select</button>
+    </div>
+    <!-- SOURCE SELECT BAR -->
+    <div class="src-select-bar" id="src-select-bar">
+      <span style="color:var(--accent);font-size:12px;flex:1" id="src-select-count">0 selected</span>
+      <button class="btn-sm" onclick="selectAllSources()">Select All</button>
+      <button class="btn-sm" onclick="deselectAllSources()">Deselect All</button>
+      <button class="btn-outline" onclick="deleteSelectedSources()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete Selected</button>
     </div>
     <div class="table-wrap">
       <div class="table-hdr">
+        <div class="th"></div>
         <div class="th">Source / URL</div>
         <div class="th">Last scraped</div>
         <div class="th">Active</div>
         <div class="th">Actions</div>
       </div>
-      <div id="sources-rows"><div style="padding:24px;text-align:center;color:var(--text3)">Loading…</div></div>
-      <div class="table-row" style="display:none">
-        <div>
-          <div style="color:var(--text);font-size:12px;font-weight:500">Foreign Policy</div>
-          <div style="color:var(--text3);font-size:10px;margin-top:2px">foreignpolicy.com/news-sitemap.xml</div>
-        </div>
-        <div style="color:var(--text3);font-size:11px">--</div>
-        <div><button class="toggle-btn on">ON</button></div>
-        <div class="row-actions">
-          <button class="btn-edit">Edit</button>
-          <button class="btn-del">Del</button>
-        </div>
-      </div>
+      <div id="sources-rows"><div style="padding:24px;text-align:center;color:var(--text3)">Loading&hellip;</div></div>
     </div>
   </div>
 
   <!-- ARTICLES -->
 
   <div class="view" id="view-articles">
+    <div class="toolbar">
+      <input class="search-input" placeholder="Search articles&hellip;" oninput="filterArticles(this.value)" id="art-search"/>
+      <select class="filter-select" onchange="filterArticles()" id="art-src-filter">
+        <option value="">All sources</option>
+      </select>
+      <select class="filter-select" onchange="filterArticles()" id="art-topic-filter">
+        <option value="">All topics</option>
+        <option value="Energy">Energy</option>
+        <option value="Defence">Defence</option>
+        <option value="Trade">Trade</option>
+        <option value="Diplomacy">Diplomacy</option>
+        <option value="Climate">Climate</option>
+      </select>
+      <div style="display:flex;gap:6px;margin-left:auto">
+        <button class="view-toggle active" id="btn-list-view" onclick="setArticleView('list')">&#8801; List</button>
+        <button class="view-toggle" id="btn-tree-view" onclick="setArticleView('tree')">&#8862; Tree</button>
+        <button class="btn-outline" id="btn-select-toggle" onclick="toggleSelectMode()">&#9744; Select</button>
+      </div>
+    </div>
 
 ```
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <input class="search-input" placeholder="Search articles…" oninput="filterArticles(this.value)" id="art-search"/>
-  <select class="filter-select" onchange="filterArticles()" id="art-src-filter">
-    <option value="">All sources</option>
-    <option value="Global Watch">Global Watch</option>
-    <option value="Meridian Brief">Meridian Brief</option>
-    <option value="Stratford Post">Stratford Post</option>
-    <option value="AsiaPacific Monitor">AsiaPacific Monitor</option>
-  </select>
-  <select class="filter-select" onchange="filterArticles()" id="art-topic-filter">
-    <option value="">All topics</option>
-    <option value="Energy">Energy</option>
-    <option value="Defence">Defence</option>
-    <option value="Trade">Trade</option>
-    <option value="Diplomacy">Diplomacy</option>
-    <option value="Climate">Climate</option>
-  </select>
-  <div style="display:flex;gap:6px;margin-left:auto">
-    <button class="view-toggle active" id="btn-list-view" onclick="setArticleView('list')">≡ List</button>
-    <button class="view-toggle" id="btn-tree-view" onclick="setArticleView('tree')">⊞ Tree</button>
-    <button class="btn-outline" id="btn-select-toggle" onclick="toggleSelectMode()">&#9744; Select</button>
-  </div>
-</div>
-
 <!-- SELECT BAR -->
 <div class="select-action-bar" id="select-action-bar">
   <span class="select-count" id="select-count">0 selected</span>
   <button class="btn-sm" onclick="selectAllArticles()">All</button>
+  <!-- FIX 4: none -> none (lowercase) -->
   <button class="btn-sm" onclick="deselectAllArticles()">none</button>
   <button class="btn-outline" onclick="deleteSelectedArticles()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete</button>
 </div>
+
 <!-- TOPIC CHIPS -->
 <div style="display:flex;gap:8px;flex-wrap:wrap">
   <span class="topic-chip active" onclick="toggleTopic(this,'')" data-topic="">All</span>
@@ -547,17 +542,9 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <!-- ARTICLE DETAIL -->
 
   <div class="view" id="view-article-detail">
-    <button class="btn-outline" style="width:fit-content" onclick="showView('articles', document.querySelector('nav button:nth-child(3)'))">← Back</button>
-    <div class="detail-wrap">
-      <div class="detail-meta">
-        <span class="art-source">Foreign Policy</span>
-        <span class="art-lang">EN</span>
-        <span class="art-date">26 Mar 2026</span>
-      </div>
-      <div class="detail-title">Iran Rejects Trump's 15-Point Peace Plan</div>
-      <div style="color:var(--text3);font-size:11px;margin-bottom:16px">Author: Alexandra Sharp · <a href="#" style="color:var(--accent)">Original ↗</a></div>
-      <hr class="detail-divider"/>
-      <div class="detail-content">Tehran issued a counterproposal...</div>
+    <button class="btn-outline" style="width:fit-content" onclick="showView('articles', document.querySelector('nav button:nth-child(3)'))">&#8592; Back</button>
+    <div class="detail-wrap" id="article-detail-content">
+      <div style="color:var(--text3);text-align:center;padding:40px">Select an article to view.</div>
     </div>
   </div>
 
@@ -566,7 +553,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <div class="view" id="view-query">
     <div class="query-box">
       <div class="query-row">
-        <textarea class="query-input" placeholder="Ask a question on the knowledge base…"></textarea>
+        <textarea class="query-input" placeholder="Ask a question on the knowledge base&hellip;"></textarea>
         <button class="btn-accent" style="padding:0 24px">ASK</button>
       </div>
       <div class="query-filters">
@@ -585,10 +572,10 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
         <div style="display:flex;flex-direction:column;gap:14px">
           <div class="form-row"><label>Supabase URL</label><input type="text" id="cfg-sb-url" placeholder="https://xxxx.supabase.co"/></div>
-          <div class="form-row"><label>Supabase Anon Key</label><div class="api-row"><input type="password" id="cfg-sb-key" placeholder="eyJ…"/><button class="btn-outline" onclick="testSB()">TEST</button></div></div>
+          <div class="form-row"><label>Supabase Anon Key</label><div class="api-row"><input type="password" id="cfg-sb-key" placeholder="eyJ&hellip;"/><button class="btn-outline" onclick="testSB()">TEST</button></div></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>Anthropic API Key</label><div class="api-row"><input type="password" id="cfg-ant-key" placeholder="sk-ant-…"/><button class="btn-outline" onclick="testAnt()">TEST</button></div></div>
+          <div class="form-row"><label>Anthropic API Key</label><div class="api-row"><input type="password" id="cfg-ant-key" placeholder="sk-ant-&hellip;"/><button class="btn-outline" onclick="testAnt()">TEST</button></div></div>
           <button class="btn-accent" style="width:100%;margin-top:auto" onclick="saveCFG()">SAVE CONNECTION</button>
         </div>
       </div>
@@ -597,27 +584,33 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Scheduler</div></div>
         <div class="panel-body" style="display:flex;flex-direction:column;gap:0">
-          <div class="config-item"><span class="config-label">Frequency (d:hh:mm)</span><input type="text" class="inline-input" placeholder="0:04:00" id="cfg-freq" value="0:04:00" style="width:100px;text-align:center"/></div>
-          <div class="config-item"><span class="config-label">Max articles/run</span><input type="number" class="inline-input" id="cfg-max-art" value="50"/></div>
+          <!-- FIX 6: removed Max articles/run -->
+          <div class="config-item">
+            <span class="config-label">Frequency (d:hh:mm)</span>
+            <input type="text" class="inline-input" placeholder="0:04:00" id="cfg-freq" value="0:04:00" style="width:100px;text-align:center" onchange="updateFrequencyDisplay()"/>
+          </div>
           <button class="btn-accent" style="width:100%;margin-top:16px" onclick="saveCFG()">SAVE</button>
         </div>
       </div>
       <div class="panel">
         <div class="panel-hdr"><div class="panel-title">Security</div></div>
         <div class="panel-body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="form-row"><label>New Password</label><input type="password" id="cfg-new-pwd" placeholder="New password…"/></div>
-          <div class="form-row"><label>Confirm</label><input type="password" id="cfg-confirm-pwd" placeholder="Confirm…"/></div>
+          <div class="form-row"><label>New Password</label><input type="password" id="cfg-new-pwd" placeholder="New password&hellip;"/></div>
+          <div class="form-row"><label>Confirm</label><input type="password" id="cfg-confirm-pwd" placeholder="Confirm&hellip;"/></div>
           <button class="btn-accent" style="width:100%;margin-top:auto" onclick="changePwd()">CHANGE PASSWORD</button>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- MODALS -->
 
 <div class="modal-overlay" id="modal-source">
   <div class="modal">
     <div class="modal-hdr">
       <div class="modal-title" id="modal-src-title">Add Source</div>
-      <button class="btn-close" onclick="closeModal('modal-source')">&#215;</button>
+      <button class="btn-close" onclick="closeModal('modal-source')">&times;</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="modal-src-id"/>
@@ -637,35 +630,40 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
   <div class="modal" style="max-width:480px">
     <div class="modal-hdr">
       <div class="modal-title" id="modal-run-title">Last Run Detail</div>
-      <button class="btn-close" onclick="closeModal('modal-run-detail')">&#215;</button>
+      <button class="btn-close" onclick="closeModal('modal-run-detail')">&times;</button>
     </div>
     <div class="modal-body" id="modal-run-body"></div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// AUTH
+// ═══ AUTH ════════════════════════════════════════════════════════
 async function hashStr(s) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
 }
-let pwdHash = localStorage.getItem('gi_pwd') || '';
+var pwdHash = localStorage.getItem('gi_pwd') || '';
 if (!pwdHash) document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
 
 async function doLogin() {
-  const pwd = document.getElementById('login-pwd').value;
+  var pwd = document.getElementById('login-pwd').value;
   if (!pwd) return;
-  const h = await hashStr(pwd);
+  var h = await hashStr(pwd);
   if (!pwdHash) { pwdHash = h; localStorage.setItem('gi_pwd', h); showApp(); }
   else if (h === pwdHash) { showApp(); }
   else { document.getElementById('login-error').textContent = 'Invalid password.'; document.getElementById('login-pwd').value = ''; }
 }
-document.getElementById('login-pwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login-pwd').addEventListener('keydown', function(e){ if (e.key==='Enter') doLogin(); });
 
 function showApp() {
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').classList.add('visible');
+  loadCFGtoForm();
+  if (CFG.sbUrl && CFG.sbKey) { loadSources(); loadDashboardStats(); }
+  startDashAutoRefresh();
+  updateFrequencyDisplay();
 }
 function doLogout() {
   document.getElementById('login').style.display = 'flex';
@@ -673,146 +671,51 @@ function doLogout() {
   document.getElementById('login-pwd').value = '';
 }
 
-// NAV
+// ═══ NAV ═════════════════════════════════════════════════════════
 function showView(id, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById('view-' + id).classList.add('active');
-  if (btn) { document.querySelectorAll('nav button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-  if (id === 'articles') renderArticles();
+  if (btn) { document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
+  if (id === 'articles') { articlePage = 0; loadArticles(); }
 }
 
-// ── FAKE DATA (removed in L2) ──────────────────────────────────────────────
-const FAKE_ARTICLES = [
-  { id:1, source:'Global Watch',       title:'Strait of Hormuz: New Maritime Tensions Emerge',           topic:'Energy',   author:'R. Cardenas',  date:'2026-03-26', lang:'EN', excerpt:'Growing concerns over shipping lane security as regional powers contest access rights.' },
-  { id:2, source:'Global Watch',       title:'Gulf States Reposition on Nuclear Deterrence',              topic:'Defence',  author:'M. Al-Farsi',  date:'2026-03-25', lang:'EN', excerpt:'Saudi Arabia and UAE signal interest in bilateral defence frameworks outside NATO umbrella.' },
-  { id:3, source:'Global Watch',       title:'OPEC+ Emergency Session Called Amid Price Volatility',      topic:'Energy',   author:'L. Petrova',   date:'2026-03-24', lang:'EN', excerpt:'Cartel members divided on output strategy as Brent crude swings beyond historical ranges.' },
-  { id:4, source:'Meridian Brief',     title:'China-Russia Trade Corridor Hits Record Volume',            topic:'Trade',    author:'X. Liang',     date:'2026-03-26', lang:'EN', excerpt:'Bilateral trade reaches $240bn milestone, bypassing Western payment infrastructure entirely.' },
-  { id:5, source:'Meridian Brief',     title:'EU Carbon Border Tax: First Full Year Assessment',          topic:'Climate',  author:'F. Brandt',    date:'2026-03-23', lang:'EN', excerpt:'CBAM shows mixed results; steel and cement sectors report unexpected compliance costs.' },
-  { id:6, source:'Meridian Brief',     title:'Turkey Mediates Black Sea Grain Deal Extension',            topic:'Diplomacy',author:'S. Yilmaz',   date:'2026-03-22', lang:'EN', excerpt:'Ankara brokers renewed agreement covering Ukrainian port access through year end.' },
-  { id:7, source:'Meridian Brief',     title:'Rare Earth Dominance: Beijing Tightens Export Controls',   topic:'Trade',    author:'X. Liang',     date:'2026-03-20', lang:'EN', excerpt:'New licensing regime targets gallium and germanium, critical for semiconductor supply chains.' },
-  { id:8, source:'Stratford Post',     title:'NATO Eastern Flank: Baltic States Request Permanent Bases', topic:'Defence', author:'K. Kowalski',  date:'2026-03-25', lang:'EN', excerpt:'Poland and Lithuania push for permanent Allied presence beyond current rotational model.' },
-  { id:9, source:'Stratford Post',     title:'African Union Debt Relief Initiative Stalls in Brussels',  topic:'Diplomacy',author:'A. Diallo',   date:'2026-03-24', lang:'EN', excerpt:'EU creditors and AU negotiators fail to agree on restructuring terms for sovereign debt.' },
-  { id:10,source:'Stratford Post',     title:'Arctic Shipping Routes: Russia Doubles Icebreaker Fleet',  topic:'Energy',   author:'I. Petrov',    date:'2026-03-21', lang:'EN', excerpt:'Moscow accelerates Northern Sea Route infrastructure as summer ice coverage shrinks further.' },
-  { id:11,source:'AsiaPacific Monitor','title':'Taiwan Strait: Weekly Air Incursion Count Reaches High', topic:'Defence',  author:'C. Chen',      date:'2026-03-26', lang:'EN', excerpt:'PLA Air Force conducted 42 sorties in ADIZ over seven-day period, ROCAF confirms.' },
-  { id:12,source:'AsiaPacific Monitor','title':'ASEAN Summit: South China Sea Code of Conduct Delayed',  topic:'Diplomacy',author:'P. Nguyen',  date:'2026-03-23', lang:'EN', excerpt:'Members fail to agree on binding enforcement mechanisms, pushing resolution to 2027.' },
-  { id:13,source:'AsiaPacific Monitor','title':'Japan Green Hydrogen: $50bn Investment Plan Unveiled',   topic:'Climate',  author:'H. Tanaka',    date:'2026-03-19', lang:'EN', excerpt:'Tokyo commits to domestic production capacity targeting 3 million tonnes annually by 2030.' },
-  { id:14,source:'Global Watch',       title:'Sanctions Architecture: US Treasury Targets Iranian Proxies', topic:'Trade', author:'R. Cardenas',  date:'2026-02-28', lang:'EN', excerpt:'Treasury OFAC designates 14 entities linked to funding networks across Lebanon and Iraq.' },
-  { id:15,source:'Meridian Brief',     title:'IMF Special Drawing Rights: Reform Proposal Gains Traction', topic:'Trade', author:'F. Brandt',    date:'2026-02-15', lang:'EN', excerpt:'G20 bloc supports basket reweighting to increase yuan share from current 10.9 percent.' },
-];
-
-let currentTopicFilter = '';
-let currentViewMode = 'list';
-
-function topicClass(topic) {
-  return 'tag-' + topic.toLowerCase();
-}
-
-function filterArticles(val) {
-  renderArticles();
-}
-
-function toggleTopic(el, topic) {
-  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentTopicFilter = topic;
-  renderArticles();
-}
-
-function setArticleView(mode) {
-  currentViewMode = mode;
-  document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none';
-  document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none';
-  document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
-  document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree');
-  renderArticles();
-}
-
-function getFilteredArticles() {
-  const q = (document.getElementById('art-search')?.value || '').toLowerCase();
-  const src = document.getElementById('art-src-filter')?.value || '';
-  const topic = document.getElementById('art-topic-filter')?.value || '';
-  const activeTopic = currentTopicFilter;
-  return FAKE_ARTICLES.filter(a => {
-    if (src && a.source !== src) return false;
-    if (topic && a.topic !== topic) return false;
-    if (activeTopic && a.topic !== activeTopic) return false;
-    if (q && !a.title.toLowerCase().includes(q) && !a.excerpt.toLowerCase().includes(q)) return false;
-    return true;
-  });
-}
-
-function renderArticles() {
-  if (currentViewMode === 'list') renderListView();
-  else renderTreeView();
-}
-
-function renderListView() {
-  const articles = getFilteredArticles();
-  const container = document.getElementById('articles-list');
-  if (!articles.length) {
-    container.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><div>No articles match your filters.</div></div>';
-    return;
-  }
-  container.innerHTML = articles.map(a => `
-    <div class="article-card">
-      <div class="art-topics">
-        <span class="art-topic-tag ${topicClass(a.topic)}">${a.topic}</span>
-      </div>
-      <div class="art-meta">
-        <span class="art-source">${a.source}</span>
-        <span class="art-lang">${a.lang}</span>
-        <span class="art-author">${a.author}</span>
-        <span class="art-date">${a.date}</span>
-      </div>
-      <div class="art-title">${a.title}</div>
-      <div class="art-excerpt">${a.excerpt}</div>
-    </div>
-  `).join('');
-}
-
-function renderTreeView() {
-  // Replaced by renderRealTreeView in L2
-  renderRealTreeView();
-}
-function toggleTree(id) {
-  const el = document.getElementById(id);
-  const chev = document.getElementById('chev-' + id);
-  if (!el) return;
-  el.classList.toggle('open');
-  if (chev) chev.classList.toggle('open');
-}
-
-// TOAST
+// ═══ TOAST ═══════════════════════════════════════════════════════
 function showToast(msg, type) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast ' + (type||'');
   void t.offsetWidth; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(function(){t.classList.remove('show');}, 3000);
 }
-// ═══ L1: CONFIG + SOURCES CRUD ═══════════════════════════════════
+
+// ═══ CONFIG ══════════════════════════════════════════════════════
 var CFG = {};
 try { CFG = JSON.parse(localStorage.getItem('gi_cfg') || '{}'); } catch(e) {}
-var SOURCES = [];
 
 function loadCFGtoForm() {
   try { CFG = JSON.parse(localStorage.getItem('gi_cfg') || '{}'); } catch(e) {}
-  var set = function(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; };
+  function set(id, v) { var el = document.getElementById(id); if (el) el.value = v || ''; }
   set('cfg-sb-url', CFG.sbUrl);
   set('cfg-sb-key', CFG.sbKey);
   set('cfg-ant-key', CFG.antKey);
   set('cfg-freq', CFG.freq || '0:04:00');
-  set('cfg-max-art', CFG.maxArt || 50);
+}
+
+// FIX 2: read frequency from config and display in dashboard
+function updateFrequencyDisplay() {
+  var freq = document.getElementById('cfg-freq') ? document.getElementById('cfg-freq').value : (CFG.freq || '0:04:00');
+  var el = document.getElementById('sched-frequency');
+  if (el) el.textContent = freq || '--';
 }
 
 function saveCFG() {
-  var get = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  function get(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
   CFG.sbUrl = get('cfg-sb-url').replace(/\/$/, '');
   CFG.sbKey = get('cfg-sb-key');
   CFG.antKey = get('cfg-ant-key');
   CFG.freq = get('cfg-freq') || '0:04:00';
-  CFG.maxArt = parseInt(get('cfg-max-art')) || 50;
   localStorage.setItem('gi_cfg', JSON.stringify(CFG));
   showToast('Configuration saved.', 'green');
+  updateFrequencyDisplay();
   if (CFG.sbUrl && CFG.sbKey) loadSources();
 }
 
@@ -844,18 +747,21 @@ function changePwd() {
   var p2 = document.getElementById('cfg-confirm-pwd') ? document.getElementById('cfg-confirm-pwd').value : '';
   if (!p1) { showToast('Enter a password.', 'red'); return; }
   if (p1 !== p2) { showToast('Passwords do not match.', 'red'); return; }
-  var h = hashStr(p1);
-  pwdHash = h;
-  localStorage.setItem('gi_pwd', h);
-  if (document.getElementById('cfg-new-pwd')) document.getElementById('cfg-new-pwd').value = '';
-  if (document.getElementById('cfg-confirm-pwd')) document.getElementById('cfg-confirm-pwd').value = '';
-  showToast('Password changed.', 'green');
+  hashStr(p1).then(function(h) {
+    pwdHash = h;
+    localStorage.setItem('gi_pwd', h);
+    if (document.getElementById('cfg-new-pwd')) document.getElementById('cfg-new-pwd').value = '';
+    if (document.getElementById('cfg-confirm-pwd')) document.getElementById('cfg-confirm-pwd').value = '';
+    showToast('Password changed.', 'green');
+  });
 }
 
+// ═══ SUPABASE FETCH ══════════════════════════════════════════════
 async function sbFetch(path, method, body) {
   method = method || 'GET';
   if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return { ok: false, noConn: true }; }
-  var headers = { 'apikey': CFG.sbKey, 'Authorization': 'Bearer ' + CFG.sbKey, 'Content-Type': 'application/json', 'Prefer': method === 'POST' ? 'return=representation' : '' };
+  var headers = { 'apikey': CFG.sbKey, 'Authorization': 'Bearer ' + CFG.sbKey, 'Content-Type': 'application/json' };
+  if (method === 'POST') headers['Prefer'] = 'return=representation';
   var opts = { method: method, headers: headers };
   if (body) opts.body = JSON.stringify(body);
   try {
@@ -867,16 +773,22 @@ async function sbFetch(path, method, body) {
   } catch(e) { showToast('Connection error', 'red'); return { ok: false }; }
 }
 
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══ SOURCES ═════════════════════════════════════════════════════
+var SOURCES = [];
+var srcSelectMode = false;
+var selectedSrcIds = [];
+
 async function loadSources() {
   var res = await sbFetch('geo_sources?order=name.asc');
   if (!res.ok || !res.data) return;
   SOURCES = res.data;
   renderSources(SOURCES);
-}
-
-function esc(str) {
-  if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  updateFrequencyDisplay();
 }
 
 function renderSources(list) {
@@ -889,8 +801,14 @@ function renderSources(list) {
   var html = '';
   list.forEach(function(s) {
     var on = s.active === true;
-    var sid = JSON.stringify(String(s.id));
+    var isChecked = selectedSrcIds.indexOf(String(s.id)) !== -1;
     html += '<div class="table-row">';
+    // FIX 3: checkbox column
+    html += '<div>';
+    if (srcSelectMode) {
+      html += '<div class="src-checkbox ' + (isChecked ? 'checked' : '') + '" onclick="toggleSrcSelect(\'' + esc(String(s.id)) + '\')" style="margin:auto">' + (isChecked ? '<span style="color:var(--accent);font-size:12px">&#10003;</span>' : '') + '</div>';
+    }
+    html += '</div>';
     html += '<div><div style="color:var(--text);font-size:12px;font-weight:500">' + esc(s.name) + '</div>';
     html += '<div style="color:var(--text3);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">' + esc(s.url) + '</div></div>';
     html += '<div style="color:var(--text3);font-size:11px">' + (s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '&mdash;') + '</div>';
@@ -900,11 +818,12 @@ function renderSources(list) {
     var fLabel = fStatus === 'ok' ? 'OK' : fStatus === 'configured' ? 'Ready' : fStatus === 'error' ? 'Error' : 'Pending';
     html += '<div style="display:flex;align-items:center;gap:8px">';
     html += '<span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:' + fColor + '">' + fLabel + '</span>';
-    html += '<button class="btn-edit" data-id="' + esc(String(s.id)) + '" onclick="openEditSrc(this.dataset.id)">Edit</button>';
-    html += '<button class="btn-del" data-id="' + esc(String(s.id)) + '" onclick="delSrc(this.dataset.id)">Del</button>';
+    html += '<button class="btn-edit" onclick="openEditSrc(\'' + esc(String(s.id)) + '\')">Edit</button>';
+    html += '<button class="btn-del" onclick="delSrc(\'' + esc(String(s.id)) + '\')">Del</button>';
     html += '</div></div>';
   });
   el.innerHTML = html;
+
   // Populate source filter in Articles
   var artSrcFilter = document.getElementById('art-src-filter');
   if (artSrcFilter) {
@@ -921,6 +840,56 @@ function filterSrcUI(q) {
   }));
 }
 
+// FIX 3: source select mode
+function toggleSrcSelectMode() {
+  srcSelectMode = !srcSelectMode;
+  selectedSrcIds = [];
+  var bar = document.getElementById('src-select-bar');
+  var btn = document.getElementById('btn-src-select');
+  if (bar) bar.classList.toggle('visible', srcSelectMode);
+  if (btn) btn.textContent = srcSelectMode ? 'Cancel' : '☐ Select';
+  renderSources(SOURCES);
+}
+
+function toggleSrcSelect(id) {
+  var idx = selectedSrcIds.indexOf(id);
+  if (idx === -1) selectedSrcIds.push(id);
+  else selectedSrcIds.splice(idx, 1);
+  var el = document.getElementById('src-select-count');
+  if (el) el.textContent = selectedSrcIds.length + ' selected';
+  renderSources(SOURCES);
+}
+
+function selectAllSources() {
+  selectedSrcIds = SOURCES.map(function(s){ return String(s.id); });
+  var el = document.getElementById('src-select-count');
+  if (el) el.textContent = selectedSrcIds.length + ' selected';
+  renderSources(SOURCES);
+}
+
+function deselectAllSources() {
+  selectedSrcIds = [];
+  var el = document.getElementById('src-select-count');
+  if (el) el.textContent = '0 selected';
+  renderSources(SOURCES);
+}
+
+async function deleteSelectedSources() {
+  if (!selectedSrcIds.length) { showToast('No sources selected.', 'amber'); return; }
+  if (!confirm('Delete ' + selectedSrcIds.length + ' source(s)?')) return;
+  for (var i = 0; i < selectedSrcIds.length; i++) {
+    await sbFetch('geo_sources?id=eq.' + selectedSrcIds[i], 'DELETE');
+  }
+  selectedSrcIds = [];
+  srcSelectMode = false;
+  var bar = document.getElementById('src-select-bar');
+  var btn = document.getElementById('btn-src-select');
+  if (bar) bar.classList.remove('visible');
+  if (btn) btn.textContent = '☐ Select';
+  showToast('Sources deleted.', 'amber');
+  await loadSources();
+}
+
 async function toggleSrc(btn) {
   var id = btn.dataset.id;
   var newActive = btn.dataset.active !== 'true';
@@ -933,7 +902,7 @@ async function toggleSrc(btn) {
     btn.classList.toggle('on', !newActive);
     btn.dataset.active = String(!newActive);
   } else {
-    var s = SOURCES.find(function(x) { return String(x.id) === String(id); });
+    var s = SOURCES.find(function(x){ return String(x.id) === String(id); });
     if (s) s.active = newActive;
   }
 }
@@ -949,7 +918,7 @@ function openAddSrc() {
 }
 
 function openEditSrc(id) {
-  var s = SOURCES.find(function(x) { return String(x.id) === String(id); });
+  var s = SOURCES.find(function(x){ return String(x.id) === String(id); });
   if (!s) return;
   document.getElementById('modal-src-title').textContent = 'Edit Source';
   document.getElementById('modal-src-id').value = id;
@@ -973,11 +942,8 @@ async function saveSrc() {
   var fetcherStatus = fetcherId ? 'configured' : 'pending';
   var data = { name: name, url: url, fetcher_config: fetcherConfig, fetcher_status: fetcherStatus };
   var saveRes;
-  if (id) {
-    saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data);
-  } else {
-    saveRes = await sbFetch('geo_sources', 'POST', Object.assign({ active: true }, data));
-  }
+  if (id) { saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data); }
+  else { saveRes = await sbFetch('geo_sources', 'POST', Object.assign({ active: true }, data)); }
   if (!saveRes.ok) { err.textContent = 'Failed to save. Check connection.'; return; }
   closeModal('modal-source');
   showToast(id ? 'Source updated.' : 'Source added.', 'green');
@@ -988,56 +954,62 @@ async function delSrc(id) {
   if (!confirm('Delete this source?')) return;
   var delRes = await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
   if (!delRes.ok) { showToast('Delete failed.', 'red'); return; }
-  SOURCES = SOURCES.filter(function(x) { return String(x.id) !== String(id); });
+  SOURCES = SOURCES.filter(function(x){ return String(x.id) !== String(id); });
   renderSources(SOURCES);
   showToast('Source deleted.', 'amber');
 }
 
-
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// L1 init: called after login via showApp override
-var _origShowApp = showApp;
-showApp = function() {
-  _origShowApp();
-  loadCFGtoForm();
-  if (CFG.sbUrl && CFG.sbKey) {
-    loadSources();
-  }
-};
-// ═══ L2: ARTICLES FROM SUPABASE ═══════════════════════════════════
-
+// ═══ ARTICLES ════════════════════════════════════════════════════
 var ARTICLES = [];
 var articlePage = 0;
 var articlePageSize = 50;
-var articleTotal = 0;
+var currentTopicFilter = '';
+var currentViewMode = 'list';
+var selectedArticleIds = [];
+var selectModeActive = false;
 
 async function loadArticles() {
   var srcFilter = document.getElementById('art-src-filter') ? document.getElementById('art-src-filter').value : '';
-  var topicFilter = document.getElementById('art-topic-filter') ? document.getElementById('art-topic-filter').value : '';
   var q = document.getElementById('art-search') ? document.getElementById('art-search').value.trim() : '';
-
   var path = 'geo_articles?order=published_at.desc&limit=' + articlePageSize + '&offset=' + (articlePage * articlePageSize);
   if (srcFilter) path += '&source_id=eq.' + srcFilter;
-  if (topicFilter) path += '&topic=eq.' + topicFilter;
+  if (currentTopicFilter) path += '&topic=eq.' + currentTopicFilter;
   if (q) path += '&title=ilike.*' + encodeURIComponent(q) + '*';
-
   var el = document.getElementById('articles-list');
-  if (el) el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">Loading\u2026</div>';
-
+  if (el) el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">Loading&hellip;</div>';
   var res = await sbFetch(path);
   if (!res.ok || !res.data) return;
   ARTICLES = res.data;
-  renderRealArticles();
+  renderArticles();
 }
 
-function renderRealArticles() {
-  if (currentViewMode === 'list') renderRealListView();
-  else renderRealTreeView();
+function filterArticles() { articlePage = 0; loadArticles(); }
+
+function toggleTopic(el, topic) {
+  document.querySelectorAll('.topic-chip').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  currentTopicFilter = topic;
+  filterArticles();
 }
 
-function renderRealListView() {
+function setArticleView(mode) {
+  currentViewMode = mode;
+  document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none';
+  document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none';
+  document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
+  document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree');
+  renderArticles();
+}
+
+function renderArticles() {
+  if (currentViewMode === 'list') renderListView();
+  else renderTreeView();
+}
+
+function renderListView() {
   var container = document.getElementById('articles-list');
   if (!container) return;
   if (!ARTICLES.length) {
@@ -1046,7 +1018,7 @@ function renderRealListView() {
   }
   var html = '';
   ARTICLES.forEach(function(a) {
-    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+    var src = SOURCES.find(function(s){ return String(s.id) === String(a.source_id); });
     var srcName = src ? src.name : 'Unknown';
     var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '\u2014';
     var topic = a.topic || '';
@@ -1054,7 +1026,7 @@ function renderRealListView() {
     var aid = esc(String(a.id));
     html += '<div class="article-card' + (isSelected ? ' selected' : '') + '" data-id="' + aid + '" onclick="' + (selectModeActive ? 'toggleArticleSelect(\'' + aid + '\')' : 'openArticle(\'' + aid + '\')') + '" style="display:flex;gap:12px;align-items:flex-start">';
     if (selectModeActive) {
-      html += '<span style="font-size:18px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;margin-top:2px;pointer-events:none">' + (isSelected ? '\u25CF' : '\u25CB') + '</span>';
+      html += '<span style="font-size:18px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;margin-top:2px;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
     }
     html += '<div style="flex:1"><div class="art-meta">';
     html += '<span class="art-source">' + esc(srcName) + '</span>';
@@ -1065,48 +1037,71 @@ function renderRealListView() {
   });
   container.innerHTML = html;
 }
-function renderRealTreeView() {
+
+// FIX 5: Tree view with select on Source and Year
+function renderTreeView() {
   var container = document.getElementById('articles-tree');
   if (!container) return;
   var tree = {};
   ARTICLES.forEach(function(a) {
-    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+    var src = SOURCES.find(function(s){ return String(s.id) === String(a.source_id); });
     var srcName = src ? src.name : 'Unknown';
+    var srcId = String(a.source_id);
     var d = a.published_at ? new Date(a.published_at) : new Date();
     var yr = d.getFullYear();
     var mo = d.toLocaleString('en', { month: 'long' });
-    if (!tree[srcName]) tree[srcName] = {};
-    if (!tree[srcName][yr]) tree[srcName][yr] = {};
-    if (!tree[srcName][yr][mo]) tree[srcName][yr][mo] = [];
-    tree[srcName][yr][mo].push(a);
+    if (!tree[srcId]) tree[srcId] = { name: srcName, years: {} };
+    if (!tree[srcId].years[yr]) tree[srcId].years[yr] = {};
+    if (!tree[srcId].years[yr][mo]) tree[srcId].years[yr][mo] = [];
+    tree[srcId].years[yr][mo].push(a);
   });
+
   var html = '';
-  Object.keys(tree).forEach(function(src, si) {
+  Object.keys(tree).forEach(function(srcId, si) {
+    var srcNode = tree[srcId];
     var srcCount = 0;
-    Object.keys(tree[src]).forEach(function(yr) {
-      Object.keys(tree[src][yr]).forEach(function(mo) { srcCount += tree[src][yr][mo].length; });
-    });
+    Object.keys(srcNode.years).forEach(function(yr){ Object.keys(srcNode.years[yr]).forEach(function(mo){ srcCount += srcNode.years[yr][mo].length; }); });
+    var allSrcIds = [];
+    Object.keys(srcNode.years).forEach(function(yr){ Object.keys(srcNode.years[yr]).forEach(function(mo){ srcNode.years[yr][mo].forEach(function(a){ allSrcIds.push(String(a.id)); }); }); });
     var sid = 'rts' + si;
+    var srcAllSelected = selectModeActive && allSrcIds.length > 0 && allSrcIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+
     html += '<div class="tree-source">';
-    html += '<div class="tree-source-hdr" onclick="toggleTree(\'' + sid + '\')">';
-    html += '<span class="tree-chevron" id="chev-' + sid + '">\u25B6</span>';
-    html += '<span class="tree-source-name">' + esc(src) + '</span>';
+    html += '<div class="tree-source-hdr" style="display:flex;align-items:center;gap:10px">';
+    if (selectModeActive) {
+      // FIX 5: select circle on Source
+      var srcIdsJson = JSON.stringify(allSrcIds);
+      html += '<span onclick="toggleGroupSelect(' + srcIdsJson + ')" style="font-size:16px;color:' + (srcAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (srcAllSelected ? '&#9679;' : '&#9675;') + '</span>';
+    }
+    html += '<span class="tree-chevron" id="chev-' + sid + '" onclick="toggleTree(\'' + sid + '\')">&#9654;</span>';
+    html += '<span class="tree-source-name" onclick="toggleTree(\'' + sid + '\')" style="flex:1">' + esc(srcNode.name) + '</span>';
     html += '<span class="tree-count">' + srcCount + ' articles</span></div>';
     html += '<div class="tree-body" id="' + sid + '">';
-    Object.keys(tree[src]).sort(function(a,b){return b-a;}).forEach(function(yr, yi) {
+
+    Object.keys(srcNode.years).sort(function(a,b){return b-a;}).forEach(function(yr, yi) {
       var yrCount = 0;
-      Object.keys(tree[src][yr]).forEach(function(mo) { yrCount += tree[src][yr][mo].length; });
+      var allYrIds = [];
+      Object.keys(srcNode.years[yr]).forEach(function(mo){ srcNode.years[yr][mo].forEach(function(a){ yrCount++; allYrIds.push(String(a.id)); }); });
       var yid = 'rty' + si + 'x' + yi;
+      var yrAllSelected = selectModeActive && allYrIds.length > 0 && allYrIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+
       html += '<div class="tree-year">';
-      html += '<div class="tree-year-hdr" onclick="toggleTree(\'' + yid + '\')">';
-      html += '<span class="tree-chevron" id="chev-' + yid + '">\u25B6</span>';
-      html += '<span style="flex:1">' + yr + '</span><span class="tree-count">' + yrCount + '</span></div>';
-      Object.keys(tree[src][yr]).forEach(function(mo, mi) {
-        var moArr = tree[src][yr][mo];
+      html += '<div class="tree-year-hdr" style="display:flex;align-items:center;gap:8px">';
+      if (selectModeActive) {
+        // FIX 5: select circle on Year
+        var yrIdsJson = JSON.stringify(allYrIds);
+        html += '<span onclick="toggleGroupSelect(' + yrIdsJson + ')" style="font-size:14px;color:' + (yrAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (yrAllSelected ? '&#9679;' : '&#9675;') + '</span>';
+      }
+      html += '<span class="tree-chevron" id="chev-' + yid + '" onclick="toggleTree(\'' + yid + '\')">&#9654;</span>';
+      html += '<span onclick="toggleTree(\'' + yid + '\')" style="flex:1">' + yr + '</span>';
+      html += '<span class="tree-count">' + yrCount + '</span></div>';
+
+      Object.keys(srcNode.years[yr]).forEach(function(mo, mi) {
+        var moArr = srcNode.years[yr][mo];
         var mid = 'rtm' + si + 'x' + yi + 'x' + mi;
         html += '<div class="tree-month">';
         html += '<div class="tree-month-hdr" onclick="toggleTree(\'' + mid + '\')">';
-        html += '<span class="tree-chevron" id="chev-' + mid + '">\u25B6</span>';
+        html += '<span class="tree-chevron" id="chev-' + mid + '">&#9654;</span>';
         html += '<span style="flex:1">' + mo + '</span><span class="tree-count">' + moArr.length + '</span></div>';
         html += '<div class="tree-articles" id="' + mid + '">';
         moArr.forEach(function(a) {
@@ -1114,7 +1109,7 @@ function renderRealTreeView() {
           var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
           html += '<div class="tree-article' + (isSelected ? ' selected' : '') + '" data-id="' + aid + '" style="display:flex;align-items:center;gap:10px" onclick="' + (selectModeActive ? 'toggleArticleSelect(\'' + aid + '\')' : 'openArticle(\'' + aid + '\')') + '">';
           if (selectModeActive) {
-            html += '<span class="sel-circle" style="font-size:16px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none">' + (isSelected ? '\u25CF' : '\u25CB') + '</span>';
+            html += '<span class="sel-circle" style="font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
           }
           html += '<div style="flex:1">';
           html += '<div class="tree-article-title">' + esc(a.title) + '</div>';
@@ -1131,17 +1126,36 @@ function renderRealTreeView() {
   });
   container.innerHTML = html;
 }
+
+// FIX 5: toggle group (source or year)
+function toggleGroupSelect(ids) {
+  var allSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+  if (allSelected) {
+    ids.forEach(function(id){ var idx = selectedArticleIds.indexOf(id); if (idx !== -1) selectedArticleIds.splice(idx,1); });
+  } else {
+    ids.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
+  }
+  updateSelectBar();
+  renderTreeView();
+}
+
+function toggleTree(id) {
+  var el = document.getElementById(id);
+  var chev = document.getElementById('chev-' + id);
+  if (!el) return;
+  el.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
 function openArticle(id) {
-  var a = ARTICLES.find(function(x) { return String(x.id) === String(id); });
+  var a = ARTICLES.find(function(x){ return String(x.id) === String(id); });
   if (!a) return;
-  var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+  var src = SOURCES.find(function(s){ return String(s.id) === String(a.source_id); });
   var srcName = src ? src.name : 'Unknown';
   var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '--';
-  var detail = document.getElementById('view-article-detail');
+  var detail = document.getElementById('article-detail-content');
   if (!detail) return;
   detail.innerHTML =
-    '<button class="btn-outline" style="width:fit-content" onclick="showView(\'articles\', document.querySelector(\'nav button:nth-child(3)\'))">&#8592; Back</button>' +
-    '<div class="detail-wrap">' +
     '<div class="detail-meta"><span class="art-source">' + esc(srcName) + '</span>' +
     (a.topic ? '<span class="art-topic-tag tag-' + a.topic.toLowerCase() + '">' + esc(a.topic) + '</span>' : '') +
     '<span class="art-date">' + date + '</span></div>' +
@@ -1149,28 +1163,9 @@ function openArticle(id) {
     (a.author ? '<div style="color:var(--text3);font-size:11px;margin-bottom:16px">Author: ' + esc(a.author) + '</div>' : '') +
     (a.url ? '<div style="margin-bottom:16px"><a href="' + esc(a.url) + '" target="_blank" style="color:var(--accent);font-size:12px">Original article &#8599;</a></div>' : '') +
     '<hr class="detail-divider"/>' +
-    '<div class="detail-content">' + esc(a.content_translated || a.content_original || 'No content available.') + '</div>' +
-    '</div>';
+    '<div class="detail-content">' + esc(a.content_translated || a.content_original || 'No content available.') + '</div>';
   showView('article-detail', null);
 }
-
-// Override renderArticles to use real data when available
-var _origRenderArticles = renderArticles;
-renderArticles = function() {
-  if (ARTICLES.length > 0 || document.getElementById('art-search').value) {
-    renderRealArticles();
-  } else {
-    loadArticles();
-  }
-};
-
-// Override filterArticles to reload from DB
-filterArticles = function() { articlePage = 0; loadArticles(); };
-
-// ═══ L2 PATCH: Select/Deselect + Tree fix ════════════════════════
-
-var selectedArticleIds = [];
-var selectModeActive = false;
 
 function toggleSelectMode() {
   selectModeActive = !selectModeActive;
@@ -1180,42 +1175,31 @@ function toggleSelectMode() {
   if (bar) bar.classList.toggle('visible', selectModeActive);
   if (btn) btn.textContent = selectModeActive ? 'Cancel' : '☐ Select';
   updateSelectBar();
-  if (currentViewMode === 'list') {
-    renderRealListView();
-  } else {
-    // Tree: inject or remove circles without re-rendering
-    refreshTreeSelectUI();
-  }
+  renderArticles();
 }
 
 function toggleArticleSelect(id) {
   var idx = selectedArticleIds.indexOf(id);
-  if (idx === -1) { selectedArticleIds.push(id); }
-  else { selectedArticleIds.splice(idx, 1); }
+  if (idx === -1) selectedArticleIds.push(id);
+  else selectedArticleIds.splice(idx, 1);
   updateSelectBar();
-  var isNowSelected = selectedArticleIds.indexOf(id) !== -1;
-  if (currentViewMode === 'list') {
-    renderRealListView();
-  } else {
-    // Find element by iterating all tree-article divs
-    var els = document.querySelectorAll('.tree-article');
-    for (var i = 0; i < els.length; i++) {
-      if (els[i].getAttribute('data-id') === id) {
-        els[i].style.background = isNowSelected ? 'rgba(0,212,255,0.1)' : '';
-        var circle = els[i].querySelector('.sel-circle');
-        if (circle) {
-          circle.style.color = isNowSelected ? '#00d4ff' : '#3d5a73';
-          circle.textContent = isNowSelected ? '●' : '○';
-        }
-        break;
-      }
-    }
-  }
+  renderArticles();
 }
 
 function updateSelectBar() {
   var countEl = document.getElementById('select-count');
   if (countEl) countEl.textContent = selectedArticleIds.length + ' selected';
+}
+
+function selectAllArticles() {
+  selectedArticleIds = ARTICLES.map(function(a){ return String(a.id); });
+  updateSelectBar();
+  renderArticles();
+}
+function deselectAllArticles() {
+  selectedArticleIds = [];
+  updateSelectBar();
+  renderArticles();
 }
 
 async function deleteSelectedArticles() {
@@ -1229,52 +1213,7 @@ async function deleteSelectedArticles() {
   await loadArticles();
 }
 
-function selectAllArticles() {
-  selectedArticleIds = ARTICLES.map(function(a) { return String(a.id); });
-  updateSelectBar();
-  if (currentViewMode === 'list') {
-    renderRealListView();
-  } else {
-    refreshTreeSelectUI();
-  }
-}
-function deselectAllArticles() {
-  selectedArticleIds = [];
-  updateSelectBar();
-  if (currentViewMode === 'list') {
-    renderRealListView();
-  } else {
-    refreshTreeSelectUI();
-  }
-}
-function refreshTreeSelectUI() {
-  var els = document.querySelectorAll('.tree-article');
-  for (var i = 0; i < els.length; i++) {
-    var el = els[i];
-    var aid = el.getAttribute('data-id');
-    var isSelected = selectedArticleIds.indexOf(aid) !== -1;
-    // Update background
-    el.style.background = (selectModeActive && isSelected) ? 'rgba(0,212,255,0.1)' : '';
-    // Update onclick
-    el.setAttribute('onclick', selectModeActive ? 'toggleArticleSelect(this.getAttribute(\'data-id\'))' : 'openArticle(this.getAttribute(\'data-id\'))');
-    // Add or remove circle
-    var existingCircle = el.querySelector('.sel-circle');
-    if (selectModeActive) {
-      if (!existingCircle) {
-        var span = document.createElement('span');
-        span.className = 'sel-circle';
-        span.style.cssText = 'font-size:16px;line-height:1;flex-shrink:0;pointer-events:none;';
-        el.insertBefore(span, el.firstChild);
-      }
-      var circle = el.querySelector('.sel-circle');
-      circle.style.color = isSelected ? '#00d4ff' : '#3d5a73';
-      circle.textContent = isSelected ? '●' : '○';
-    } else {
-      if (existingCircle) existingCircle.remove();
-    }
-  }
-}
-// ═══ DASHBOARD STATS ════════════════════════════════════════════
+// ═══ DASHBOARD ═══════════════════════════════════════════════════
 var lastRunData = null;
 
 async function loadDashboardStats() {
@@ -1326,7 +1265,7 @@ function openRunDetail() {
   var title = document.getElementById('modal-run-title');
   if (!body) return;
   var isFull = lastRunData.sources_scraped >= lastRunData.sources_total;
-  if (title) title.textContent = (isFull ? 'Full' : 'Partial') + ' Run -- ' + new Date(lastRunData.started_at).toLocaleString();
+  if (title) title.textContent = (isFull ? 'Full' : 'Partial') + ' Run - ' + new Date(lastRunData.started_at).toLocaleString();
   var detail = lastRunData.run_detail;
   var html = '<div style="display:flex;flex-direction:column;gap:0">';
   html += '<div style="display:grid;grid-template-columns:1fr auto;padding:8px 0;border-bottom:1px solid var(--border)">';
@@ -1349,55 +1288,31 @@ function openRunDetail() {
   openModal('modal-run-detail');
 }
 
-var _origShowAppDash = showApp;
-showApp = function() {
-  _origShowAppDash();
-  loadDashboardStats();
-};
-
-// ═══ DASHBOARD AUTO-REFRESH ══════════════════════════════════════
-var dashRefreshTimer = null;
-
 function refreshDashboard() {
   loadDashboardStats();
-  // Update sources count from current SOURCES array
   var el = document.getElementById('stat-active-sources');
-  if (el && SOURCES.length > 0) {
-    el.textContent = SOURCES.filter(function(s) { return s.active === true; }).length;
-  }
-  // Update timestamp
+  if (el && SOURCES.length > 0) el.textContent = SOURCES.filter(function(s){ return s.active === true; }).length;
   var ts = document.getElementById('dash-refresh-ts');
   if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
+  updateFrequencyDisplay();
 }
 
+var dashRefreshTimer = null;
 function startDashAutoRefresh() {
   if (dashRefreshTimer) clearInterval(dashRefreshTimer);
   dashRefreshTimer = setInterval(function() {
     var dashView = document.getElementById('view-dashboard');
-    if (dashView && dashView.classList.contains('active')) {
-      refreshDashboard();
-    }
+    if (dashView && dashView.classList.contains('active')) refreshDashboard();
   }, 60000);
 }
 
-var _origShowAppRefresh = showApp;
-showApp = function() {
-  _origShowAppRefresh();
-  startDashAutoRefresh();
-};
-
-// ═══ RUN NOW ════════════════════════════════════════════════════
+// ═══ RUN NOW ═════════════════════════════════════════════════════
 var isRunning = false;
 
 async function runScrape() {
   if (isRunning) { showToast('Already running.', 'amber'); return; }
-  var activeSources = SOURCES.filter(function(s) {
-    return s.active === true && s.fetcher_config && s.fetcher_config.fetcher_id;
-  });
-  if (!activeSources.length) {
-    showToast('No active sources with fetcher configured.', 'amber');
-    return;
-  }
+  var activeSources = SOURCES.filter(function(s){ return s.active === true && s.fetcher_config && s.fetcher_config.fetcher_id; });
+  if (!activeSources.length) { showToast('No active sources with fetcher configured.', 'amber'); return; }
   isRunning = true;
   setRunningUI(true);
   logRun('Starting run for ' + activeSources.length + ' source(s)...', 'info');
@@ -1420,37 +1335,25 @@ async function runScrape() {
           body: JSON.stringify({ source_id: src.id, max_articles: 20 })
         });
         var data = await res.json();
-        if (!res.ok) {
-          logRun(src.name + ': server error -- ' + (data.error || res.status), 'err');
-          break;
-        }
+        if (!res.ok) { logRun(src.name + ': server error - ' + (data.error || res.status), 'err'); break; }
         consecutiveTimeouts = 0;
         var fetched = data.fetched || 0;
         sourceSaved += fetched;
-        logRun(src.name + ': batch ' + batch + ' → ' + fetched + ' new (' + sourceSaved + ' total so far)', fetched > 0 ? 'ok' : 'info');
+        logRun(src.name + ': batch ' + batch + ' -> ' + fetched + ' new (' + sourceSaved + ' total so far)', fetched > 0 ? 'ok' : 'info');
         refreshDashboard();
-        if (fetched === 0) {
-          logRun(src.name + ': no more new articles.', 'info');
-          break;
-        }
-        if (batch >= 100) { logRun(src.name + ': safety cap reached.', 'warn'); break; }
+        if (fetched === 0) { logRun(src.name + ': no more new articles.', 'info'); break; }
+        if (batch >= 200) { logRun(src.name + ': safety cap reached.', 'warn'); break; }
       } catch(e) {
         consecutiveTimeouts++;
-        // Load failed = Safari closed connection, but Edge is still running in background
-        // Wait and retry -- the next batch will skip already-saved articles
         if (consecutiveTimeouts <= 5) {
-          logRun(src.name + ': batch ' + batch + ' running in background, waiting 8s before next batch...', 'warn');
-          await new Promise(r => setTimeout(r, 8000));
+          logRun(src.name + ': batch ' + batch + ' running in background, waiting 8s...', 'warn');
+          await new Promise(function(r){ setTimeout(r, 8000); });
           refreshDashboard();
-        } else {
-          logRun(src.name + ': too many timeouts, stopping.', 'err');
-          break;
-        }
+        } else { logRun(src.name + ': too many timeouts, stopping.', 'err'); break; }
       }
     }
-
     grandTotal += sourceSaved;
-    logRun(src.name + ': completed -- ' + sourceSaved + ' articles saved.', sourceSaved > 0 ? 'ok' : 'info');
+    logRun(src.name + ': done - ' + sourceSaved + ' articles.', sourceSaved > 0 ? 'ok' : 'info');
     refreshDashboard();
   }
 
@@ -1461,16 +1364,24 @@ async function runScrape() {
 }
 
 function setRunningUI(running) {
-  var dot = document.getElementById('status-dot');
-  var statusTxt = document.getElementById('status-txt');
+  var badge = document.getElementById('status-badge');
   var btnRun = document.getElementById('btn-run-dash');
-  if (dot) { dot.style.background = running ? 'var(--amber)' : 'var(--text3)'; }
-  if (statusTxt) statusTxt.textContent = running ? 'Running...' : 'IDLE';
-  if (btnRun) {
-    btnRun.textContent = running ? '■  STOP' : '▶  RUN NOW';
-    btnRun.style.borderColor = running ? 'var(--red)' : 'var(--accent)';
-    btnRun.style.color = running ? 'var(--red)' : 'var(--accent)';
+  // FIX 1: STOP label
+  if (badge) {
+    badge.innerHTML = running ? '&#9632; &nbsp;RUNNING...' : '&#9632; &nbsp;STOP';
+    badge.style.color = running ? 'var(--amber)' : 'var(--text3)';
   }
+  if (btnRun) {
+    btnRun.innerHTML = running ? '&#9632; &nbsp;STOP' : '&#9654; &nbsp;RUN NOW';
+    btnRun.style.color = running ? 'var(--red)' : 'var(--accent)';
+    btnRun.onclick = running ? stopScrape : runScrape;
+  }
+}
+
+function stopScrape() {
+  isRunning = false;
+  setRunningUI(false);
+  logRun('Run stopped by user.', 'warn');
 }
 
 function logRun(msg, type) {
@@ -1479,7 +1390,7 @@ function logRun(msg, type) {
   var time = new Date().toLocaleTimeString();
   var div = document.createElement('div');
   div.className = 'log-line';
-  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + msg + '</span>';
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type||'info') + '">' + esc(msg) + '</span>';
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
 }
@@ -1487,14 +1398,8 @@ function logRun(msg, type) {
 function copyLog() {
   var log = document.getElementById('run-log');
   if (!log) return;
-  var text = Array.from(log.querySelectorAll('.log-line')).map(function(l) {
-    return l.textContent.trim();
-  }).join('\n');
-  navigator.clipboard.writeText(text).then(function() {
-    showToast('Log copied.', 'green');
-  }).catch(function() {
-    showToast('Copy failed.', 'red');
-  });
+  var text = Array.from(log.querySelectorAll('.log-line')).map(function(l){ return l.textContent.trim(); }).join('\n');
+  navigator.clipboard.writeText(text).then(function(){ showToast('Log copied.', 'green'); }).catch(function(){ showToast('Copy failed.', 'red'); });
 }
 
 function clearLog() {
