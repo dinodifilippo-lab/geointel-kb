@@ -350,7 +350,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v4.1 &middot; L0</div>
+  <div class="version">v4.2 &middot; L0</div>
 </div>
 
 <!-- APP -->
@@ -511,8 +511,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
 <div class="select-action-bar" id="select-action-bar">
   <span class="select-count" id="select-count">0 selected</span>
   <button class="btn-sm" onclick="selectAllArticles()">All</button>
-  <!-- FIX 4: none -> none (lowercase) -->
-  <button class="btn-sm" onclick="deselectAllArticles()">none</button>
+  <button class="btn-sm" onclick="deselectAllArticles()">NONE</button>
   <button class="btn-outline" onclick="deleteSelectedArticles()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete</button>
 </div>
 
@@ -1038,17 +1037,18 @@ function renderListView() {
   container.innerHTML = html;
 }
 
-// FIX 5: Tree view with select on Source and Year
 function renderTreeView() {
   var container = document.getElementById('articles-tree');
   if (!container) return;
+
+  // Build tree data structure
   var tree = {};
   ARTICLES.forEach(function(a) {
     var src = SOURCES.find(function(s){ return String(s.id) === String(a.source_id); });
     var srcName = src ? src.name : 'Unknown';
     var srcId = String(a.source_id);
     var d = a.published_at ? new Date(a.published_at) : new Date();
-    var yr = d.getFullYear();
+    var yr = String(d.getFullYear());
     var mo = d.toLocaleString('en', { month: 'long' });
     if (!tree[srcId]) tree[srcId] = { name: srcName, years: {} };
     if (!tree[srcId].years[yr]) tree[srcId].years[yr] = {};
@@ -1056,82 +1056,24 @@ function renderTreeView() {
     tree[srcId].years[yr][mo].push(a);
   });
 
-  var html = '';
-  Object.keys(tree).forEach(function(srcId, si) {
-    var srcNode = tree[srcId];
-    var srcCount = 0;
-    Object.keys(srcNode.years).forEach(function(yr){ Object.keys(srcNode.years[yr]).forEach(function(mo){ srcCount += srcNode.years[yr][mo].length; }); });
-    var allSrcIds = [];
-    Object.keys(srcNode.years).forEach(function(yr){ Object.keys(srcNode.years[yr]).forEach(function(mo){ srcNode.years[yr][mo].forEach(function(a){ allSrcIds.push(String(a.id)); }); }); });
-    var sid = 'rts' + si;
-    var srcAllSelected = selectModeActive && allSrcIds.length > 0 && allSrcIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+  // Helper: make toggle chevron + body
+  function makeToggleHdr(cls, extraStyle) {
+    var hdr = document.createElement('div');
+    hdr.className = cls;
+    if (extraStyle) hdr.style.cssText = extraStyle;
+    return hdr;
+  }
 
-    html += '<div class="tree-source">';
-    html += '<div class="tree-source-hdr" style="display:flex;align-items:center;gap:10px">';
-    if (selectModeActive) {
-      // Use data-groupids attribute to avoid JSON quoting issues in onclick
-      html += '<span class="tree-group-sel" data-groupids="' + allSrcIds.join(',') + '" style="font-size:16px;color:' + (srcAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (srcAllSelected ? '&#9679;' : '&#9675;') + '</span>';
-    }
-    html += '<span class="tree-chevron" id="chev-' + sid + '" onclick="toggleTree(\'' + sid + '\')">&#9654;</span>';
-    html += '<span class="tree-source-name" onclick="toggleTree(\'' + sid + '\')" style="flex:1">' + esc(srcNode.name) + '</span>';
-    html += '<span class="tree-count">' + srcCount + ' articles</span></div>';
-    html += '<div class="tree-body" id="' + sid + '">';
-
-    Object.keys(srcNode.years).sort(function(a,b){return b-a;}).forEach(function(yr, yi) {
-      var yrCount = 0;
-      var allYrIds = [];
-      Object.keys(srcNode.years[yr]).forEach(function(mo){ srcNode.years[yr][mo].forEach(function(a){ yrCount++; allYrIds.push(String(a.id)); }); });
-      var yid = 'rty' + si + 'x' + yi;
-      var yrAllSelected = selectModeActive && allYrIds.length > 0 && allYrIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
-
-      html += '<div class="tree-year">';
-      html += '<div class="tree-year-hdr" style="display:flex;align-items:center;gap:8px">';
-      if (selectModeActive) {
-        html += '<span class="tree-group-sel" data-groupids="' + allYrIds.join(',') + '" style="font-size:14px;color:' + (yrAllSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0">' + (yrAllSelected ? '&#9679;' : '&#9675;') + '</span>';
-      }
-      html += '<span class="tree-chevron" id="chev-' + yid + '" onclick="toggleTree(\'' + yid + '\')">&#9654;</span>';
-      html += '<span onclick="toggleTree(\'' + yid + '\')" style="flex:1">' + yr + '</span>';
-      html += '<span class="tree-count">' + yrCount + '</span></div>';
-
-      Object.keys(srcNode.years[yr]).forEach(function(mo, mi) {
-        var moArr = srcNode.years[yr][mo];
-        var mid = 'rtm' + si + 'x' + yi + 'x' + mi;
-        html += '<div class="tree-month">';
-        html += '<div class="tree-month-hdr" onclick="toggleTree(\'' + mid + '\')">';
-        html += '<span class="tree-chevron" id="chev-' + mid + '">&#9654;</span>';
-        html += '<span style="flex:1">' + mo + '</span><span class="tree-count">' + moArr.length + '</span></div>';
-        html += '<div class="tree-articles" id="' + mid + '">';
-        moArr.forEach(function(a) {
-          var aid = esc(String(a.id));
-          var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
-          // FIX: use data-aid and data-mode to avoid inline onclick issues; stopPropagation handled in delegated listener
-          html += '<div class="tree-article' + (isSelected ? ' selected' : '') + '" data-id="' + aid + '" data-selectmode="' + (selectModeActive ? '1' : '0') + '" style="display:flex;align-items:center;gap:10px">';
-          if (selectModeActive) {
-            html += '<span class="sel-circle" style="font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
-          }
-          html += '<div style="flex:1">';
-          html += '<div class="tree-article-title">' + esc(a.title) + '</div>';
-          html += '<div class="tree-article-meta">';
-          if (a.topic) html += '<span class="art-topic-tag tag-' + a.topic.toLowerCase() + '">' + esc(a.topic) + '</span>';
-          html += '<span class="art-date">' + (a.published_at ? new Date(a.published_at).toLocaleDateString() : '\u2014') + '</span>';
-          html += '</div></div></div>';
-        });
-        html += '</div></div>';
-      });
-      html += '</div>';
-    });
-    html += '</div></div>';
-  });
-  container.innerHTML = html;
-
-  // Attach delegated event listeners after rendering
-  // Group selectors (source / year)
-  container.querySelectorAll('.tree-group-sel').forEach(function(el) {
-    el.addEventListener('click', function(e) {
+  // Helper: make group select circle
+  function makeGroupCircle(ids, fontSize) {
+    var allSelected = ids.length > 0 && ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+    var span = document.createElement('span');
+    span.style.cssText = 'font-size:' + fontSize + 'px;line-height:1;color:' + (allSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0';
+    span.textContent = allSelected ? '\u25CF' : '\u25CB';
+    span.addEventListener('click', function(e) {
       e.stopPropagation();
-      var ids = el.dataset.groupids ? el.dataset.groupids.split(',').filter(Boolean) : [];
-      var allSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
-      if (allSelected) {
+      var nowAllSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+      if (nowAllSelected) {
         ids.forEach(function(id){ var idx = selectedArticleIds.indexOf(id); if (idx !== -1) selectedArticleIds.splice(idx,1); });
       } else {
         ids.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
@@ -1139,19 +1081,210 @@ function renderTreeView() {
       updateSelectBar();
       renderTreeView();
     });
-  });
+    return span;
+  }
 
-  // Article clicks -- stopPropagation prevents tree collapse
-  container.querySelectorAll('.tree-article').forEach(function(el) {
-    el.addEventListener('click', function(e) {
+  // Helper: make chevron span
+  function makeChevron() {
+    var chev = document.createElement('span');
+    chev.className = 'tree-chevron';
+    chev.textContent = '\u25B6';
+    return chev;
+  }
+
+  // Helper: toggle body open/closed
+  function bindToggle(hdr, body, chev) {
+    hdr.addEventListener('click', function(e) {
       e.stopPropagation();
-      var aid = el.dataset.id;
-      if (el.dataset.selectmode === '1') {
-        toggleArticleSelect(aid);
-      } else {
-        openArticle(aid);
-      }
+      var isOpen = body.classList.toggle('open');
+      chev.classList.toggle('open', isOpen);
     });
+  }
+
+  container.innerHTML = '';
+
+  Object.keys(tree).forEach(function(srcId) {
+    var srcNode = tree[srcId];
+
+    // Collect all article IDs for this source
+    var allSrcIds = [];
+    Object.keys(srcNode.years).forEach(function(yr){
+      Object.keys(srcNode.years[yr]).forEach(function(mo){
+        srcNode.years[yr][mo].forEach(function(a){ allSrcIds.push(String(a.id)); });
+      });
+    });
+    var srcCount = allSrcIds.length;
+
+    // Source block
+    var srcDiv = document.createElement('div');
+    srcDiv.className = 'tree-source';
+
+    var srcHdr = document.createElement('div');
+    srcHdr.className = 'tree-source-hdr';
+    srcHdr.style.cssText = 'display:flex;align-items:center;gap:10px';
+
+    if (selectModeActive) srcHdr.appendChild(makeGroupCircle(allSrcIds, 16));
+
+    var srcChev = makeChevron();
+    srcHdr.appendChild(srcChev);
+
+    var srcName = document.createElement('span');
+    srcName.className = 'tree-source-name';
+    srcName.style.flex = '1';
+    srcName.textContent = srcNode.name;
+    srcHdr.appendChild(srcName);
+
+    var srcCountEl = document.createElement('span');
+    srcCountEl.className = 'tree-count';
+    srcCountEl.textContent = srcCount + ' articles';
+    srcHdr.appendChild(srcCountEl);
+
+    var srcBody = document.createElement('div');
+    srcBody.className = 'tree-body';
+
+    bindToggle(srcHdr, srcBody, srcChev);
+    srcDiv.appendChild(srcHdr);
+    srcDiv.appendChild(srcBody);
+
+    // Years
+    Object.keys(srcNode.years).sort(function(a,b){ return Number(b) - Number(a); }).forEach(function(yr) {
+      var allYrIds = [];
+      Object.keys(srcNode.years[yr]).forEach(function(mo){
+        srcNode.years[yr][mo].forEach(function(a){ allYrIds.push(String(a.id)); });
+      });
+
+      var yrDiv = document.createElement('div');
+      yrDiv.className = 'tree-year';
+
+      var yrHdr = document.createElement('div');
+      yrHdr.className = 'tree-year-hdr';
+      yrHdr.style.cssText = 'display:flex;align-items:center;gap:8px';
+
+      if (selectModeActive) yrHdr.appendChild(makeGroupCircle(allYrIds, 14));
+
+      var yrChev = makeChevron();
+      yrHdr.appendChild(yrChev);
+
+      var yrLabel = document.createElement('span');
+      yrLabel.style.flex = '1';
+      yrLabel.textContent = yr;
+      yrHdr.appendChild(yrLabel);
+
+      var yrCount = document.createElement('span');
+      yrCount.className = 'tree-count';
+      yrCount.textContent = allYrIds.length;
+      yrHdr.appendChild(yrCount);
+
+      var yrBody = document.createElement('div');
+      // reuse tree-body class for collapsible
+      yrBody.style.display = 'none';
+
+      bindToggle(yrHdr, yrBody, yrChev);
+      // Override bindToggle for year: use display none/block instead of class
+      yrHdr.removeEventListener('click', yrHdr._toggle);
+      yrHdr.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var open = yrBody.style.display === 'block';
+        yrBody.style.display = open ? 'none' : 'block';
+        yrChev.classList.toggle('open', !open);
+      });
+
+      yrDiv.appendChild(yrHdr);
+      yrDiv.appendChild(yrBody);
+
+      // Months
+      Object.keys(srcNode.years[yr]).forEach(function(mo) {
+        var moArr = srcNode.years[yr][mo];
+
+        var moDiv = document.createElement('div');
+        moDiv.className = 'tree-month';
+
+        var moHdr = document.createElement('div');
+        moHdr.className = 'tree-month-hdr';
+
+        var moChev = makeChevron();
+        moHdr.appendChild(moChev);
+
+        var moLabel = document.createElement('span');
+        moLabel.style.flex = '1';
+        moLabel.textContent = mo;
+        moHdr.appendChild(moLabel);
+
+        var moCount = document.createElement('span');
+        moCount.className = 'tree-count';
+        moCount.textContent = moArr.length;
+        moHdr.appendChild(moCount);
+
+        var moBody = document.createElement('div');
+        moBody.className = 'tree-articles';
+
+        moHdr.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var open = moBody.classList.toggle('open');
+          moChev.classList.toggle('open', open);
+        });
+
+        // Articles
+        moArr.forEach(function(a) {
+          var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
+
+          var artDiv = document.createElement('div');
+          artDiv.className = 'tree-article' + (isSelected ? ' selected' : '');
+          artDiv.style.cssText = 'display:flex;align-items:center;gap:10px';
+
+          if (selectModeActive) {
+            var circle = document.createElement('span');
+            circle.className = 'sel-circle';
+            circle.style.cssText = 'font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none';
+            circle.textContent = isSelected ? '\u25CF' : '\u25CB';
+            artDiv.appendChild(circle);
+          }
+
+          var artContent = document.createElement('div');
+          artContent.style.flex = '1';
+
+          var artTitle = document.createElement('div');
+          artTitle.className = 'tree-article-title';
+          artTitle.textContent = a.title || '';
+          artContent.appendChild(artTitle);
+
+          var artMeta = document.createElement('div');
+          artMeta.className = 'tree-article-meta';
+          if (a.topic) {
+            var topicTag = document.createElement('span');
+            topicTag.className = 'art-topic-tag tag-' + a.topic.toLowerCase();
+            topicTag.textContent = a.topic;
+            artMeta.appendChild(topicTag);
+          }
+          var dateEl = document.createElement('span');
+          dateEl.className = 'art-date';
+          dateEl.textContent = a.published_at ? new Date(a.published_at).toLocaleDateString() : '\u2014';
+          artMeta.appendChild(dateEl);
+          artContent.appendChild(artMeta);
+          artDiv.appendChild(artContent);
+
+          // Click: stopPropagation prevents month/year/source collapse
+          artDiv.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (selectModeActive) {
+              toggleArticleSelect(String(a.id));
+            } else {
+              openArticle(String(a.id));
+            }
+          });
+
+          moBody.appendChild(artDiv);
+        });
+
+        moDiv.appendChild(moHdr);
+        moDiv.appendChild(moBody);
+        yrBody.appendChild(moDiv);
+      });
+
+      srcBody.appendChild(yrDiv);
+    });
+
+    container.appendChild(srcDiv);
   });
 }
 
