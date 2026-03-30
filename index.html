@@ -350,7 +350,7 @@ font-family: var(–mono); font-size: 11px; padding: 5px 14px; cursor: pointer;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v4.3 &middot; L0</div>
+  <div class="version">v4.4 &middot; L0</div>
 </div>
 
 <!-- APP -->
@@ -1056,244 +1056,208 @@ function renderTreeView() {
     tree[srcId].years[yr][mo].push(a);
   });
 
-  // Helper: make toggle chevron + body
-  function makeToggleHdr(cls, extraStyle) {
-    var hdr = document.createElement('div');
-    hdr.className = cls;
-    if (extraStyle) hdr.style.cssText = extraStyle;
-    return hdr;
-  }
-
-  // Helper: make group select circle
-  function makeGroupCircle(ids, fontSize) {
-    var allSelected = ids.length > 0 && ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
-    var span = document.createElement('span');
-    span.style.cssText = 'font-size:' + fontSize + 'px;line-height:1;color:' + (allSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0';
-    span.textContent = allSelected ? '\u25CF' : '\u25CB';
-    span.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var nowAllSelected = ids.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
-      if (nowAllSelected) {
-        ids.forEach(function(id){ var idx = selectedArticleIds.indexOf(id); if (idx !== -1) selectedArticleIds.splice(idx,1); });
-      } else {
-        ids.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
-      }
-      updateSelectBar();
-      renderTreeView();
-    });
-    return span;
-  }
-
-  // Helper: make chevron span
-  function makeChevron() {
-    var chev = document.createElement('span');
-    chev.className = 'tree-chevron';
-    chev.textContent = '\u25B6';
-    return chev;
-  }
-
-  // Helper: bind toggle - only fires when clicking directly on hdr or its non-interactive children (chevron, label, count)
-  // Uses e.target check to ignore clicks bubbling from nested headers or articles
-  function bindToggle(hdr, body, chev, useDisplay) {
-    hdr.addEventListener('click', function(e) {
-      // Only toggle if the click originated directly within this header, not from a deeper nested header
-      var t = e.target;
-      // Walk up from target: if we hit another hdr-class element before reaching our hdr, ignore
-      while (t && t !== hdr) {
-        var cls = t.className || '';
-        if (cls.indexOf('tree-source-hdr') !== -1 || cls.indexOf('tree-year-hdr') !== -1 || cls.indexOf('tree-month-hdr') !== -1 || cls.indexOf('tree-article') !== -1) {
-          return; // click came from a nested interactive element, ignore
-        }
-        t = t.parentElement;
-      }
-      e.stopPropagation();
-      if (useDisplay) {
-        var open = body.style.display === 'block';
-        body.style.display = open ? 'none' : 'block';
-        chev.classList.toggle('open', !open);
-      } else {
-        var isOpen = body.classList.toggle('open');
-        chev.classList.toggle('open', isOpen);
-      }
-    });
-  }
-
+  // FLAT DOM approach: all rows are siblings under container.
+  // Visibility controlled by data attributes, not DOM nesting.
+  // This eliminates all click bubbling between levels.
   container.innerHTML = '';
 
-  Object.keys(tree).forEach(function(srcId) {
-    var srcNode = tree[srcId];
+  // Track open/closed state
+  var openSrc = {};
+  var openYr = {};
+  var openMo = {};
 
-    // Collect all article IDs for this source
-    var allSrcIds = [];
-    Object.keys(srcNode.years).forEach(function(yr){
-      Object.keys(srcNode.years[yr]).forEach(function(mo){
-        srcNode.years[yr][mo].forEach(function(a){ allSrcIds.push(String(a.id)); });
+  function rerender() {
+    container.innerHTML = '';
+    Object.keys(tree).forEach(function(srcId, si) {
+      var srcNode = tree[srcId];
+      var allSrcIds = [];
+      Object.keys(srcNode.years).forEach(function(yr){
+        Object.keys(srcNode.years[yr]).forEach(function(mo){
+          srcNode.years[yr][mo].forEach(function(a){ allSrcIds.push(String(a.id)); });
+        });
       });
-    });
-    var srcCount = allSrcIds.length;
+      var srcCount = allSrcIds.length;
+      var srcOpen = !!openSrc[srcId];
+      var srcAllSel = selectModeActive && allSrcIds.length > 0 && allSrcIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
 
-    // Source block
-    var srcDiv = document.createElement('div');
-    srcDiv.className = 'tree-source';
-
-    var srcHdr = document.createElement('div');
-    srcHdr.className = 'tree-source-hdr';
-    srcHdr.style.cssText = 'display:flex;align-items:center;gap:10px';
-
-    if (selectModeActive) srcHdr.appendChild(makeGroupCircle(allSrcIds, 16));
-
-    var srcChev = makeChevron();
-    srcHdr.appendChild(srcChev);
-
-    var srcName = document.createElement('span');
-    srcName.className = 'tree-source-name';
-    srcName.style.flex = '1';
-    srcName.textContent = srcNode.name;
-    srcHdr.appendChild(srcName);
-
-    var srcCountEl = document.createElement('span');
-    srcCountEl.className = 'tree-count';
-    srcCountEl.textContent = srcCount + ' articles';
-    srcHdr.appendChild(srcCountEl);
-
-    var srcBody = document.createElement('div');
-    srcBody.className = 'tree-body';
-
-    bindToggle(srcHdr, srcBody, srcChev, false);
-    srcDiv.appendChild(srcHdr);
-    srcDiv.appendChild(srcBody);
-
-    // Years
-    Object.keys(srcNode.years).sort(function(a,b){ return Number(b) - Number(a); }).forEach(function(yr) {
-      var allYrIds = [];
-      Object.keys(srcNode.years[yr]).forEach(function(mo){
-        srcNode.years[yr][mo].forEach(function(a){ allYrIds.push(String(a.id)); });
+      // SOURCE ROW
+      var srcRow = document.createElement('div');
+      srcRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);margin-bottom:2px;user-select:none';
+      srcRow.addEventListener('click', function() {
+        openSrc[srcId] = !openSrc[srcId];
+        rerender();
       });
 
-      var yrDiv = document.createElement('div');
-      yrDiv.className = 'tree-year';
-
-      var yrHdr = document.createElement('div');
-      yrHdr.className = 'tree-year-hdr';
-      yrHdr.style.cssText = 'display:flex;align-items:center;gap:8px';
-
-      if (selectModeActive) yrHdr.appendChild(makeGroupCircle(allYrIds, 14));
-
-      var yrChev = makeChevron();
-      yrHdr.appendChild(yrChev);
-
-      var yrLabel = document.createElement('span');
-      yrLabel.style.flex = '1';
-      yrLabel.textContent = yr;
-      yrHdr.appendChild(yrLabel);
-
-      var yrCount = document.createElement('span');
-      yrCount.className = 'tree-count';
-      yrCount.textContent = allYrIds.length;
-      yrHdr.appendChild(yrCount);
-
-      var yrBody = document.createElement('div');
-      yrBody.style.display = 'none';
-
-      bindToggle(yrHdr, yrBody, yrChev, true);
-
-      yrDiv.appendChild(yrHdr);
-      yrDiv.appendChild(yrBody);
-
-      // Months
-      Object.keys(srcNode.years[yr]).forEach(function(mo) {
-        var moArr = srcNode.years[yr][mo];
-
-        var moDiv = document.createElement('div');
-        moDiv.className = 'tree-month';
-
-        var moHdr = document.createElement('div');
-        moHdr.className = 'tree-month-hdr';
-
-        var moChev = makeChevron();
-        moHdr.appendChild(moChev);
-
-        var moLabel = document.createElement('span');
-        moLabel.style.flex = '1';
-        moLabel.textContent = mo;
-        moHdr.appendChild(moLabel);
-
-        var moCount = document.createElement('span');
-        moCount.className = 'tree-count';
-        moCount.textContent = moArr.length;
-        moHdr.appendChild(moCount);
-
-        var moBody = document.createElement('div');
-        moBody.className = 'tree-articles';
-
-        moHdr.addEventListener('click', function(e) {
+      if (selectModeActive) {
+        var srcCircle = document.createElement('span');
+        srcCircle.style.cssText = 'font-size:16px;color:' + (srcAllSel ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0';
+        srcCircle.textContent = srcAllSel ? '\u25CF' : '\u25CB';
+        srcCircle.addEventListener('click', function(e) {
           e.stopPropagation();
-          var open = moBody.classList.toggle('open');
-          moChev.classList.toggle('open', open);
+          if (srcAllSel) {
+            allSrcIds.forEach(function(id){ var i = selectedArticleIds.indexOf(id); if (i !== -1) selectedArticleIds.splice(i,1); });
+          } else {
+            allSrcIds.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
+          }
+          updateSelectBar();
+          rerender();
+        });
+        srcRow.appendChild(srcCircle);
+      }
+
+      var srcChev = document.createElement('span');
+      srcChev.className = 'tree-chevron' + (srcOpen ? ' open' : '');
+      srcChev.textContent = '\u25B6';
+      srcRow.appendChild(srcChev);
+
+      var srcLbl = document.createElement('span');
+      srcLbl.style.cssText = 'flex:1;color:var(--text);font-size:12px;font-weight:500';
+      srcLbl.textContent = srcNode.name;
+      srcRow.appendChild(srcLbl);
+
+      var srcCnt = document.createElement('span');
+      srcCnt.className = 'tree-count';
+      srcCnt.textContent = srcCount + ' articles';
+      srcRow.appendChild(srcCnt);
+
+      container.appendChild(srcRow);
+      if (!srcOpen) return;
+
+      // YEAR ROWS
+      Object.keys(srcNode.years).sort(function(a,b){ return Number(b)-Number(a); }).forEach(function(yr) {
+        var yrKey = srcId + '_' + yr;
+        var allYrIds = [];
+        Object.keys(srcNode.years[yr]).forEach(function(mo){
+          srcNode.years[yr][mo].forEach(function(a){ allYrIds.push(String(a.id)); });
+        });
+        var yrOpen = !!openYr[yrKey];
+        var yrAllSel = selectModeActive && allYrIds.length > 0 && allYrIds.every(function(id){ return selectedArticleIds.indexOf(id) !== -1; });
+
+        var yrRow = document.createElement('div');
+        yrRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 16px 8px 32px;cursor:pointer;color:var(--text2);font-size:11px;letter-spacing:1px;background:var(--surface);border-bottom:1px solid var(--border)';
+        yrRow.addEventListener('click', function() {
+          openYr[yrKey] = !openYr[yrKey];
+          rerender();
         });
 
-        // Articles
-        moArr.forEach(function(a) {
-          var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
-
-          var artDiv = document.createElement('div');
-          artDiv.className = 'tree-article' + (isSelected ? ' selected' : '');
-          artDiv.style.cssText = 'display:flex;align-items:center;gap:10px';
-
-          if (selectModeActive) {
-            var circle = document.createElement('span');
-            circle.className = 'sel-circle';
-            circle.style.cssText = 'font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;pointer-events:none';
-            circle.textContent = isSelected ? '\u25CF' : '\u25CB';
-            artDiv.appendChild(circle);
-          }
-
-          var artContent = document.createElement('div');
-          artContent.style.flex = '1';
-
-          var artTitle = document.createElement('div');
-          artTitle.className = 'tree-article-title';
-          artTitle.textContent = a.title || '';
-          artContent.appendChild(artTitle);
-
-          var artMeta = document.createElement('div');
-          artMeta.className = 'tree-article-meta';
-          if (a.topic) {
-            var topicTag = document.createElement('span');
-            topicTag.className = 'art-topic-tag tag-' + a.topic.toLowerCase();
-            topicTag.textContent = a.topic;
-            artMeta.appendChild(topicTag);
-          }
-          var dateEl = document.createElement('span');
-          dateEl.className = 'art-date';
-          dateEl.textContent = a.published_at ? new Date(a.published_at).toLocaleDateString() : '\u2014';
-          artMeta.appendChild(dateEl);
-          artContent.appendChild(artMeta);
-          artDiv.appendChild(artContent);
-
-          // Click: stopPropagation prevents month/year/source collapse
-          artDiv.addEventListener('click', function(e) {
+        if (selectModeActive) {
+          var yrCircle = document.createElement('span');
+          yrCircle.style.cssText = 'font-size:14px;color:' + (yrAllSel ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer;flex-shrink:0';
+          yrCircle.textContent = yrAllSel ? '\u25CF' : '\u25CB';
+          yrCircle.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (selectModeActive) {
-              toggleArticleSelect(String(a.id));
+            if (yrAllSel) {
+              allYrIds.forEach(function(id){ var i = selectedArticleIds.indexOf(id); if (i !== -1) selectedArticleIds.splice(i,1); });
             } else {
-              openArticle(String(a.id));
+              allYrIds.forEach(function(id){ if (selectedArticleIds.indexOf(id) === -1) selectedArticleIds.push(id); });
             }
+            updateSelectBar();
+            rerender();
+          });
+          yrRow.appendChild(yrCircle);
+        }
+
+        var yrChev = document.createElement('span');
+        yrChev.className = 'tree-chevron' + (yrOpen ? ' open' : '');
+        yrChev.textContent = '\u25B6';
+        yrRow.appendChild(yrChev);
+
+        var yrLbl = document.createElement('span');
+        yrLbl.style.flex = '1';
+        yrLbl.textContent = yr;
+        yrRow.appendChild(yrLbl);
+
+        var yrCnt = document.createElement('span');
+        yrCnt.className = 'tree-count';
+        yrCnt.textContent = allYrIds.length;
+        yrRow.appendChild(yrCnt);
+
+        container.appendChild(yrRow);
+        if (!yrOpen) return;
+
+        // MONTH ROWS
+        Object.keys(srcNode.years[yr]).forEach(function(mo) {
+          var moKey = yrKey + '_' + mo;
+          var moArr = srcNode.years[yr][mo];
+          var moOpen = !!openMo[moKey];
+
+          var moRow = document.createElement('div');
+          moRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 16px 7px 48px;cursor:pointer;color:var(--text3);font-size:11px;background:var(--surface);border-bottom:1px solid var(--border)';
+          moRow.addEventListener('click', function() {
+            openMo[moKey] = !openMo[moKey];
+            rerender();
           });
 
-          moBody.appendChild(artDiv);
+          var moChev = document.createElement('span');
+          moChev.className = 'tree-chevron' + (moOpen ? ' open' : '');
+          moChev.textContent = '\u25B6';
+          moRow.appendChild(moChev);
+
+          var moLbl = document.createElement('span');
+          moLbl.style.flex = '1';
+          moLbl.textContent = mo;
+          moRow.appendChild(moLbl);
+
+          var moCnt = document.createElement('span');
+          moCnt.className = 'tree-count';
+          moCnt.textContent = moArr.length;
+          moRow.appendChild(moCnt);
+
+          container.appendChild(moRow);
+          if (!moOpen) return;
+
+          // ARTICLE ROWS
+          moArr.forEach(function(a) {
+            var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
+
+            var artRow = document.createElement('div');
+            artRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 16px 8px 64px;border-bottom:1px solid rgba(30,64,96,0.5);cursor:pointer;background:' + (isSelected ? 'rgba(0,212,255,0.06)' : 'var(--surface)');
+            artRow.addEventListener('click', function() {
+              if (selectModeActive) {
+                toggleArticleSelect(String(a.id));
+              } else {
+                openArticle(String(a.id));
+              }
+            });
+
+            if (selectModeActive) {
+              var artCircle = document.createElement('span');
+              artCircle.style.cssText = 'font-size:14px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0';
+              artCircle.textContent = isSelected ? '\u25CF' : '\u25CB';
+              artRow.appendChild(artCircle);
+            }
+
+            var artContent = document.createElement('div');
+            artContent.style.flex = '1';
+
+            var artTitle = document.createElement('div');
+            artTitle.className = 'tree-article-title';
+            artTitle.textContent = a.title || '';
+            artContent.appendChild(artTitle);
+
+            var artMeta = document.createElement('div');
+            artMeta.className = 'tree-article-meta';
+            if (a.topic) {
+              var topicTag = document.createElement('span');
+              topicTag.className = 'art-topic-tag tag-' + a.topic.toLowerCase();
+              topicTag.textContent = a.topic;
+              artMeta.appendChild(topicTag);
+            }
+            var dateEl = document.createElement('span');
+            dateEl.className = 'art-date';
+            dateEl.textContent = a.published_at ? new Date(a.published_at).toLocaleDateString() : '\u2014';
+            artMeta.appendChild(dateEl);
+            artContent.appendChild(artMeta);
+            artRow.appendChild(artContent);
+
+            container.appendChild(artRow);
+          });
         });
-
-        moDiv.appendChild(moHdr);
-        moDiv.appendChild(moBody);
-        yrBody.appendChild(moDiv);
       });
-
-      srcBody.appendChild(yrDiv);
     });
+  }
 
-    container.appendChild(srcDiv);
-  });
+  rerender();
 }
 
 function toggleTree(id) {
