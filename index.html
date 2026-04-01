@@ -1323,6 +1323,8 @@ async function runPipeline(mode) {
       logRun('--- Discovering: ' + dSrc.name + ' [' + discFunc + '] ---', 'info');
       var discTotal = 0;
       var discStartPage = 1;
+      var discEmptyRuns = 0;
+
 
       while (isRunning) {
         try {
@@ -1343,6 +1345,15 @@ async function runPipeline(mode) {
           if (discData.reached_end) {
             logRun('[' + dSrc.name + '] Discover complete. Total new: ' + discTotal, discTotal > 0 ? 'ok' : 'info');
             break;
+          }
+          if (discNew === 0) {
+            discEmptyRuns++;
+            if (discEmptyRuns >= 3) {
+              logRun('[' + dSrc.name + '] 3 consecutive empty batches. Stopping early.', 'info');
+              break;
+            }
+          } else {
+            discEmptyRuns = 0;
           }
           discStartPage = discData.last_page + 1;
           await delay(3000);
