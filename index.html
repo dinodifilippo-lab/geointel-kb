@@ -1345,7 +1345,7 @@ async function runPipeline(mode) {
             break;
           }
           discStartPage = discData.last_page + 1;
-          await delay(500);
+          await delay(3000);
         } catch(ex) {
           logRun('[' + dSrc.name + '] Discover failed: ' + ex.message, 'err');
           break;
