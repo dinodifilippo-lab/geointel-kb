@@ -1347,9 +1347,11 @@ async function runPipeline(mode) {
           discStartPage = discData.last_page + 1;
           await delay(3000);
         } catch(ex) {
-          logRun('[' + dSrc.name + '] Discover failed: ' + ex.message, 'err');
-          break;
+          logRun('[' + dSrc.name + '] Connection reset, pausing 10s before retry...', 'warn');
+          await delay(10000);
+          continue;
         }
+
       }
     }
     refreshDashboard();
