@@ -1535,8 +1535,9 @@ function copyLog() {
 function clearLog() {
   var log = document.getElementById('run-log'); if (!log) return;
   log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>';
-  lastLogIndex = 0;
+  lastLogIndex = 999999;
 }
+
 </script>
 
 </body>
