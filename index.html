@@ -105,7 +105,7 @@ header {
 .logo { font-family: var(--sans); font-size: 16px; font-weight: 800; color: #fff; margin-right: 32px; }
 .logo span { color: var(--accent); }
 .logo-ver { font-family: var(--mono); font-size: 10px; font-weight: 400; color: var(--text3); letter-spacing: 1px; margin-left: 6px; }
-nav { display: flex; gap: 2px; flex: 1; }
+nav { display: flex; gap: 2px; flex: 1; flex-wrap: wrap; }
 nav button {
   background: none; border: none; color: var(--text2);
   font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px;
@@ -241,10 +241,39 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 .tree-article-meta { display: flex; gap: 8px; align-items: center; }
 .alert-bar { display: flex; align-items: center; gap: 10px; background: rgba(255,170,0,0.1); border: 1px solid var(--amber); padding: 10px 16px; font-size: 11px; color: var(--amber); }
 .alert-bar .alert-msg { flex: 1; }
+/* Upload zone */
+.upload-zone { border: 2px dashed var(--border); padding: 40px 20px; text-align: center; cursor: pointer; transition: all .2s; }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(0,212,255,0.04); }
+.upload-zone-icon { font-size: 32px; color: var(--text3); margin-bottom: 12px; }
+.upload-zone-text { color: var(--text2); font-size: 12px; margin-bottom: 4px; }
+.upload-zone-sub { color: var(--text3); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.upload-progress { margin-top: 16px; display: none; }
+.upload-progress.active { display: block; }
+.upload-file-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface2); border: 1px solid var(--border); margin-bottom: 4px; font-size: 11px; }
+.upload-file-name { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upload-file-status { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.upload-file-status.ok { color: var(--green); }
+.upload-file-status.err { color: var(--red); }
+.upload-file-status.working { color: var(--amber); animation: pulse 1.5s infinite; }
+.doc-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-left: 3px solid var(--border); }
+.doc-card:hover { border-color: var(--accent); border-left-color: var(--accent); background: var(--surface2); }
+.doc-icon { font-size: 22px; flex-shrink: 0; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { color: var(--text); font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-meta { color: var(--text3); font-size: 10px; margin-top: 3px; display: flex; gap: 10px; }
+.doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 </style>
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- Mammoth.js for DOCX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<!-- JSZip for PPTX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- SheetJS for XLSX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -261,18 +290,19 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.3</div>
+  <div class="version">v5.4</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.3</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.4</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
       <button onclick="showView('articles',this)">Articles</button>
+      <button onclick="showView('upload',this)">Manual Upload</button>
       <button onclick="showView('query',this)">Query KB</button>
       <button onclick="showView('config',this)">Config</button>
     </nav>
@@ -414,6 +444,40 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     </div>
   </div>
 
+  <!-- MANUAL UPLOAD -->
+
+  <div class="view" id="view-upload">
+    <div class="toolbar">
+      <span style="color:var(--text2);font-size:12px;letter-spacing:1px">MANUAL UPLOAD</span>
+      <span style="color:var(--text3);font-size:11px;margin-left:8px" id="upload-doc-count"></span>
+      <button class="btn-outline" style="margin-left:auto" onclick="loadUploadedDocs()">&#8635; Refresh</button>
+    </div>
+
+```
+<!-- Upload Zone -->
+<div class="upload-zone" id="upload-zone" onclick="document.getElementById('upload-file-input').click()">
+  <div class="upload-zone-icon">&#8682;</div>
+  <div class="upload-zone-text">Tap to select files or drag &amp; drop</div>
+  <div class="upload-zone-sub">PDF &middot; DOCX &middot; PPTX &middot; XLSX</div>
+</div>
+<input type="file" id="upload-file-input" multiple accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="handleFileUpload(this.files)"/>
+
+<!-- Upload Progress -->
+<div class="upload-progress" id="upload-progress"></div>
+
+<!-- Archive -->
+<div class="panel" style="margin-top:8px">
+  <div class="panel-hdr">
+    <div class="panel-title">Uploaded Documents</div>
+  </div>
+  <div id="upload-archive" style="padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+    <div class="empty-state" style="padding:30px">Loading...</div>
+  </div>
+</div>
+```
+
+  </div>
+
   <!-- QUERY KB -->
 
   <div class="view" id="view-query">
@@ -531,6 +595,7 @@ function showView(id, btn) {
   document.getElementById('view-' + id).classList.add('active');
   if (btn) { document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); }
   if (id === 'articles') { articlePage = 0; loadArticles(); }
+  if (id === 'upload') { loadUploadedDocs(); }
 }
 
 // === TOAST ===
@@ -1054,6 +1119,252 @@ function startDashAutoRefresh() {
     var dashView = document.getElementById('view-dashboard');
     if (dashView && dashView.classList.contains('active')) refreshDashboard();
   }, 60000);
+}
+
+// === MANUAL UPLOAD ===
+
+// Drag and drop
+var uploadZone = null;
+document.addEventListener('DOMContentLoaded', function() {
+  uploadZone = document.getElementById('upload-zone');
+  if (!uploadZone) return;
+  uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
+  uploadZone.addEventListener('drop', function(e) {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files);
+  });
+});
+
+// File type icons
+var FILE_ICONS = { pdf: '\u{1F4C4}', docx: '\u{1F4DD}', pptx: '\u{1F4CA}', xlsx: '\u{1F4CA}' };
+
+function getFileExt(name) {
+  var parts = name.split('.');
+  return parts.length > 1 ? parts.pop().toLowerCase() : '';
+}
+
+// Extract text from PDF
+async function extractPdfText(arrayBuffer) {
+  var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  var pages = [];
+  for (var i = 1; i <= pdf.numPages; i++) {
+    var page = await pdf.getPage(i);
+    var content = await page.getTextContent();
+    var text = content.items.map(function(item) { return item.str; }).join(' ');
+    pages.push(text);
+  }
+  return pages.join('\n\n');
+}
+
+// Extract text from DOCX
+async function extractDocxText(arrayBuffer) {
+  var result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+  return result.value;
+}
+
+// Extract text from PPTX (ZIP of XML slides)
+async function extractPptxText(arrayBuffer) {
+  var zip = await JSZip.loadAsync(arrayBuffer);
+  var slides = [];
+  var slideFiles = Object.keys(zip.files).filter(function(f) {
+    return f.match(/^ppt\/slides\/slide\d+\.xml$/);
+  }).sort(function(a, b) {
+    var na = parseInt(a.match(/\d+/)[0]);
+    var nb = parseInt(b.match(/\d+/)[0]);
+    return na - nb;
+  });
+  for (var i = 0; i < slideFiles.length; i++) {
+    var xml = await zip.files[slideFiles[i]].async('text');
+    // Extract text from XML <a:t> tags
+    var texts = [];
+    var re = /<a:t[^>]*>([\s\S]*?)<\/a:t>/g;
+    var m;
+    while ((m = re.exec(xml)) !== null) {
+      texts.push(m[1]);
+    }
+    if (texts.length > 0) {
+      slides.push('--- Slide ' + (i + 1) + ' ---\n' + texts.join(' '));
+    }
+  }
+  return slides.join('\n\n');
+}
+
+// Extract text from XLSX
+function extractXlsxText(arrayBuffer) {
+  var wb = XLSX.read(arrayBuffer, { type: 'array' });
+  var sheets = [];
+  wb.SheetNames.forEach(function(name) {
+    var ws = wb.Sheets[name];
+    var csv = XLSX.utils.sheet_to_csv(ws);
+    if (csv.trim()) {
+      sheets.push('--- Sheet: ' + name + ' ---\n' + csv);
+    }
+  });
+  return sheets.join('\n\n');
+}
+
+// Main upload handler
+var uploadQueue = [];
+var isUploading = false;
+
+async function handleFileUpload(fileList) {
+  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
+  if (!fileList || fileList.length === 0) return;
+
+  var progressDiv = document.getElementById('upload-progress');
+  progressDiv.innerHTML = '';
+  progressDiv.classList.add('active');
+
+  var files = Array.from(fileList);
+  var validExts = ['pdf', 'docx', 'pptx', 'xlsx'];
+
+  // Create progress rows
+  files.forEach(function(f, idx) {
+    var ext = getFileExt(f.name);
+    var valid = validExts.indexOf(ext) !== -1;
+    var row = document.createElement('div');
+    row.className = 'upload-file-row';
+    row.id = 'upload-row-' + idx;
+    row.innerHTML = '<span style="font-size:16px">' + (FILE_ICONS[ext] || '\u{1F4C1}') + '</span>' +
+      '<span class="upload-file-name">' + esc(f.name) + '</span>' +
+      '<span class="upload-file-status ' + (valid ? 'working' : 'err') + '" id="upload-status-' + idx + '">' +
+      (valid ? 'WAITING' : 'UNSUPPORTED') + '</span>';
+    progressDiv.appendChild(row);
+  });
+
+  // Process each file
+  var successCount = 0;
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var ext = getFileExt(file.name);
+    var statusEl = document.getElementById('upload-status-' + i);
+    if (validExts.indexOf(ext) === -1) continue;
+
+    statusEl.textContent = 'EXTRACTING';
+    statusEl.className = 'upload-file-status working';
+
+    try {
+      var arrayBuffer = await file.arrayBuffer();
+      var text = '';
+
+      if (ext === 'pdf') {
+        text = await extractPdfText(arrayBuffer);
+      } else if (ext === 'docx') {
+        text = await extractDocxText(arrayBuffer);
+      } else if (ext === 'pptx') {
+        text = await extractPptxText(arrayBuffer);
+      } else if (ext === 'xlsx') {
+        text = extractXlsxText(arrayBuffer);
+      }
+
+      if (!text || text.trim().length === 0) {
+        statusEl.textContent = 'EMPTY';
+        statusEl.className = 'upload-file-status err';
+        continue;
+      }
+
+      statusEl.textContent = 'SAVING';
+
+      // Save to geo_documents
+      var docData = {
+        filename: file.name,
+        file_type: ext,
+        content_text: text.trim()
+      };
+
+      var res = await sbFetch('geo_documents', 'POST', docData);
+      if (res.ok) {
+        statusEl.textContent = 'DONE';
+        statusEl.className = 'upload-file-status ok';
+        successCount++;
+      } else {
+        statusEl.textContent = 'DB ERROR';
+        statusEl.className = 'upload-file-status err';
+      }
+    } catch (err) {
+      statusEl.textContent = 'ERROR';
+      statusEl.className = 'upload-file-status err';
+      console.error('Upload error for ' + file.name + ':', err);
+    }
+  }
+
+  // Reset file input
+  document.getElementById('upload-file-input').value = '';
+
+  if (successCount > 0) {
+    showToast(successCount + ' document(s) uploaded.', 'green');
+    loadUploadedDocs();
+  }
+
+  // Clear progress after 5s
+  setTimeout(function() {
+    progressDiv.classList.remove('active');
+    progressDiv.innerHTML = '';
+  }, 5000);
+}
+
+// Load uploaded documents archive
+async function loadUploadedDocs() {
+  var archive = document.getElementById('upload-archive');
+  if (!archive) return;
+  if (!CFG.sbUrl || !CFG.sbKey) {
+    archive.innerHTML = '<div class="empty-state" style="padding:30px">Configure Supabase first.</div>';
+    return;
+  }
+
+  archive.innerHTML = '<div class="empty-state" style="padding:20px"><span class="spinner"></span></div>';
+
+  var res = await sbFetch('geo_documents?hidden=neq.true&order=uploaded_at.desc&limit=200');
+  if (!res.ok || !res.data) {
+    archive.innerHTML = '<div class="empty-state" style="padding:30px">Failed to load.</div>';
+    return;
+  }
+
+  var docs = res.data;
+  var countEl = document.getElementById('upload-doc-count');
+  if (countEl) countEl.textContent = docs.length + ' document' + (docs.length !== 1 ? 's' : '');
+
+  if (docs.length === 0) {
+    archive.innerHTML = '<div class="empty-state" style="padding:30px">No documents uploaded yet.</div>';
+    return;
+  }
+
+  var html = '';
+  docs.forEach(function(doc) {
+    var ext = doc.file_type || getFileExt(doc.filename);
+    var icon = FILE_ICONS[ext] || '\u{1F4C1}';
+    var date = doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleString() : '-';
+    var textLen = doc.content_text ? doc.content_text.length : 0;
+    var sizeStr = textLen > 1000 ? Math.round(textLen / 1000) + 'k chars' : textLen + ' chars';
+
+    html += '<div class="doc-card">';
+    html += '<div class="doc-icon">' + icon + '</div>';
+    html += '<div class="doc-info">';
+    html += '<div class="doc-name">' + esc(doc.filename) + '</div>';
+    html += '<div class="doc-meta"><span>' + ext.toUpperCase() + '</span><span>' + sizeStr + '</span><span>' + date + '</span></div>';
+    html += '</div>';
+    html += '<div class="doc-actions">';
+    html += '<button class="btn-sm" onclick="deleteDoc(\'' + esc(String(doc.id)) + '\',\'' + esc(doc.filename) + '\')">Del</button>';
+    html += '</div>';
+    html += '</div>';
+  });
+
+  archive.innerHTML = html;
+}
+
+async function deleteDoc(id, name) {
+  if (!confirm('Delete "' + name + '"?')) return;
+  var res = await sbFetch('geo_documents?id=eq.' + id, 'PATCH', { hidden: true });
+  if (res.ok) {
+    showToast('Document hidden.', 'amber');
+    loadUploadedDocs();
+  }
+}
+
+// Init PDF.js worker
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
 
 // === RUN PIPELINE ===
