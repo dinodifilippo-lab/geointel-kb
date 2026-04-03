@@ -261,59 +261,68 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
 /* === QUERY KB === */
-#view-query { display: none; flex: 1; flex-direction: column; padding: 24px; gap: 16px; overflow: hidden; min-height: 0; }
+#view-query { display: none; flex: 1; flex-direction: column; padding: 20px; gap: 14px; overflow: hidden; min-height: 0; }
 #view-query.active { display: flex; }
-.qkb-prompt-panel { background: var(–surface); border: 1px solid var(–border); border-top: 3px solid var(–accent); flex-shrink: 0; }
-.qkb-prompt-row { display: flex; align-items: stretch; padding: 12px 18px; gap: 12px; background: var(–bg); }
-.qkb-input {
+.q-panel { background: var(–surface); border: 1px solid var(–border); border-top: 3px solid var(–accent); flex-shrink: 0; }
+.q-hdr {
+padding: 10px 18px; border-bottom: 1px solid var(–border);
+display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3);
+}
+.q-hdr-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text2); }
+.q-hdr-info { font-size: 10px; color: var(–text3); letter-spacing: 0.5px; flex: 1; }
+.q-body { padding: 14px 18px; background: var(–bg); display: flex; gap: 12px; align-items: flex-start; }
+.q-input {
 flex: 1; background: var(–surface2); border: 1px solid var(–border);
 color: var(–text); font-family: var(–mono); font-size: 13px; padding: 12px 16px;
 outline: none; resize: none; min-height: 44px; max-height: 140px; line-height: 1.6;
 }
-.qkb-input::placeholder { color: var(–text3); }
-.qkb-input:focus { border-color: var(–accent); background: var(–bg); }
-.qkb-thread-panel {
+.q-input::placeholder { color: var(–text3); }
+.q-input:focus { border-color: var(–accent); background: var(–bg); }
+.q-btn {
+background: var(–accent); border: none; color: var(–bg);
+font-family: var(–mono); font-size: 11px; font-weight: 700;
+letter-spacing: 2px; padding: 12px 24px; cursor: pointer;
+text-transform: uppercase; flex-shrink: 0;
+}
+.q-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.q-btn:hover:not(:disabled) { background: #33e0ff; }
+.c-panel {
 background: var(–surface); border: 1px solid var(–border);
 flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
 }
-.qkb-thread {
-flex: 1; overflow-y: auto; background: #010406; padding: 0;
+.c-hdr {
+padding: 10px 18px; border-bottom: 1px solid var(–border);
+display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3);
 }
-.qkb-empty-thread {
-display: flex; align-items: center; justify-content: center;
-height: 100%; color: var(–text3); font-size: 11px; letter-spacing: 1px;
-}
-.qkb-msg { border-bottom: 1px solid var(–border); padding: 18px 20px; }
-.qkb-msg:last-child { border-bottom: none; }
-.qkb-msg-user { background: rgba(0,212,255,0.03); border-left: 3px solid var(–accent); }
-.qkb-msg-ai { background: transparent; border-left: 3px solid var(–green); }
-.qkb-msg-label {
-font-family: var(–mono); font-size: 9px; letter-spacing: 2px;
-text-transform: uppercase; margin-bottom: 8px;
-}
-.qkb-msg-label-user { color: var(–accent); }
-.qkb-msg-label-ai { color: var(–green); }
-.qkb-msg-body { font-family: var(–sans); font-size: 13px; line-height: 1.85; color: var(–text); }
-.qkb-msg-body p { margin-bottom: 10px; }
-.qkb-msg-body p:last-child { margin-bottom: 0; }
-.qkb-msg-body strong { color: #fff; font-weight: 600; }
-.qkb-msg-body ul, .qkb-msg-body ol { margin: 8px 0 10px 20px; }
-.qkb-msg-body li { margin-bottom: 5px; }
-.qkb-sources { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(–border); }
-.qkb-sources-label { font-family: var(–mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); margin-bottom: 8px; }
-.qkb-source-item { display: flex; gap: 8px; align-items: baseline; padding: 4px 0; font-size: 11px; line-height: 1.4; }
-.qkb-source-idx { color: var(–accent); font-family: var(–mono); font-size: 10px; flex-shrink: 0; min-width: 18px; }
-.qkb-source-title { color: var(–text2); }
-.qkb-source-title a { color: var(–accent); text-decoration: none; }
-.qkb-source-title a:hover { text-decoration: underline; }
-.qkb-source-meta { color: var(–text3); font-size: 10px; }
-.qkb-thinking { border-bottom: 1px solid var(–border); padding: 18px 20px; background: transparent; border-left: 3px solid var(–amber); }
-.qkb-thinking-inner { display: flex; align-items: center; gap: 12px; }
-.qkb-thinking-text { color: var(–amber); font-size: 11px; font-family: var(–mono); letter-spacing: 1px; animation: pulse 1.5s infinite; }
-.qkb-thinking-dots { display: flex; gap: 4px; }
-.qkb-thinking-dots span { width: 5px; height: 5px; background: var(–amber); border-radius: 50%; animation: pulse 1.2s infinite; }
-.qkb-thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-.qkb-thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+.c-thread { flex: 1; overflow-y: auto; background: #010406; }
+.c-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(–text3); font-size: 11px; letter-spacing: 1px; }
+.qmsg { border-bottom: 1px solid rgba(26,74,114,0.5); padding: 20px 22px; }
+.qmsg:last-child { border-bottom: none; }
+.qmsg-user { border-left: 3px solid var(–accent); background: rgba(0,212,255,0.02); }
+.qmsg-ai { border-left: 3px solid var(–green); background: transparent; }
+.qmsg-label { font-family: var(–mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.qmsg-label-u { color: var(–accent); }
+.qmsg-label-a { color: var(–green); }
+.qmsg-time { color: var(–text3); font-size: 9px; letter-spacing: 1px; }
+.qmsg-body { font-family: var(–sans); font-size: 13px; line-height: 1.9; color: var(–text); }
+.qmsg-body p { margin-bottom: 12px; }
+.qmsg-body p:last-child { margin-bottom: 0; }
+.qmsg-body strong { color: #fff; font-weight: 600; }
+.qmsg-body ul, .qmsg-body ol { margin: 8px 0 10px 20px; }
+.qmsg-body li { margin-bottom: 5px; }
+.src-box { margin-top: 16px; padding: 14px 16px; background: rgba(2,5,7,0.6); border: 1px solid var(–border); }
+.src-label { font-family: var(–mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); margin-bottom: 10px; }
+.src-item { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; font-size: 11px; line-height: 1.5; }
+.src-idx { color: var(–accent); font-family: var(–mono); font-size: 10px; min-width: 20px; flex-shrink: 0; }
+.src-title a { color: var(–accent); text-decoration: none; }
+.src-title a:hover { text-decoration: underline; }
+.src-meta { color: var(–text3); font-size: 10px; }
+.qmsg-think { border-bottom: 1px solid rgba(26,74,114,0.5); padding: 16px 22px; border-left: 3px solid var(–amber); background: rgba(255,170,0,0.02); }
+.think-inner { display: flex; align-items: center; gap: 12px; }
+.think-text { color: var(–amber); font-size: 11px; font-family: var(–mono); letter-spacing: 1px; animation: pulse 1.5s infinite; }
+.think-dot { width: 5px; height: 5px; background: var(–amber); border-radius: 50%; display: inline-block; animation: pulse 1.2s infinite; }
+.think-dot:nth-child(2) { animation-delay: 0.2s; }
+.think-dot:nth-child(3) { animation-delay: 0.4s; }
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -340,14 +349,14 @@ text-transform: uppercase; margin-bottom: 8px;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.6.3</div>
+  <div class="version">v5.7</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.6.3</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.7</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -518,24 +527,23 @@ text-transform: uppercase; margin-bottom: 8px;
   <!-- QUERY KB -->
 
   <div class="view" id="view-query">
-    <div class="qkb-prompt-panel">
-      <div class="panel-hdr">
-        <div class="panel-title">Query</div>
+    <div class="q-panel">
+      <div class="q-hdr">
+        <div class="q-hdr-title">Query</div>
+        <div class="q-hdr-info" id="q-hdr-info"></div>
         <button class="btn-sm" onclick="qkbClearChat()">New Chat</button>
       </div>
-      <div class="qkb-prompt-row">
-        <textarea class="qkb-input" id="qkb-input" placeholder="Ask a question on the knowledge base..." rows="1" oninput="qkbAutoResize(this)"></textarea>
-        <button class="btn-accent" id="qkb-send" onclick="qkbSend()" style="padding:0 24px;letter-spacing:2px;min-width:70px">ASK</button>
+      <div class="q-body">
+        <textarea class="q-input" id="qkb-input" placeholder="Ask a question on the knowledge base..." rows="2" oninput="qkbAutoResize(this)"></textarea>
+        <button class="q-btn" id="qkb-send" onclick="qkbSend()">ASK</button>
       </div>
     </div>
-    <div class="qkb-thread-panel">
-      <div class="panel-hdr">
-        <div class="panel-title">Conversation</div>
+    <div class="c-panel">
+      <div class="c-hdr">
+        <div class="q-hdr-title">Conversation</div>
         <button class="btn-sm" onclick="qkbCopyThread()">Copy</button>
       </div>
-      <div class="qkb-thread" id="qkb-thread">
-        <div class="qkb-empty-thread" id="qkb-empty">Ask a question to begin analysis</div>
-      </div>
+      <div class="c-thread" id="qkb-thread"></div>
     </div>
   </div>
   <!-- CONFIG -->
@@ -1026,7 +1034,6 @@ function clearLog() { var log = document.getElementById('run-log'); if (!log) re
 // === QUERY KB ===
 var qkbHistory = [];
 var qkbBusy = false;
-var qkbQueryCount = 0;
 
 function qkbAutoResize(el) {
   el.style.height = 'auto';
@@ -1035,71 +1042,65 @@ function qkbAutoResize(el) {
 
 function qkbClearChat() {
   qkbHistory = [];
-  var thread = document.getElementById('qkb-thread');
-  thread.innerHTML = '<div class="qkb-empty-thread" id="qkb-empty">Ask a question to begin analysis</div>';
+  document.getElementById('qkb-thread').innerHTML = '';
 }
 
 function qkbCopyThread() {
-  var thread = document.getElementById('qkb-thread');
-  if (!thread) return;
-  var text = thread.innerText || thread.textContent || '';
-  navigator.clipboard.writeText(text).then(function() { showToast('Thread copied.', 'green'); });
+  var t = document.getElementById('qkb-thread');
+  if (!t) return;
+  navigator.clipboard.writeText(t.innerText || '').then(function() { showToast('Thread copied.', 'green'); });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   var input = document.getElementById('qkb-input');
-  if (input) {
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); qkbSend(); }
-    });
-  }
+  if (input) input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); qkbSend(); }
+  });
 });
 
-async function qkbLoadStats() {
+function qkbLoadInfo() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
-  var cnt = await sbCount('geo_articles', 'hidden=neq.true');
-  var el = document.getElementById('qkb-stat-articles');
-  if (el) el.textContent = cnt;
-  var activeSrc = SOURCES.filter(function(s) { return s.active === true; }).length;
-  var el2 = document.getElementById('qkb-stat-sources');
-  if (el2) el2.textContent = activeSrc;
+  sbCount('geo_articles', 'hidden=neq.true').then(function(cnt) {
+    var activeSrc = SOURCES.filter(function(s) { return s.active; }).length;
+    var el = document.getElementById('q-hdr-info');
+    if (el) el.textContent = cnt.toLocaleString() + ' articles \u00B7 ' + activeSrc + ' sources \u00B7 Claude Sonnet';
+  });
 }
 
-function qkbAddMessage(role, html, sources) {
+function qkbTimeStamp() {
+  var d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function qkbAddMsg(role, html, sources) {
   var thread = document.getElementById('qkb-thread');
-  var empty = document.getElementById('qkb-empty');
-  if (empty) empty.remove();
-
   var div = document.createElement('div');
-  div.className = 'qkb-msg qkb-msg-' + (role === 'user' ? 'user' : 'ai');
+  div.className = 'qmsg qmsg-' + (role === 'user' ? 'user' : 'ai');
 
-  var labelClass = role === 'user' ? 'qkb-msg-label-user' : 'qkb-msg-label-ai';
-  var labelText = role === 'user' ? 'You' : 'Assistant';
-  var bodyHtml = '<div class="qkb-msg-label ' + labelClass + '">' + labelText + '</div>';
-  bodyHtml += '<div class="qkb-msg-body">' + (role === 'user' ? esc(html) : html);
+  var labelCls = role === 'user' ? 'qmsg-label-u' : 'qmsg-label-a';
+  var labelTxt = role === 'user' ? 'You' : 'Assistant';
+  var h = '<div class="qmsg-label ' + labelCls + '">' + labelTxt + ' <span class="qmsg-time">' + qkbTimeStamp() + '</span></div>';
+  h += '<div class="qmsg-body">' + (role === 'user' ? esc(html) : html);
 
   if (sources && sources.length > 0) {
-    bodyHtml += '<div class="qkb-sources"><div class="qkb-sources-label">Sources Referenced</div>';
+    h += '<div class="src-box"><div class="src-label">Sources Referenced</div>';
     sources.forEach(function(s, i) {
-      bodyHtml += '<div class="qkb-source-item"><span class="qkb-source-idx">[' + (i + 1) + ']</span><div><div class="qkb-source-title"><a href="' + esc(s.url) + '" target="_blank">' + esc(s.title) + '</a></div><div class="qkb-source-meta">' + esc(s.source) + ' &middot; ' + esc(s.date) + '</div></div></div>';
+      h += '<div class="src-item"><span class="src-idx">[' + (i+1) + ']</span><div><div class="src-title"><a href="' + esc(s.url) + '" target="_blank">' + esc(s.title) + '</a></div><div class="src-meta">' + esc(s.source) + ' \u00B7 ' + esc(s.date) + '</div></div></div>';
     });
-    bodyHtml += '</div>';
+    h += '</div>';
   }
-
-  bodyHtml += '</div>';
-  div.innerHTML = bodyHtml;
+  h += '</div>';
+  div.innerHTML = h;
   thread.appendChild(div);
   thread.scrollTop = thread.scrollHeight;
 }
 
 function qkbShowThinking() {
   var thread = document.getElementById('qkb-thread');
-  var empty = document.getElementById('qkb-empty');
-  if (empty) empty.remove();
   var div = document.createElement('div');
-  div.className = 'qkb-thinking';
+  div.className = 'qmsg-think';
   div.id = 'qkb-thinking';
-  div.innerHTML = '<div class="qkb-thinking-inner"><div class="qkb-thinking-dots"><span></span><span></span><span></span></div><span class="qkb-thinking-text">Searching knowledge base...</span></div>';
+  div.innerHTML = '<div class="think-inner"><span class="think-dot"></span><span class="think-dot"></span><span class="think-dot"></span><span class="think-text">Searching knowledge base...</span></div>';
   thread.appendChild(div);
   thread.scrollTop = thread.scrollHeight;
 }
@@ -1109,22 +1110,19 @@ function qkbRemoveThinking() {
   if (el) el.remove();
 }
 
-async function qkbSearchArticles(query) {
+async function qkbSearch(query) {
   if (!CFG.sbUrl || !CFG.sbKey) return [];
   var words = query.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(function(w) { return w.length > 3; });
   if (words.length === 0) words = query.split(/\s+/).slice(0, 3);
-  var results = [];
-  var seen = {};
+  var results = [], seen = {};
   for (var i = 0; i < Math.min(words.length, 4); i++) {
     var w = words[i];
     var path = 'geo_articles?hidden=neq.true&or=(title.ilike.*' + encodeURIComponent(w) + '*,content_original.ilike.*' + encodeURIComponent(w) + '*)&order=published_at.desc.nullslast&limit=10';
     var res = await sbFetch(path);
-    if (res.ok && res.data) {
-      res.data.forEach(function(a) { if (!seen[a.id]) { seen[a.id] = true; results.push(a); } });
-    }
+    if (res.ok && res.data) res.data.forEach(function(a) { if (!seen[a.id]) { seen[a.id] = true; results.push(a); } });
   }
   results.forEach(function(a) {
-    var text = ((a.title || '') + ' ' + (a.content_original || '')).toLowerCase();
+    var text = ((a.title||'') + ' ' + (a.content_original||'')).toLowerCase();
     a._score = 0;
     words.forEach(function(w) { if (text.indexOf(w) !== -1) a._score++; });
   });
@@ -1146,16 +1144,12 @@ async function qkbSend() {
   input.value = '';
   input.style.height = 'auto';
 
-  qkbAddMessage('user', query);
+  qkbAddMsg('user', query);
   qkbShowThinking();
-  qkbQueryCount++;
-  var qEl = document.getElementById('qkb-stat-queries');
-  if (qEl) qEl.textContent = qkbQueryCount;
 
   try {
-    var articles = await qkbSearchArticles(query);
-    var context = '';
-    var sourcesForDisplay = [];
+    var articles = await qkbSearch(query);
+    var context = '', sourcesForDisplay = [];
     if (articles.length > 0) {
       context = 'The following articles from the knowledge base are relevant to the query. Use them to inform your answer. Cite sources by number [1], [2], etc.\n\n';
       articles.forEach(function(a, i) {
@@ -1164,10 +1158,10 @@ async function qkbSend() {
         var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : 'unknown date';
         var content = a.content_original || '';
         if (content.length > 2000) content = content.substring(0, 2000) + '...';
-        context += '[' + (i + 1) + '] Title: ' + (a.title || 'Untitled') + '\nSource: ' + srcName + ' | Date: ' + date + '\n';
+        context += '[' + (i+1) + '] Title: ' + (a.title||'Untitled') + '\nSource: ' + srcName + ' | Date: ' + date + '\n';
         if (a.author) context += 'Author: ' + a.author + '\n';
         context += 'Content: ' + content + '\n\n';
-        sourcesForDisplay.push({ title: a.title || 'Untitled', source: srcName, date: date, url: a.url || '#' });
+        sourcesForDisplay.push({ title: a.title||'Untitled', source: srcName, date: date, url: a.url||'#' });
       });
     } else {
       context = 'No directly relevant articles were found in the knowledge base. Answer based on your general knowledge and note that no KB sources were available.\n\n';
@@ -1179,12 +1173,7 @@ async function qkbSend() {
 
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CFG.antKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': CFG.antKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4096,
@@ -1197,7 +1186,7 @@ async function qkbSend() {
 
     if (!res.ok) {
       var errData = await res.json().catch(function() { return {}; });
-      qkbAddMessage('ai', '<p style="color:var(--red)">API Error: ' + (errData.error ? errData.error.message : res.status) + '</p>');
+      qkbAddMsg('ai', '<p style="color:var(--red)">API Error: ' + (errData.error ? errData.error.message : res.status) + '</p>');
     } else {
       var data = await res.json();
       var answer = data.content.map(function(c) { return c.text || ''; }).join('');
@@ -1208,14 +1197,14 @@ async function qkbSend() {
         .replace(/\n- /g, '\n<li>')
         .replace(/\n\d+\. /g, '\n<li>');
       htmlAnswer = '<p>' + htmlAnswer + '</p>';
-      qkbAddMessage('ai', htmlAnswer, articles.length > 0 ? sourcesForDisplay : null);
+      qkbAddMsg('ai', htmlAnswer, articles.length > 0 ? sourcesForDisplay : null);
       qkbHistory.push({ role: 'user', content: query });
       qkbHistory.push({ role: 'assistant', content: answer });
       if (qkbHistory.length > 20) qkbHistory = qkbHistory.slice(-20);
     }
   } catch (err) {
     qkbRemoveThinking();
-    qkbAddMessage('ai', '<p style="color:var(--red)">Error: ' + esc(err.message) + '</p>');
+    qkbAddMsg('ai', '<p style="color:var(--red)">Error: ' + esc(err.message) + '</p>');
   }
 
   qkbBusy = false;
@@ -1223,11 +1212,11 @@ async function qkbSend() {
   input.focus();
 }
 
-// Load QKB stats when switching to query tab
-var origShowView = showView;
+// Hook into showView to load QKB info
+var _origShowView = showView;
 showView = function(id, btn) {
-  origShowView(id, btn);
-  if (id === 'query') qkbLoadStats();
+  _origShowView(id, btn);
+  if (id === 'query') qkbLoadInfo();
 };
 
 </script>
