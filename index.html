@@ -263,27 +263,15 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 /* === QUERY KB === */
 #view-query { display: none; flex: 1; flex-direction: column; padding: 24px; gap: 16px; overflow: hidden; min-height: 0; }
 #view-query.active { display: flex; }
-.qkb-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; flex-shrink: 0; }
-.qkb-stat { background: var(–surface); border: 1px solid var(–border); padding: 16px 18px; border-top: 3px solid var(–accent); }
-.qkb-stat-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); margin-bottom: 8px; }
-.qkb-stat-val { font-family: var(–sans); font-size: 24px; font-weight: 700; color: #fff; }
-.qkb-prompt-panel { background: var(–surface); border: 1px solid var(–border); flex-shrink: 0; }
-.qkb-prompt-row { display: flex; align-items: stretch; }
+.qkb-prompt-panel { background: var(–surface); border: 1px solid var(–border); border-top: 3px solid var(–accent); flex-shrink: 0; }
+.qkb-prompt-row { display: flex; align-items: stretch; padding: 12px 18px; gap: 12px; background: var(–bg); }
 .qkb-input {
-flex: 1; background: var(–bg); border: none;
-color: var(–text); font-family: var(–mono); font-size: 13px; padding: 14px 18px;
-outline: none; resize: none; min-height: 48px; max-height: 140px; line-height: 1.6;
+flex: 1; background: var(–surface2); border: 1px solid var(–border);
+color: var(–text); font-family: var(–mono); font-size: 13px; padding: 12px 16px;
+outline: none; resize: none; min-height: 44px; max-height: 140px; line-height: 1.6;
 }
 .qkb-input::placeholder { color: var(–text3); }
-.qkb-input:focus { background: #060d16; box-shadow: inset 0 0 0 1px var(–accent); }
-.qkb-send {
-background: var(–accent); border: none; color: var(–bg);
-font-family: var(–mono); font-size: 11px; font-weight: 700;
-letter-spacing: 2px; padding: 0 28px; cursor: pointer;
-text-transform: uppercase; flex-shrink: 0; min-width: 80px;
-}
-.qkb-send:disabled { opacity: 0.3; cursor: not-allowed; }
-.qkb-send:hover:not(:disabled) { background: #33e0ff; }
+.qkb-input:focus { border-color: var(–accent); background: var(–bg); }
 .qkb-thread-panel {
 background: var(–surface); border: 1px solid var(–border);
 flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
@@ -352,14 +340,14 @@ text-transform: uppercase; margin-bottom: 8px;
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.6.2</div>
+  <div class="version">v5.6.3</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.6.2</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.6.3</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -530,21 +518,14 @@ text-transform: uppercase; margin-bottom: 8px;
   <!-- QUERY KB -->
 
   <div class="view" id="view-query">
-    <div class="qkb-stats">
-      <div class="qkb-stat"><div class="qkb-stat-lbl">Articles Indexed</div><div class="qkb-stat-val" style="color:var(--accent)" id="qkb-stat-articles">--</div></div>
-      <div class="qkb-stat" style="border-top-color:var(--green)"><div class="qkb-stat-lbl">Sources Active</div><div class="qkb-stat-val" style="color:var(--green)" id="qkb-stat-sources">--</div></div>
-      <div class="qkb-stat" style="border-top-color:var(--amber)"><div class="qkb-stat-lbl">Questions Asked</div><div class="qkb-stat-val" id="qkb-stat-queries">0</div></div>
-    </div>
     <div class="qkb-prompt-panel">
       <div class="panel-hdr">
         <div class="panel-title">Query</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn-sm" onclick="qkbClearChat()">New Chat</button>
-        </div>
+        <button class="btn-sm" onclick="qkbClearChat()">New Chat</button>
       </div>
       <div class="qkb-prompt-row">
         <textarea class="qkb-input" id="qkb-input" placeholder="Ask a question on the knowledge base..." rows="1" oninput="qkbAutoResize(this)"></textarea>
-        <button class="qkb-send" id="qkb-send" onclick="qkbSend()">ASK</button>
+        <button class="btn-accent" id="qkb-send" onclick="qkbSend()" style="padding:0 24px;letter-spacing:2px;min-width:70px">ASK</button>
       </div>
     </div>
     <div class="qkb-thread-panel">
