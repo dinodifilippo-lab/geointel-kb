@@ -187,12 +187,6 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 .detail-title { font-family: var(--sans); font-size: 22px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 16px; }
 .detail-content { color: var(--text2); line-height: 1.9; font-size: 13px; white-space: pre-wrap; }
 .detail-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-.query-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; }
-.query-row { display: flex; gap: 10px; }
-.query-input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 12px 14px; outline: none; resize: none; height: 60px; line-height: 1.6; }
-.query-input:focus { border-color: var(--accent); }
-.query-input::placeholder { color: var(--text3); }
-.query-filters { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .form-row { display: flex; flex-direction: column; gap: 6px; }
 .form-row label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); }
 .form-row input, .form-row select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 9px 12px; outline: none; width: 100%; }
@@ -265,11 +259,119 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* === QUERY KB CHAT UI === */
+.qkb-container {
+display: flex; flex-direction: column; flex: 1; min-height: 0;
+background: var(–bg); border: 1px solid var(–border); overflow: hidden;
+}
+.qkb-messages {
+flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px;
+}
+.qkb-welcome {
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+flex: 1; gap: 16px; padding: 40px 20px; text-align: center;
+}
+.qkb-welcome-icon { font-size: 48px; color: var(–accent); opacity: 0.3; }
+.qkb-welcome-title { font-family: var(–sans); font-size: 20px; font-weight: 700; color: var(–text); }
+.qkb-welcome-sub { font-size: 12px; color: var(–text3); max-width: 440px; line-height: 1.7; }
+.qkb-welcome-examples { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; width: 100%; max-width: 500px; }
+.qkb-example {
+background: var(–surface); border: 1px solid var(–border); padding: 12px 16px;
+font-size: 12px; color: var(–text2); cursor: pointer; text-align: left; line-height: 1.5;
+transition: all .15s;
+}
+.qkb-example:hover { border-color: var(–accent); color: var(–accent); background: var(–surface2); }
+
+.qkb-msg { display: flex; gap: 12px; max-width: 100%; }
+.qkb-msg-user { justify-content: flex-end; }
+.qkb-msg-user .qkb-bubble {
+background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
+color: var(–text); max-width: 75%;
+}
+.qkb-msg-ai .qkb-bubble {
+background: var(–surface); border: 1px solid var(–border);
+color: var(–text); max-width: 90%; flex: 1;
+}
+.qkb-bubble {
+padding: 16px 20px; font-family: var(–sans); font-size: 14px; line-height: 1.8;
+}
+.qkb-bubble p { margin-bottom: 12px; }
+.qkb-bubble p:last-child { margin-bottom: 0; }
+.qkb-bubble strong { color: #fff; font-weight: 600; }
+.qkb-bubble ul, .qkb-bubble ol { margin: 8px 0 12px 20px; }
+.qkb-bubble li { margin-bottom: 6px; }
+.qkb-avatar {
+width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center;
+justify-content: center; font-size: 14px; margin-top: 2px;
+background: var(–surface2); border: 1px solid var(–border);
+}
+.qkb-avatar-ai { color: var(–accent); }
+.qkb-sources {
+margin-top: 14px; padding-top: 12px; border-top: 1px solid var(–border);
+}
+.qkb-sources-label {
+font-family: var(–mono); font-size: 9px; letter-spacing: 2px;
+text-transform: uppercase; color: var(–text3); margin-bottom: 8px;
+}
+.qkb-source-item {
+display: flex; gap: 8px; align-items: baseline; padding: 5px 0;
+font-size: 11px; line-height: 1.4;
+}
+.qkb-source-idx {
+color: var(–accent); font-family: var(–mono); font-size: 10px;
+flex-shrink: 0; min-width: 18px;
+}
+.qkb-source-title { color: var(–text2); }
+.qkb-source-title a { color: var(–accent); text-decoration: none; }
+.qkb-source-title a:hover { text-decoration: underline; }
+.qkb-source-meta { color: var(–text3); font-size: 10px; }
+
+.qkb-thinking {
+display: flex; align-items: center; gap: 10px; padding: 16px 20px;
+background: var(–surface); border: 1px solid var(–border);
+}
+.qkb-thinking-text { color: var(–text3); font-size: 12px; animation: pulse 1.5s infinite; }
+.qkb-thinking-dots { display: flex; gap: 4px; }
+.qkb-thinking-dots span {
+width: 6px; height: 6px; background: var(–accent); border-radius: 50%;
+animation: pulse 1.2s infinite;
+}
+.qkb-thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.qkb-thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+.qkb-input-bar {
+display: flex; gap: 0; border-top: 2px solid var(–border); background: var(–surface);
+}
+.qkb-input {
+flex: 1; background: transparent; border: none; color: var(–text);
+font-family: var(–sans); font-size: 14px; padding: 16px 20px;
+outline: none; resize: none; min-height: 52px; max-height: 120px; line-height: 1.5;
+}
+.qkb-input::placeholder { color: var(–text3); }
+.qkb-send {
+background: var(–accent); border: none; color: var(–bg);
+font-family: var(–mono); font-size: 12px; font-weight: 700;
+letter-spacing: 2px; padding: 0 28px; cursor: pointer;
+text-transform: uppercase; flex-shrink: 0;
+}
+.qkb-send:disabled { opacity: 0.3; cursor: not-allowed; }
+.qkb-send:hover:not(:disabled) { background: #33e0ff; }
+.qkb-clear {
+background: none; border: none; border-left: 1px solid var(–border);
+color: var(–text3); font-size: 16px; padding: 0 14px; cursor: pointer;
+}
+.qkb-clear:hover { color: var(–red); }
 </style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </head>
 <body>
 
@@ -286,14 +388,14 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.5</div>
+  <div class="version">v5.6</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.5</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.6</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -351,10 +453,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
           </div>
         </div>
         <div class="log" id="run-log">
-          <div class="log-line">
-            <span class="log-time">--:--</span>
-            <span class="log-msg info">System ready. Configure sources and run.</span>
-          </div>
+          <div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">System ready. Configure sources and run.</span></div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:16px">
@@ -406,9 +505,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     <div id="articles-alert" style="display:none"></div>
     <div class="toolbar">
       <input class="search-input" placeholder="Search articles&hellip;" oninput="filterArticles(this.value)" id="art-search"/>
-      <select class="filter-select" onchange="filterArticles()" id="art-src-filter">
-        <option value="">All sources</option>
-      </select>
+      <select class="filter-select" onchange="filterArticles()" id="art-src-filter"><option value="">All sources</option></select>
       <div style="display:flex;gap:6px;margin-left:auto">
         <button class="view-toggle active" id="btn-list-view" onclick="setArticleView('list')">&#8801; List</button>
         <button class="view-toggle" id="btn-tree-view" onclick="setArticleView('tree')">&#8862; Tree</button>
@@ -421,12 +518,8 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
       <button class="btn-sm" onclick="deselectAllArticles()">NONE</button>
       <button class="btn-outline" onclick="deleteSelectedArticles()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete</button>
     </div>
-    <div id="articles-list-view">
-      <div class="articles-list" id="articles-list"></div>
-    </div>
-    <div id="articles-tree-view" style="display:none">
-      <div class="tree-wrap" id="articles-tree"></div>
-    </div>
+    <div id="articles-list-view"><div class="articles-list" id="articles-list"></div></div>
+    <div id="articles-tree-view" style="display:none"><div class="tree-wrap" id="articles-tree"></div></div>
   </div>
 
   <!-- ARTICLE DETAIL -->
@@ -446,23 +539,19 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
       <span style="color:var(--text3);font-size:11px;margin-left:8px" id="upload-doc-count"></span>
       <button class="btn-outline" style="margin-left:auto" onclick="loadUploadedDocs()">&#8635; Refresh</button>
     </div>
-
     <div class="upload-zone" id="upload-zone" onclick="document.getElementById('upload-file-input').click()">
       <div class="upload-zone-icon">&#8682;</div>
       <div class="upload-zone-text">Tap to select files or drag &amp; drop</div>
       <div class="upload-zone-sub">PDF &middot; DOCX &middot; PPTX &middot; XLSX</div>
     </div>
     <input type="file" id="upload-file-input" multiple accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="handleFileUpload(this.files)"/>
-
     <div class="upload-progress" id="upload-progress"></div>
-
     <div class="select-action-bar" id="doc-select-bar">
       <span class="select-count" id="doc-select-count">0 selected</span>
       <button class="btn-sm" onclick="selectAllDocs()">All</button>
       <button class="btn-sm" onclick="deselectAllDocs()">NONE</button>
       <button class="btn-outline" onclick="deleteSelectedDocs()" style="color:var(--red);border-color:var(--red);margin-left:auto">Delete Selected</button>
     </div>
-
     <div class="panel" style="margin-top:8px">
       <div class="panel-hdr">
         <div class="panel-title">Uploaded Documents</div>
@@ -476,16 +565,24 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 
   <!-- QUERY KB -->
 
-  <div class="view" id="view-query">
-    <div class="query-box">
-      <div class="query-row">
-        <textarea class="query-input" placeholder="Ask a question on the knowledge base&hellip;"></textarea>
-        <button class="btn-accent" style="padding:0 24px">ASK</button>
+  <div class="view" id="view-query" style="padding:0;gap:0">
+    <div class="qkb-container">
+      <div class="qkb-messages" id="qkb-messages">
+        <div class="qkb-welcome" id="qkb-welcome">
+          <div class="qkb-welcome-icon">&#9670;</div>
+          <div class="qkb-welcome-title">Knowledge Base Assistant</div>
+          <div class="qkb-welcome-sub">Ask any question. The assistant will search the knowledge base, analyze relevant articles, and provide a synthesized answer with sources.</div>
+          <div class="qkb-welcome-examples">
+            <div class="qkb-example" onclick="qkbAskExample(this)">What are the main geopolitical risk themes emerging from recent analyses?</div>
+            <div class="qkb-example" onclick="qkbAskExample(this)">Summarize the key developments in EU-China relations and their potential impact on trade policy</div>
+            <div class="qkb-example" onclick="qkbAskExample(this)">Identify 5 risk drivers with a severity score from 1-5 and explain the rationale for each</div>
+          </div>
+        </div>
       </div>
-      <div class="query-filters">
-        <select class="filter-select"><option>All sources</option></select>
-        <select class="filter-select"><option>Last 30 days</option></select>
-        <select class="filter-select"><option>Reply in: Auto</option></select>
+      <div class="qkb-input-bar">
+        <textarea class="qkb-input" id="qkb-input" placeholder="Ask a question..." rows="1" oninput="qkbAutoResize(this)"></textarea>
+        <button class="qkb-clear" onclick="qkbClearChat()" title="Clear chat">&#215;</button>
+        <button class="qkb-send" id="qkb-send" onclick="qkbSend()">SEND</button>
       </div>
     </div>
   </div>
@@ -555,9 +652,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 // === AUTH ===
 async function hashStr(s) {
   var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(function(b) {
-    return b.toString(16).padStart(2, '0');
-  }).join('');
+  return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
 }
 var pwdHash = localStorage.getItem('gi_pwd') || '';
 if (!pwdHash) document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
@@ -714,124 +809,40 @@ async function loadSources() {
   var artSrcFilter = document.getElementById('art-src-filter');
   if (artSrcFilter) {
     artSrcFilter.innerHTML = '<option value="">All sources</option>';
-    SOURCES.forEach(function(s) {
-      artSrcFilter.innerHTML += '<option value="' + esc(String(s.id)) + '">' + esc(s.name) + '</option>';
-    });
+    SOURCES.forEach(function(s) { artSrcFilter.innerHTML += '<option value="' + esc(String(s.id)) + '">' + esc(s.name) + '</option>'; });
   }
 }
 
 function renderSources(list) {
-  var el = document.getElementById('sources-rows');
-  if (!el) return;
+  var el = document.getElementById('sources-rows'); if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3)">No sources yet.</div>'; return; }
   var html = '';
   list.forEach(function(s) {
     var on = s.active === true;
     var isChecked = selectedSrcIds.indexOf(String(s.id)) !== -1;
     html += '<div class="table-row"><div>';
-    if (srcSelectMode) {
-      html += '<span onclick="toggleSrcSelect(\'' + esc(String(s.id)) + '\')" style="font-size:16px;color:' + (isChecked ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer">' + (isChecked ? '\u25CF' : '\u25CB') + '</span>';
-    }
-    html += '</div>';
-    html += '<div><div style="color:var(--text);font-size:12px;font-weight:500">' + esc(s.name) + '</div>';
+    if (srcSelectMode) html += '<span onclick="toggleSrcSelect(\'' + esc(String(s.id)) + '\')" style="font-size:16px;color:' + (isChecked ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer">' + (isChecked ? '\u25CF' : '\u25CB') + '</span>';
+    html += '</div><div><div style="color:var(--text);font-size:12px;font-weight:500">' + esc(s.name) + '</div>';
     html += '<div style="color:var(--text3);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">' + esc(s.url) + '</div></div>';
     html += '<div style="color:var(--text3);font-size:11px">' + (s.last_scraped_at ? new Date(s.last_scraped_at).toLocaleString() : '&mdash;') + '</div>';
     html += '<div><button class="toggle-btn ' + (on ? 'on' : '') + '" data-id="' + esc(String(s.id)) + '" data-active="' + on + '" onclick="toggleSrc(this)">' + (on ? 'ON' : 'OFF') + '</button></div>';
-    html += '<div style="display:flex;align-items:center;gap:8px">';
-    html += '<button class="btn-sm" onclick="openEditSrc(\'' + esc(String(s.id)) + '\')">Edit</button>';
-    html += '<button class="btn-sm" onclick="delSrc(\'' + esc(String(s.id)) + '\')">Del</button>';
-    html += '</div></div>';
+    html += '<div style="display:flex;align-items:center;gap:8px"><button class="btn-sm" onclick="openEditSrc(\'' + esc(String(s.id)) + '\')">Edit</button>';
+    html += '<button class="btn-sm" onclick="delSrc(\'' + esc(String(s.id)) + '\')">Del</button></div></div>';
   });
   el.innerHTML = html;
 }
 
-function filterSrcUI(q) {
-  renderSources(SOURCES.filter(function(s) {
-    return !q || s.name.toLowerCase().includes(q.toLowerCase()) || (s.url && s.url.includes(q));
-  }));
-}
-
-function toggleSrcSelectMode() {
-  srcSelectMode = !srcSelectMode; selectedSrcIds = [];
-  var bar = document.getElementById('src-select-bar');
-  var btn = document.getElementById('btn-src-select');
-  if (bar) bar.classList.toggle('visible', srcSelectMode);
-  if (btn) btn.textContent = srcSelectMode ? 'Cancel' : '\u2610 Select';
-  renderSources(SOURCES);
-}
-function toggleSrcSelect(id) {
-  var idx = selectedSrcIds.indexOf(id);
-  if (idx === -1) selectedSrcIds.push(id); else selectedSrcIds.splice(idx, 1);
-  var el = document.getElementById('src-select-count');
-  if (el) el.textContent = selectedSrcIds.length + ' selected';
-  renderSources(SOURCES);
-}
+function filterSrcUI(q) { renderSources(SOURCES.filter(function(s) { return !q || s.name.toLowerCase().includes(q.toLowerCase()) || (s.url && s.url.includes(q)); })); }
+function toggleSrcSelectMode() { srcSelectMode = !srcSelectMode; selectedSrcIds = []; var bar = document.getElementById('src-select-bar'); var btn = document.getElementById('btn-src-select'); if (bar) bar.classList.toggle('visible', srcSelectMode); if (btn) btn.textContent = srcSelectMode ? 'Cancel' : '\u2610 Select'; renderSources(SOURCES); }
+function toggleSrcSelect(id) { var idx = selectedSrcIds.indexOf(id); if (idx === -1) selectedSrcIds.push(id); else selectedSrcIds.splice(idx, 1); var el = document.getElementById('src-select-count'); if (el) el.textContent = selectedSrcIds.length + ' selected'; renderSources(SOURCES); }
 function selectAllSources() { selectedSrcIds = SOURCES.map(function(s) { return String(s.id); }); document.getElementById('src-select-count').textContent = selectedSrcIds.length + ' selected'; renderSources(SOURCES); }
 function deselectAllSources() { selectedSrcIds = []; document.getElementById('src-select-count').textContent = '0 selected'; renderSources(SOURCES); }
-async function deleteSelectedSources() {
-  if (!selectedSrcIds.length) return;
-  if (!confirm('Delete ' + selectedSrcIds.length + ' source(s)?')) return;
-  for (var i = 0; i < selectedSrcIds.length; i++) { await sbFetch('geo_sources?id=eq.' + selectedSrcIds[i], 'DELETE'); }
-  selectedSrcIds = []; srcSelectMode = false;
-  document.getElementById('src-select-bar').classList.remove('visible');
-  document.getElementById('btn-src-select').textContent = '\u2610 Select';
-  showToast('Sources deleted.', 'amber'); await loadSources();
-}
-async function toggleSrc(btn) {
-  var id = btn.dataset.id; var newActive = btn.dataset.active !== 'true';
-  btn.textContent = newActive ? 'ON' : 'OFF'; btn.classList.toggle('on', newActive); btn.dataset.active = String(newActive);
-  var res = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newActive });
-  if (!res.ok) { btn.textContent = !newActive ? 'ON' : 'OFF'; btn.classList.toggle('on', !newActive); btn.dataset.active = String(!newActive); }
-  else { var s = SOURCES.find(function(x) { return String(x.id) === String(id); }); if (s) s.active = newActive; }
-}
-function openAddSrc() {
-  document.getElementById('modal-src-title').textContent = 'Add Source';
-  document.getElementById('modal-src-id').value = '';
-  document.getElementById('modal-src-name').value = '';
-  document.getElementById('modal-src-url').value = '';
-  document.getElementById('modal-src-discover').value = '';
-  document.getElementById('modal-src-process').value = '';
-  document.getElementById('modal-src-err').textContent = '';
-  openModal('modal-source');
-}
-function openEditSrc(id) {
-  var s = SOURCES.find(function(x) { return String(x.id) === String(id); }); if (!s) return;
-  document.getElementById('modal-src-title').textContent = 'Edit Source';
-  document.getElementById('modal-src-id').value = id;
-  document.getElementById('modal-src-name').value = s.name;
-  document.getElementById('modal-src-url').value = s.url;
-  document.getElementById('modal-src-discover').value = (s.fetcher_config && s.fetcher_config.discover_function) || '';
-  document.getElementById('modal-src-process').value = (s.fetcher_config && s.fetcher_config.process_function) || '';
-  document.getElementById('modal-src-err').textContent = '';
-  openModal('modal-source');
-}
-async function saveSrc() {
-  var id = document.getElementById('modal-src-id').value;
-  var name = document.getElementById('modal-src-name').value.trim();
-  var url = document.getElementById('modal-src-url').value.trim();
-  var discFunc = document.getElementById('modal-src-discover').value.trim();
-  var procFunc = document.getElementById('modal-src-process').value.trim();
-  var err = document.getElementById('modal-src-err');
-  if (!name || !url) { err.textContent = 'Name and URL required.'; return; }
-  var existingSrc = id ? SOURCES.find(function(x) { return String(x.id) === String(id); }) : null;
-  var existingConfig = (existingSrc && existingSrc.fetcher_config) ? existingSrc.fetcher_config : {};
-  var fetcherConfig = Object.assign({}, existingConfig);
-  if (discFunc) fetcherConfig.discover_function = discFunc; else delete fetcherConfig.discover_function;
-  if (procFunc) fetcherConfig.process_function = procFunc; else delete fetcherConfig.process_function;
-  if (Object.keys(fetcherConfig).length === 0) fetcherConfig = null;
-  var data = { name: name, url: url, fetcher_config: fetcherConfig };
-  var saveRes;
-  if (id) { saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data); }
-  else { saveRes = await sbFetch('geo_sources', 'POST', Object.assign({ active: true }, data)); }
-  if (!saveRes.ok) { err.textContent = 'Failed to save.'; return; }
-  closeModal('modal-source'); showToast(id ? 'Source updated.' : 'Source added.', 'green'); await loadSources();
-}
-async function delSrc(id) {
-  if (!confirm('Delete this source?')) return;
-  await sbFetch('geo_sources?id=eq.' + id, 'DELETE');
-  SOURCES = SOURCES.filter(function(x) { return String(x.id) !== String(id); });
-  renderSources(SOURCES); showToast('Source deleted.', 'amber');
-}
+async function deleteSelectedSources() { if (!selectedSrcIds.length) return; if (!confirm('Delete ' + selectedSrcIds.length + ' source(s)?')) return; for (var i = 0; i < selectedSrcIds.length; i++) { await sbFetch('geo_sources?id=eq.' + selectedSrcIds[i], 'DELETE'); } selectedSrcIds = []; srcSelectMode = false; document.getElementById('src-select-bar').classList.remove('visible'); document.getElementById('btn-src-select').textContent = '\u2610 Select'; showToast('Sources deleted.', 'amber'); await loadSources(); }
+async function toggleSrc(btn) { var id = btn.dataset.id; var newActive = btn.dataset.active !== 'true'; btn.textContent = newActive ? 'ON' : 'OFF'; btn.classList.toggle('on', newActive); btn.dataset.active = String(newActive); var res = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', { active: newActive }); if (!res.ok) { btn.textContent = !newActive ? 'ON' : 'OFF'; btn.classList.toggle('on', !newActive); btn.dataset.active = String(!newActive); } else { var s = SOURCES.find(function(x) { return String(x.id) === String(id); }); if (s) s.active = newActive; } }
+function openAddSrc() { document.getElementById('modal-src-title').textContent = 'Add Source'; document.getElementById('modal-src-id').value = ''; document.getElementById('modal-src-name').value = ''; document.getElementById('modal-src-url').value = ''; document.getElementById('modal-src-discover').value = ''; document.getElementById('modal-src-process').value = ''; document.getElementById('modal-src-err').textContent = ''; openModal('modal-source'); }
+function openEditSrc(id) { var s = SOURCES.find(function(x) { return String(x.id) === String(id); }); if (!s) return; document.getElementById('modal-src-title').textContent = 'Edit Source'; document.getElementById('modal-src-id').value = id; document.getElementById('modal-src-name').value = s.name; document.getElementById('modal-src-url').value = s.url; document.getElementById('modal-src-discover').value = (s.fetcher_config && s.fetcher_config.discover_function) || ''; document.getElementById('modal-src-process').value = (s.fetcher_config && s.fetcher_config.process_function) || ''; document.getElementById('modal-src-err').textContent = ''; openModal('modal-source'); }
+async function saveSrc() { var id = document.getElementById('modal-src-id').value; var name = document.getElementById('modal-src-name').value.trim(); var url = document.getElementById('modal-src-url').value.trim(); var discFunc = document.getElementById('modal-src-discover').value.trim(); var procFunc = document.getElementById('modal-src-process').value.trim(); var err = document.getElementById('modal-src-err'); if (!name || !url) { err.textContent = 'Name and URL required.'; return; } var existingSrc = id ? SOURCES.find(function(x) { return String(x.id) === String(id); }) : null; var existingConfig = (existingSrc && existingSrc.fetcher_config) ? existingSrc.fetcher_config : {}; var fetcherConfig = Object.assign({}, existingConfig); if (discFunc) fetcherConfig.discover_function = discFunc; else delete fetcherConfig.discover_function; if (procFunc) fetcherConfig.process_function = procFunc; else delete fetcherConfig.process_function; if (Object.keys(fetcherConfig).length === 0) fetcherConfig = null; var data = { name: name, url: url, fetcher_config: fetcherConfig }; var saveRes; if (id) { saveRes = await sbFetch('geo_sources?id=eq.' + id, 'PATCH', data); } else { saveRes = await sbFetch('geo_sources', 'POST', Object.assign({ active: true }, data)); } if (!saveRes.ok) { err.textContent = 'Failed to save.'; return; } closeModal('modal-source'); showToast(id ? 'Source updated.' : 'Source added.', 'green'); await loadSources(); }
+async function delSrc(id) { if (!confirm('Delete this source?')) return; await sbFetch('geo_sources?id=eq.' + id, 'DELETE'); SOURCES = SOURCES.filter(function(x) { return String(x.id) !== String(id); }); renderSources(SOURCES); showToast('Source deleted.', 'amber'); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -864,57 +875,27 @@ async function loadArticles() {
 function filterArticles() { articlePage = 0; loadArticles(); }
 
 async function checkArticleAlerts() {
-  var alertDiv = document.getElementById('articles-alert');
-  if (!alertDiv) return;
-  var maxArt = CFG.maxArt || 500;
-  var overSources = [];
-  for (var i = 0; i < SOURCES.length; i++) {
-    var s = SOURCES[i];
-    var cnt = await sbCount('geo_articles', 'source_id=eq.' + s.id + '&hidden=neq.true');
-    if (cnt > maxArt) {
-      overSources.push({ name: s.name, count: cnt });
-    }
-  }
-  if (overSources.length > 0) {
-    var msgs = overSources.map(function(o) { return o.name + ' (' + o.count + ')'; }).join(', ');
-    alertDiv.innerHTML = '<div class="alert-bar"><span style="font-size:14px">&#9888;</span><span class="alert-msg">Threshold exceeded (max ' + maxArt + '): ' + esc(msgs) + '. Consider hiding old articles.</span></div>';
-    alertDiv.style.display = '';
-  } else {
-    alertDiv.style.display = 'none';
-  }
+  var alertDiv = document.getElementById('articles-alert'); if (!alertDiv) return;
+  var maxArt = CFG.maxArt || 500; var overSources = [];
+  for (var i = 0; i < SOURCES.length; i++) { var s = SOURCES[i]; var cnt = await sbCount('geo_articles', 'source_id=eq.' + s.id + '&hidden=neq.true'); if (cnt > maxArt) overSources.push({ name: s.name, count: cnt }); }
+  if (overSources.length > 0) { var msgs = overSources.map(function(o) { return o.name + ' (' + o.count + ')'; }).join(', '); alertDiv.innerHTML = '<div class="alert-bar"><span style="font-size:14px">&#9888;</span><span class="alert-msg">Threshold exceeded (max ' + maxArt + '): ' + esc(msgs) + '. Consider hiding old articles.</span></div>'; alertDiv.style.display = ''; }
+  else { alertDiv.style.display = 'none'; }
 }
 
-function setArticleView(mode) {
-  currentViewMode = mode;
-  document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none';
-  document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none';
-  document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
-  document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree');
-  renderArticles();
-}
-
-function renderArticles() {
-  if (currentViewMode === 'list') renderListView(); else renderTreeView();
-}
+function setArticleView(mode) { currentViewMode = mode; document.getElementById('articles-list-view').style.display = mode === 'list' ? '' : 'none'; document.getElementById('articles-tree-view').style.display = mode === 'tree' ? '' : 'none'; document.getElementById('btn-list-view').classList.toggle('active', mode === 'list'); document.getElementById('btn-tree-view').classList.toggle('active', mode === 'tree'); renderArticles(); }
+function renderArticles() { if (currentViewMode === 'list') renderListView(); else renderTreeView(); }
 
 function renderListView() {
-  var container = document.getElementById('articles-list');
-  if (!container) return;
+  var container = document.getElementById('articles-list'); if (!container) return;
   if (!ARTICLES.length) { container.innerHTML = '<div class="empty-state">No articles found.</div>'; return; }
   var html = '';
   ARTICLES.forEach(function(a) {
-    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
-    var srcName = src ? src.name : 'Unknown';
+    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); }); var srcName = src ? src.name : 'Unknown';
     var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : (a.scraped_at ? new Date(a.scraped_at).toLocaleDateString() : '-');
-    var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1;
-    var aid = esc(String(a.id));
+    var isSelected = selectedArticleIds.indexOf(String(a.id)) !== -1; var aid = esc(String(a.id));
     html += '<div class="article-card' + (isSelected ? ' selected' : '') + '" onclick="' + (selectModeActive ? 'toggleArticleSelect(\'' + aid + '\')' : 'openArticle(\'' + aid + '\')') + '" style="display:flex;gap:12px;align-items:flex-start">';
-    if (selectModeActive) {
-      html += '<span style="font-size:18px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;margin-top:2px;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
-    }
-    html += '<div style="flex:1"><div class="art-meta">';
-    html += '<span class="art-source">' + esc(srcName) + '</span>';
-    html += '<span class="art-date">' + date + '</span>';
+    if (selectModeActive) html += '<span style="font-size:18px;line-height:1;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';flex-shrink:0;margin-top:2px;pointer-events:none">' + (isSelected ? '&#9679;' : '&#9675;') + '</span>';
+    html += '<div style="flex:1"><div class="art-meta"><span class="art-source">' + esc(srcName) + '</span><span class="art-date">' + date + '</span>';
     if (a.author) html += '<span class="art-author">' + esc(a.author) + '</span>';
     html += '</div><div class="art-title">' + esc(a.title) + '</div></div></div>';
   });
@@ -922,71 +903,36 @@ function renderListView() {
 }
 
 function renderTreeView() {
-  var container = document.getElementById('articles-tree');
-  if (!container) return;
+  var container = document.getElementById('articles-tree'); if (!container) return;
   var tree = {};
-  ARTICLES.forEach(function(a) {
-    var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
-    var srcName = src ? src.name : 'Unknown';
-    var srcId = String(a.source_id);
-    var yr, mo;
-    if (a.published_at) {
-      var d = new Date(a.published_at);
-      yr = String(d.getFullYear());
-      mo = d.toLocaleString('en', { month: 'long' });
-    } else { yr = '-'; mo = '-'; }
-    if (!tree[srcId]) tree[srcId] = { name: srcName, years: {} };
-    if (!tree[srcId].years[yr]) tree[srcId].years[yr] = {};
-    if (!tree[srcId].years[yr][mo]) tree[srcId].years[yr][mo] = [];
-    tree[srcId].years[yr][mo].push(a);
-  });
+  ARTICLES.forEach(function(a) { var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); }); var srcName = src ? src.name : 'Unknown'; var srcId = String(a.source_id); var yr, mo; if (a.published_at) { var d = new Date(a.published_at); yr = String(d.getFullYear()); mo = d.toLocaleString('en', { month: 'long' }); } else { yr = '-'; mo = '-'; } if (!tree[srcId]) tree[srcId] = { name: srcName, years: {} }; if (!tree[srcId].years[yr]) tree[srcId].years[yr] = {}; if (!tree[srcId].years[yr][mo]) tree[srcId].years[yr][mo] = []; tree[srcId].years[yr][mo].push(a); });
   container.innerHTML = '';
   function rerender() {
     container.innerHTML = '';
     Object.keys(tree).forEach(function(srcId) {
-      var srcNode = tree[srcId];
-      var allSrcIds = [];
-      Object.keys(srcNode.years).forEach(function(yr) { Object.keys(srcNode.years[yr]).forEach(function(mo) { srcNode.years[yr][mo].forEach(function(a) { allSrcIds.push(String(a.id)); }); }); });
-      var srcCount = allSrcIds.length;
-      var srcOpen = !!treeOpenSrc[srcId];
-      var srcRow = document.createElement('div');
-      srcRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);margin-bottom:2px;user-select:none';
-      srcRow.addEventListener('click', function() { treeOpenSrc[srcId] = !treeOpenSrc[srcId]; rerender(); });
+      var srcNode = tree[srcId]; var allSrcIds = []; Object.keys(srcNode.years).forEach(function(yr) { Object.keys(srcNode.years[yr]).forEach(function(mo) { srcNode.years[yr][mo].forEach(function(a) { allSrcIds.push(String(a.id)); }); }); }); var srcCount = allSrcIds.length; var srcOpen = !!treeOpenSrc[srcId];
+      var srcRow = document.createElement('div'); srcRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);margin-bottom:2px;user-select:none'; srcRow.addEventListener('click', function() { treeOpenSrc[srcId] = !treeOpenSrc[srcId]; rerender(); });
       var srcChev = document.createElement('span'); srcChev.className = 'tree-chevron' + (srcOpen ? ' open' : ''); srcChev.textContent = '\u25B6'; srcRow.appendChild(srcChev);
       var srcLbl = document.createElement('span'); srcLbl.style.cssText = 'flex:1;color:var(--text);font-size:12px;font-weight:500'; srcLbl.textContent = srcNode.name; srcRow.appendChild(srcLbl);
-      var srcCnt = document.createElement('span'); srcCnt.className = 'tree-count'; srcCnt.textContent = srcCount + ' articles'; srcRow.appendChild(srcCnt);
-      container.appendChild(srcRow);
+      var srcCnt = document.createElement('span'); srcCnt.className = 'tree-count'; srcCnt.textContent = srcCount + ' articles'; srcRow.appendChild(srcCnt); container.appendChild(srcRow);
       if (!srcOpen) return;
       var yearKeys = Object.keys(srcNode.years).sort(function(a, b) { if (a === '-') return 1; if (b === '-') return -1; return Number(b) - Number(a); });
       yearKeys.forEach(function(yr) {
-        var yrKey = srcId + '_' + yr;
-        var allYrIds = [];
-        Object.keys(srcNode.years[yr]).forEach(function(mo) { srcNode.years[yr][mo].forEach(function(a) { allYrIds.push(String(a.id)); }); });
-        var yrOpen = !!treeOpenYr[yrKey];
-        var yrRow = document.createElement('div');
-        yrRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 16px 8px 32px;cursor:pointer;color:var(--text2);font-size:11px;letter-spacing:1px;background:var(--surface);border-bottom:1px solid var(--border)';
-        yrRow.addEventListener('click', function() { treeOpenYr[yrKey] = !treeOpenYr[yrKey]; rerender(); });
+        var yrKey = srcId + '_' + yr; var allYrIds = []; Object.keys(srcNode.years[yr]).forEach(function(mo) { srcNode.years[yr][mo].forEach(function(a) { allYrIds.push(String(a.id)); }); }); var yrOpen = !!treeOpenYr[yrKey];
+        var yrRow = document.createElement('div'); yrRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 16px 8px 32px;cursor:pointer;color:var(--text2);font-size:11px;letter-spacing:1px;background:var(--surface);border-bottom:1px solid var(--border)'; yrRow.addEventListener('click', function() { treeOpenYr[yrKey] = !treeOpenYr[yrKey]; rerender(); });
         var yrChev = document.createElement('span'); yrChev.className = 'tree-chevron' + (yrOpen ? ' open' : ''); yrChev.textContent = '\u25B6'; yrRow.appendChild(yrChev);
         var yrLbl = document.createElement('span'); yrLbl.style.flex = '1'; yrLbl.textContent = yr === '-' ? '- (no date)' : yr; yrRow.appendChild(yrLbl);
-        var yrCnt = document.createElement('span'); yrCnt.className = 'tree-count'; yrCnt.textContent = allYrIds.length; yrRow.appendChild(yrCnt);
-        container.appendChild(yrRow);
+        var yrCnt = document.createElement('span'); yrCnt.className = 'tree-count'; yrCnt.textContent = allYrIds.length; yrRow.appendChild(yrCnt); container.appendChild(yrRow);
         if (!yrOpen) return;
         Object.keys(srcNode.years[yr]).forEach(function(mo) {
-          var moKey = yrKey + '_' + mo;
-          var moArr = srcNode.years[yr][mo];
-          var moOpen = !!treeOpenMo[moKey];
-          var moRow = document.createElement('div');
-          moRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 16px 7px 48px;cursor:pointer;color:var(--text3);font-size:11px;background:var(--surface);border-bottom:1px solid var(--border)';
-          moRow.addEventListener('click', function() { treeOpenMo[moKey] = !treeOpenMo[moKey]; rerender(); });
+          var moKey = yrKey + '_' + mo; var moArr = srcNode.years[yr][mo]; var moOpen = !!treeOpenMo[moKey];
+          var moRow = document.createElement('div'); moRow.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 16px 7px 48px;cursor:pointer;color:var(--text3);font-size:11px;background:var(--surface);border-bottom:1px solid var(--border)'; moRow.addEventListener('click', function() { treeOpenMo[moKey] = !treeOpenMo[moKey]; rerender(); });
           var moChev = document.createElement('span'); moChev.className = 'tree-chevron' + (moOpen ? ' open' : ''); moChev.textContent = '\u25B6'; moRow.appendChild(moChev);
           var moLbl = document.createElement('span'); moLbl.style.flex = '1'; moLbl.textContent = mo === '-' ? '- (no date)' : mo; moRow.appendChild(moLbl);
-          var moCnt = document.createElement('span'); moCnt.className = 'tree-count'; moCnt.textContent = moArr.length; moRow.appendChild(moCnt);
-          container.appendChild(moRow);
+          var moCnt = document.createElement('span'); moCnt.className = 'tree-count'; moCnt.textContent = moArr.length; moRow.appendChild(moCnt); container.appendChild(moRow);
           if (!moOpen) return;
           moArr.forEach(function(a) {
-            var artRow = document.createElement('div');
-            artRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 16px 8px 64px;border-bottom:1px solid rgba(30,64,96,0.5);cursor:pointer;background:var(--surface)';
-            artRow.addEventListener('click', function() { openArticle(String(a.id)); });
+            var artRow = document.createElement('div'); artRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 16px 8px 64px;border-bottom:1px solid rgba(30,64,96,0.5);cursor:pointer;background:var(--surface)'; artRow.addEventListener('click', function() { openArticle(String(a.id)); });
             var artContent = document.createElement('div'); artContent.style.flex = '1';
             var artTitle = document.createElement('div'); artTitle.className = 'tree-article-title'; artTitle.textContent = a.title || '(untitled)'; artContent.appendChild(artTitle);
             var artMeta = document.createElement('div'); artMeta.className = 'tree-article-meta';
@@ -1002,168 +948,68 @@ function renderTreeView() {
 }
 
 function openArticle(id) {
-  var a = ARTICLES.find(function(x) { return String(x.id) === String(id); });
-  if (!a) return;
-  var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
-  var srcName = src ? src.name : 'Unknown';
+  var a = ARTICLES.find(function(x) { return String(x.id) === String(id); }); if (!a) return;
+  var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); }); var srcName = src ? src.name : 'Unknown';
   var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : '-';
-  var detail = document.getElementById('article-detail-content');
-  if (!detail) return;
-  detail.innerHTML =
-    '<div class="detail-meta"><span class="art-source">' + esc(srcName) + '</span>' +
-    '<span class="art-date">' + date + '</span></div>' +
-    '<div class="detail-title">' + esc(a.title) + '</div>' +
-    (a.author ? '<div style="color:var(--text3);font-size:11px;margin-bottom:16px">Author: ' + esc(a.author) + '</div>' : '') +
-    (a.url ? '<div style="margin-bottom:16px"><a href="' + esc(a.url) + '" target="_blank" style="color:var(--accent);font-size:12px">Original article &#8599;</a></div>' : '') +
-    '<hr class="detail-divider"/>' +
-    '<div class="detail-content">' + esc(a.content_translated || a.content_original || 'No content available.') + '</div>';
+  var detail = document.getElementById('article-detail-content'); if (!detail) return;
+  detail.innerHTML = '<div class="detail-meta"><span class="art-source">' + esc(srcName) + '</span><span class="art-date">' + date + '</span></div>' + '<div class="detail-title">' + esc(a.title) + '</div>' + (a.author ? '<div style="color:var(--text3);font-size:11px;margin-bottom:16px">Author: ' + esc(a.author) + '</div>' : '') + (a.url ? '<div style="margin-bottom:16px"><a href="' + esc(a.url) + '" target="_blank" style="color:var(--accent);font-size:12px">Original article &#8599;</a></div>' : '') + '<hr class="detail-divider"/>' + '<div class="detail-content">' + esc(a.content_translated || a.content_original || 'No content available.') + '</div>';
   showView('article-detail', null);
 }
 
-function toggleSelectMode() {
-  selectModeActive = !selectModeActive; selectedArticleIds = [];
-  var bar = document.getElementById('select-action-bar');
-  var btn = document.getElementById('btn-select-toggle');
-  if (bar) bar.classList.toggle('visible', selectModeActive);
-  if (btn) btn.textContent = selectModeActive ? 'Cancel' : '\u2610 Select';
-  updateSelectBar(); renderArticles();
-}
-function toggleArticleSelect(id) {
-  var idx = selectedArticleIds.indexOf(id);
-  if (idx === -1) selectedArticleIds.push(id); else selectedArticleIds.splice(idx, 1);
-  updateSelectBar(); renderArticles();
-}
-function updateSelectBar() {
-  var el = document.getElementById('select-count');
-  if (el) el.textContent = selectedArticleIds.length + ' selected';
-}
+function toggleSelectMode() { selectModeActive = !selectModeActive; selectedArticleIds = []; var bar = document.getElementById('select-action-bar'); var btn = document.getElementById('btn-select-toggle'); if (bar) bar.classList.toggle('visible', selectModeActive); if (btn) btn.textContent = selectModeActive ? 'Cancel' : '\u2610 Select'; updateSelectBar(); renderArticles(); }
+function toggleArticleSelect(id) { var idx = selectedArticleIds.indexOf(id); if (idx === -1) selectedArticleIds.push(id); else selectedArticleIds.splice(idx, 1); updateSelectBar(); renderArticles(); }
+function updateSelectBar() { var el = document.getElementById('select-count'); if (el) el.textContent = selectedArticleIds.length + ' selected'; }
 function selectAllArticles() { selectedArticleIds = ARTICLES.map(function(a) { return String(a.id); }); updateSelectBar(); renderArticles(); }
 function deselectAllArticles() { selectedArticleIds = []; updateSelectBar(); renderArticles(); }
-async function deleteSelectedArticles() {
-  if (!selectedArticleIds.length) return;
-  if (!confirm('Hide ' + selectedArticleIds.length + ' article(s)?')) return;
-  for (var i = 0; i < selectedArticleIds.length; i++) {
-    await sbFetch('geo_articles?id=eq.' + selectedArticleIds[i], 'PATCH', { hidden: true });
-  }
-  selectedArticleIds = []; showToast('Articles hidden.', 'amber'); await loadArticles();
-}
+async function deleteSelectedArticles() { if (!selectedArticleIds.length) return; if (!confirm('Hide ' + selectedArticleIds.length + ' article(s)?')) return; for (var i = 0; i < selectedArticleIds.length; i++) { await sbFetch('geo_articles?id=eq.' + selectedArticleIds[i], 'PATCH', { hidden: true }); } selectedArticleIds = []; showToast('Articles hidden.', 'amber'); await loadArticles(); }
 
 // === DASHBOARD STATS ===
 async function loadDashboardStats() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
-  var totalArticles = await sbCount('geo_articles', 'hidden=neq.true');
-  var el = document.getElementById('stat-total-articles');
-  if (el) el.textContent = totalArticles;
-  var pendingCount = await sbCount('geo_queue', 'status=eq.pending');
-  var el2 = document.getElementById('stat-queue-pending');
-  if (el2) el2.textContent = pendingCount;
-  var failedCount = await sbCount('geo_queue', 'status=eq.failed');
-  var el3 = document.getElementById('stat-queue-failed');
-  if (el3) el3.textContent = failedCount;
-  var btnRetry = document.getElementById('btn-retry-failed');
-  if (btnRetry) btnRetry.style.display = failedCount > 0 ? '' : 'none';
-  var activeSrc = SOURCES.filter(function(s) { return s.active === true; }).length;
-  var el4 = document.getElementById('stat-active-sources');
-  if (el4) el4.textContent = activeSrc;
+  var totalArticles = await sbCount('geo_articles', 'hidden=neq.true'); var el = document.getElementById('stat-total-articles'); if (el) el.textContent = totalArticles;
+  var pendingCount = await sbCount('geo_queue', 'status=eq.pending'); var el2 = document.getElementById('stat-queue-pending'); if (el2) el2.textContent = pendingCount;
+  var failedCount = await sbCount('geo_queue', 'status=eq.failed'); var el3 = document.getElementById('stat-queue-failed'); if (el3) el3.textContent = failedCount;
+  var btnRetry = document.getElementById('btn-retry-failed'); if (btnRetry) btnRetry.style.display = failedCount > 0 ? '' : 'none';
+  var activeSrc = SOURCES.filter(function(s) { return s.active === true; }).length; var el4 = document.getElementById('stat-active-sources'); if (el4) el4.textContent = activeSrc;
   await loadQueueStatus();
 }
 
 async function loadQueueStatus() {
-  var body = document.getElementById('queue-status-body');
-  if (!body) return;
-  var res = await sbFetch('geo_queue?select=source_id,status');
-  if (!res.ok || !res.data) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No data</div>'; return; }
-  var counts = {};
-  res.data.forEach(function(r) {
-    var srcId = r.source_id;
-    if (!counts[srcId]) counts[srcId] = { pending: 0, done: 0, error: 0, failed: 0 };
-    var st = r.status || 'pending';
-    if (counts[srcId][st] !== undefined) counts[srcId][st]++;
-  });
+  var body = document.getElementById('queue-status-body'); if (!body) return;
+  var res = await sbFetch('geo_queue?select=source_id,status'); if (!res.ok || !res.data) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No data</div>'; return; }
+  var counts = {}; res.data.forEach(function(r) { var srcId = r.source_id; if (!counts[srcId]) counts[srcId] = { pending: 0, done: 0, error: 0, failed: 0 }; var st = r.status || 'pending'; if (counts[srcId][st] !== undefined) counts[srcId][st]++; });
   var html = '';
-  SOURCES.forEach(function(s) {
-    var c = counts[String(s.id)];
-    if (!c) return;
-    var total = c.pending + c.done + c.error + c.failed;
-    if (total === 0) return;
-    html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
-    html += '<span style="flex:1;color:var(--text);font-size:11px">' + esc(s.name) + '</span>';
-    html += '<span style="color:var(--accent);font-size:10px">' + c.pending + ' pend</span>';
-    html += '<span style="color:var(--green);font-size:10px">' + c.done + ' done</span>';
-    if (c.error > 0) html += '<span style="color:var(--amber);font-size:10px">' + c.error + ' err</span>';
-    if (c.failed > 0) html += '<span style="color:var(--red);font-size:10px">' + c.failed + ' fail</span>';
-    html += '</div>';
-  });
+  SOURCES.forEach(function(s) { var c = counts[String(s.id)]; if (!c) return; var total = c.pending + c.done + c.error + c.failed; if (total === 0) return; html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="flex:1;color:var(--text);font-size:11px">' + esc(s.name) + '</span><span style="color:var(--accent);font-size:10px">' + c.pending + ' pend</span><span style="color:var(--green);font-size:10px">' + c.done + ' done</span>'; if (c.error > 0) html += '<span style="color:var(--amber);font-size:10px">' + c.error + ' err</span>'; if (c.failed > 0) html += '<span style="color:var(--red);font-size:10px">' + c.failed + ' fail</span>'; html += '</div>'; });
   if (!html) html = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">Queue empty</div>';
   body.innerHTML = html;
 }
 
-function refreshDashboard() {
-  loadDashboardStats();
-  var ts = document.getElementById('dash-refresh-ts');
-  if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
-}
+function refreshDashboard() { loadDashboardStats(); var ts = document.getElementById('dash-refresh-ts'); if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString(); }
 
 // === ASYNC JOB PIPELINE ===
-var activeJobId = null;
-var jobPollTimer = null;
-var lastLogIndex = 0;
+var activeJobId = null; var jobPollTimer = null; var lastLogIndex = 0;
 
 async function startAsyncJob(jobType) {
   if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
   if (activeJobId) { showToast('A job is already running. Stop it first.', 'amber'); return; }
-  var res = await sbFetch('geo_jobs', 'POST', { job_type: jobType, status: 'running', progress: {} });
-  if (!res.ok || !res.data || !res.data.length) { showToast('Failed to create job.', 'red'); return; }
-  var job = res.data[0];
-  activeJobId = job.id;
-  lastLogIndex = 0;
-  logRun('=== JOB STARTED: ' + jobType.toUpperCase() + ' ===', 'info');
-  logRun('Job ID: ' + job.id, 'info');
-  setAsyncRunningUI(true);
-  // Fire-and-forget: launch job-worker
-  fetch(CFG.sbUrl + '/functions/v1/job-worker', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
-    body: JSON.stringify({ job_id: job.id })
-  }).catch(function() {});
+  var res = await sbFetch('geo_jobs', 'POST', { job_type: jobType, status: 'running', progress: {} }); if (!res.ok || !res.data || !res.data.length) { showToast('Failed to create job.', 'red'); return; }
+  var job = res.data[0]; activeJobId = job.id; lastLogIndex = 0;
+  logRun('=== JOB STARTED: ' + jobType.toUpperCase() + ' ===', 'info'); logRun('Job ID: ' + job.id, 'info'); setAsyncRunningUI(true);
+  fetch(CFG.sbUrl + '/functions/v1/job-worker', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey }, body: JSON.stringify({ job_id: job.id }) }).catch(function() {});
 }
 
-async function stopAsyncJob() {
-  if (!activeJobId) { showToast('No active job.', 'amber'); return; }
-  await sbFetch('geo_jobs?id=eq.' + activeJobId, 'PATCH', { status: 'cancelled' });
-  logRun('=== JOB STOP REQUESTED ===', 'warn');
-  activeJobId = null;
-  setAsyncRunningUI(false);
-}
+async function stopAsyncJob() { if (!activeJobId) { showToast('No active job.', 'amber'); return; } await sbFetch('geo_jobs?id=eq.' + activeJobId, 'PATCH', { status: 'cancelled' }); logRun('=== JOB STOP REQUESTED ===', 'warn'); activeJobId = null; setAsyncRunningUI(false); }
 
 function setAsyncRunningUI(running) {
-  var badge = document.getElementById('status-badge');
-  var btnRun = document.getElementById('btn-run-all');
-  if (badge) {
-    badge.innerHTML = running ? '<span class="spinner"></span> &nbsp;RUNNING' : '&#9632; &nbsp;IDLE';
-    badge.style.color = running ? 'var(--amber)' : 'var(--text3)';
-  }
-  if (btnRun) {
-    if (running) {
-      btnRun.innerHTML = '&#9632; &nbsp;STOP';
-      btnRun.style.color = 'var(--red)';
-      btnRun.onclick = stopAsyncJob;
-    } else {
-      btnRun.innerHTML = '&#9654; &nbsp;RUN ALL';
-      btnRun.style.color = 'var(--accent)';
-      btnRun.onclick = function() { startAsyncJob('all'); };
-    }
-  }
+  var badge = document.getElementById('status-badge'); var btnRun = document.getElementById('btn-run-all');
+  if (badge) { badge.innerHTML = running ? '<span class="spinner"></span> &nbsp;RUNNING' : '&#9632; &nbsp;IDLE'; badge.style.color = running ? 'var(--amber)' : 'var(--text3)'; }
+  if (btnRun) { if (running) { btnRun.innerHTML = '&#9632; &nbsp;STOP'; btnRun.style.color = 'var(--red)'; btnRun.onclick = stopAsyncJob; } else { btnRun.innerHTML = '&#9654; &nbsp;RUN ALL'; btnRun.style.color = 'var(--accent)'; btnRun.onclick = function() { startAsyncJob('all'); }; } }
 }
 
 async function pollJobStatus() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
-  var res = await sbFetch('geo_jobs?order=created_at.desc&limit=1');
-  if (!res.ok || !res.data || !res.data.length) return;
-  var job = res.data[0];
-  var progress = job.progress || {};
-
-  // Update Job Status panel
+  var res = await sbFetch('geo_jobs?order=created_at.desc&limit=1'); if (!res.ok || !res.data || !res.data.length) return;
+  var job = res.data[0]; var progress = job.progress || {};
   var jobBody = document.getElementById('job-status-body');
   if (jobBody) {
     var statusColor = job.status === 'running' ? 'var(--amber)' : job.status === 'completed' ? 'var(--green)' : job.status === 'completed_with_errors' ? 'var(--red)' : 'var(--text3)';
@@ -1173,369 +1019,275 @@ async function pollJobStatus() {
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Discovered</span><span style="color:var(--text);font-size:11px">' + (progress.total_discovered || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Processed</span><span style="color:var(--green);font-size:11px">' + (progress.total_processed || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Errors</span><span style="color:var(--red);font-size:11px">' + (progress.total_errors || 0) + '</span></div>';
-    // Per-source status
-    if (progress.sources_status) {
-      var ss = progress.sources_status;
-      html += '<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">';
-      Object.keys(ss).forEach(function(name) {
-        var s = ss[name];
-        var dColor = s.discover === 'ok' ? 'var(--green)' : s.discover === 'error' ? 'var(--red)' : s.discover === 'running' ? 'var(--amber)' : 'var(--text3)';
-        var pColor = s.process === 'ok' ? 'var(--green)' : s.process === 'error' ? 'var(--red)' : s.process === 'running' ? 'var(--amber)' : 'var(--text3)';
-        html += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px">';
-        html += '<span style="flex:1;color:var(--text)">' + esc(name) + '</span>';
-        html += '<span style="color:' + dColor + '">D:' + s.discover + '</span>';
-        html += '<span style="color:' + pColor + '">P:' + s.process + '</span>';
-        html += '</div>';
-        if (s.error) html += '<div style="font-size:9px;color:var(--red);padding-left:8px;margin-bottom:4px">' + esc(s.error) + '</div>';
-      });
-      html += '</div>';
-    }
+    if (progress.sources_status) { var ss = progress.sources_status; html += '<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">'; Object.keys(ss).forEach(function(name) { var s = ss[name]; var dColor = s.discover === 'ok' ? 'var(--green)' : s.discover === 'error' ? 'var(--red)' : s.discover === 'running' ? 'var(--amber)' : 'var(--text3)'; var pColor = s.process === 'ok' ? 'var(--green)' : s.process === 'error' ? 'var(--red)' : s.process === 'running' ? 'var(--amber)' : 'var(--text3)'; html += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px"><span style="flex:1;color:var(--text)">' + esc(name) + '</span><span style="color:' + dColor + '">D:' + s.discover + '</span><span style="color:' + pColor + '">P:' + s.process + '</span></div>'; if (s.error) html += '<div style="font-size:9px;color:var(--red);padding-left:8px;margin-bottom:4px">' + esc(s.error) + '</div>'; }); html += '</div>'; }
     jobBody.innerHTML = html;
   }
-
-  // Stream log lines
-  if (progress.log && progress.log.length > lastLogIndex) {
-    for (var i = lastLogIndex; i < progress.log.length; i++) {
-      var line = progress.log[i];
-      var type = 'info';
-      if (line.indexOf('error') !== -1 || line.indexOf('Error') !== -1) type = 'err';
-      else if (line.indexOf('complete') !== -1 || line.indexOf('Done') !== -1 || line.indexOf('+') !== -1) type = 'ok';
-      else if (line.indexOf('cancel') !== -1 || line.indexOf('Cancel') !== -1) type = 'warn';
-      logRun(line, type);
-    }
-    lastLogIndex = progress.log.length;
-  }
-
-  // Sync running state
-  if (job.status === 'running') {
-    if (!activeJobId) {
-      activeJobId = job.id;
-      setAsyncRunningUI(true);
-    }
-  } else {
-    if (activeJobId === job.id) {
-      activeJobId = null;
-      setAsyncRunningUI(false);
-      if (job.status === 'completed') logRun('=== JOB COMPLETED ===', 'ok');
-      else if (job.status === 'completed_with_errors') logRun('=== JOB COMPLETED WITH ERRORS ===', 'err');
-      else if (job.status === 'cancelled') logRun('=== JOB CANCELLED ===', 'warn');
-      refreshDashboard();
-    }
-  }
-
-  // Always refresh stats
+  if (progress.log && progress.log.length > lastLogIndex) { for (var i = lastLogIndex; i < progress.log.length; i++) { var line = progress.log[i]; var type = 'info'; if (line.indexOf('error') !== -1 || line.indexOf('Error') !== -1) type = 'err'; else if (line.indexOf('complete') !== -1 || line.indexOf('Done') !== -1 || line.indexOf('+') !== -1) type = 'ok'; else if (line.indexOf('cancel') !== -1 || line.indexOf('Cancel') !== -1) type = 'warn'; logRun(line, type); } lastLogIndex = progress.log.length; }
+  if (job.status === 'running') { if (!activeJobId) { activeJobId = job.id; setAsyncRunningUI(true); } }
+  else { if (activeJobId === job.id) { activeJobId = null; setAsyncRunningUI(false); if (job.status === 'completed') logRun('=== JOB COMPLETED ===', 'ok'); else if (job.status === 'completed_with_errors') logRun('=== JOB COMPLETED WITH ERRORS ===', 'err'); else if (job.status === 'cancelled') logRun('=== JOB CANCELLED ===', 'warn'); refreshDashboard(); } }
   loadDashboardStats();
 }
 
-function startJobPoll() {
-  if (jobPollTimer) clearInterval(jobPollTimer);
-  pollJobStatus();
-  jobPollTimer = setInterval(pollJobStatus, 10000);
-}
+function startJobPoll() { if (jobPollTimer) clearInterval(jobPollTimer); pollJobStatus(); jobPollTimer = setInterval(pollJobStatus, 10000); }
+function stopJobPoll() { if (jobPollTimer) { clearInterval(jobPollTimer); jobPollTimer = null; } }
 
-function stopJobPoll() {
-  if (jobPollTimer) { clearInterval(jobPollTimer); jobPollTimer = null; }
-}
-
-async function retryFailed() {
-  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
-  if (activeJobId) { showToast('Stop current job first.', 'amber'); return; }
-  var res = await sbFetch('geo_queue?status=eq.failed', 'PATCH', { status: 'pending', retry_count: 0, error_message: null, updated_at: new Date().toISOString() });
-  if (res.ok) {
-    showToast('Failed items reset to pending.', 'green');
-    refreshDashboard();
-  } else {
-    showToast('Failed to reset.', 'red');
-  }
-}
+async function retryFailed() { if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; } if (activeJobId) { showToast('Stop current job first.', 'amber'); return; } var res = await sbFetch('geo_queue?status=eq.failed', 'PATCH', { status: 'pending', retry_count: 0, error_message: null, updated_at: new Date().toISOString() }); if (res.ok) { showToast('Failed items reset to pending.', 'green'); refreshDashboard(); } else { showToast('Failed to reset.', 'red'); } }
 
 // === MANUAL UPLOAD ===
 var uploadZone = null;
-document.addEventListener('DOMContentLoaded', function() {
-  uploadZone = document.getElementById('upload-zone');
-  if (!uploadZone) return;
-  uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
-  uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
-  uploadZone.addEventListener('drop', function(e) {
-    e.preventDefault(); uploadZone.classList.remove('dragover');
-    if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files);
-  });
-});
-
+document.addEventListener('DOMContentLoaded', function() { uploadZone = document.getElementById('upload-zone'); if (!uploadZone) return; uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); }); uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); }); uploadZone.addEventListener('drop', function(e) { e.preventDefault(); uploadZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files); }); });
 var FILE_ICONS = { pdf: '\u{1F4C4}', docx: '\u{1F4DD}', pptx: '\u{1F4CA}', xlsx: '\u{1F4CA}' };
-
-function getFileExt(name) {
-  var parts = name.split('.');
-  return parts.length > 1 ? parts.pop().toLowerCase() : '';
-}
-
-async function extractPdfText(arrayBuffer) {
-  var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  var pages = [];
-  for (var i = 1; i <= pdf.numPages; i++) {
-    var page = await pdf.getPage(i);
-    var content = await page.getTextContent();
-    var text = content.items.map(function(item) { return item.str; }).join(' ');
-    pages.push(text);
-  }
-  return pages.join('\n\n');
-}
-
-async function extractDocxText(arrayBuffer) {
-  var result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-  return result.value;
-}
-
-async function extractPptxText(arrayBuffer) {
-  var zip = await JSZip.loadAsync(arrayBuffer);
-  var slides = [];
-  var slideFiles = Object.keys(zip.files).filter(function(f) {
-    return f.match(/^ppt\/slides\/slide\d+\.xml$/);
-  }).sort(function(a, b) {
-    var na = parseInt(a.match(/\d+/)[0]);
-    var nb = parseInt(b.match(/\d+/)[0]);
-    return na - nb;
-  });
-  for (var i = 0; i < slideFiles.length; i++) {
-    var xml = await zip.files[slideFiles[i]].async('text');
-    var texts = [];
-    var re = /<a:t[^>]*>([\s\S]*?)<\/a:t>/g;
-    var m;
-    while ((m = re.exec(xml)) !== null) { texts.push(m[1]); }
-    if (texts.length > 0) {
-      slides.push('--- Slide ' + (i + 1) + ' ---\n' + texts.join(' '));
-    }
-  }
-  return slides.join('\n\n');
-}
-
-function extractXlsxText(arrayBuffer) {
-  var wb = XLSX.read(arrayBuffer, { type: 'array' });
-  var sheets = [];
-  wb.SheetNames.forEach(function(name) {
-    var ws = wb.Sheets[name];
-    var csv = XLSX.utils.sheet_to_csv(ws);
-    if (csv.trim()) {
-      sheets.push('--- Sheet: ' + name + ' ---\n' + csv);
-    }
-  });
-  return sheets.join('\n\n');
-}
+function getFileExt(name) { var parts = name.split('.'); return parts.length > 1 ? parts.pop().toLowerCase() : ''; }
+async function extractPdfText(arrayBuffer) { var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise; var pages = []; for (var i = 1; i <= pdf.numPages; i++) { var page = await pdf.getPage(i); var content = await page.getTextContent(); var text = content.items.map(function(item) { return item.str; }).join(' '); pages.push(text); } return pages.join('\n\n'); }
+async function extractDocxText(arrayBuffer) { var result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer }); return result.value; }
+async function extractPptxText(arrayBuffer) { var zip = await JSZip.loadAsync(arrayBuffer); var slides = []; var slideFiles = Object.keys(zip.files).filter(function(f) { return f.match(/^ppt\/slides\/slide\d+\.xml$/); }).sort(function(a, b) { var na = parseInt(a.match(/\d+/)[0]); var nb = parseInt(b.match(/\d+/)[0]); return na - nb; }); for (var i = 0; i < slideFiles.length; i++) { var xml = await zip.files[slideFiles[i]].async('text'); var texts = []; var re = /<a:t[^>]*>([\s\S]*?)<\/a:t>/g; var m; while ((m = re.exec(xml)) !== null) { texts.push(m[1]); } if (texts.length > 0) slides.push('--- Slide ' + (i + 1) + ' ---\n' + texts.join(' ')); } return slides.join('\n\n'); }
+function extractXlsxText(arrayBuffer) { var wb = XLSX.read(arrayBuffer, { type: 'array' }); var sheets = []; wb.SheetNames.forEach(function(name) { var ws = wb.Sheets[name]; var csv = XLSX.utils.sheet_to_csv(ws); if (csv.trim()) sheets.push('--- Sheet: ' + name + ' ---\n' + csv); }); return sheets.join('\n\n'); }
 
 async function handleFileUpload(fileList) {
-  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
-  if (!fileList || fileList.length === 0) return;
-
-  var progressDiv = document.getElementById('upload-progress');
-  progressDiv.innerHTML = '';
-  progressDiv.classList.add('active');
-
-  var files = Array.from(fileList);
-  var validExts = ['pdf', 'docx', 'pptx', 'xlsx'];
-
-  files.forEach(function(f, idx) {
-    var ext = getFileExt(f.name);
-    var valid = validExts.indexOf(ext) !== -1;
-    var row = document.createElement('div');
-    row.className = 'upload-file-row';
-    row.id = 'upload-row-' + idx;
-    row.innerHTML = '<span style="font-size:16px">' + (FILE_ICONS[ext] || '\u{1F4C1}') + '</span>' +
-      '<span class="upload-file-name">' + esc(f.name) + '</span>' +
-      '<span class="upload-file-status ' + (valid ? 'working' : 'err') + '" id="upload-status-' + idx + '">' +
-      (valid ? 'WAITING' : 'UNSUPPORTED') + '</span>';
-    progressDiv.appendChild(row);
-  });
-
+  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; } if (!fileList || fileList.length === 0) return;
+  var progressDiv = document.getElementById('upload-progress'); progressDiv.innerHTML = ''; progressDiv.classList.add('active');
+  var files = Array.from(fileList); var validExts = ['pdf', 'docx', 'pptx', 'xlsx'];
+  files.forEach(function(f, idx) { var ext = getFileExt(f.name); var valid = validExts.indexOf(ext) !== -1; var row = document.createElement('div'); row.className = 'upload-file-row'; row.id = 'upload-row-' + idx; row.innerHTML = '<span style="font-size:16px">' + (FILE_ICONS[ext] || '\u{1F4C1}') + '</span><span class="upload-file-name">' + esc(f.name) + '</span><span class="upload-file-status ' + (valid ? 'working' : 'err') + '" id="upload-status-' + idx + '">' + (valid ? 'WAITING' : 'UNSUPPORTED') + '</span>'; progressDiv.appendChild(row); });
   var successCount = 0;
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var ext = getFileExt(file.name);
-    var statusEl = document.getElementById('upload-status-' + i);
-    if (validExts.indexOf(ext) === -1) continue;
-
-    statusEl.textContent = 'EXTRACTING';
-    statusEl.className = 'upload-file-status working';
-
-    try {
-      var arrayBuffer = await file.arrayBuffer();
-      var text = '';
-
-      if (ext === 'pdf') { text = await extractPdfText(arrayBuffer); }
-      else if (ext === 'docx') { text = await extractDocxText(arrayBuffer); }
-      else if (ext === 'pptx') { text = await extractPptxText(arrayBuffer); }
-      else if (ext === 'xlsx') { text = extractXlsxText(arrayBuffer); }
-
-      if (!text || text.trim().length === 0) {
-        statusEl.textContent = 'EMPTY';
-        statusEl.className = 'upload-file-status err';
-        continue;
-      }
-
-      statusEl.textContent = 'SAVING';
-
-      var docData = { filename: file.name, file_type: ext, content_text: text.trim() };
-      var res = await sbFetch('geo_documents', 'POST', docData);
-      if (res.ok) {
-        statusEl.textContent = 'DONE';
-        statusEl.className = 'upload-file-status ok';
-        successCount++;
-      } else {
-        statusEl.textContent = 'DB ERROR';
-        statusEl.className = 'upload-file-status err';
-      }
-    } catch (err) {
-      statusEl.textContent = 'ERROR';
-      statusEl.className = 'upload-file-status err';
-      console.error('Upload error for ' + file.name + ':', err);
-    }
-  }
-
+  for (var i = 0; i < files.length; i++) { var file = files[i]; var ext = getFileExt(file.name); var statusEl = document.getElementById('upload-status-' + i); if (validExts.indexOf(ext) === -1) continue; statusEl.textContent = 'EXTRACTING'; statusEl.className = 'upload-file-status working'; try { var arrayBuffer = await file.arrayBuffer(); var text = ''; if (ext === 'pdf') { text = await extractPdfText(arrayBuffer); } else if (ext === 'docx') { text = await extractDocxText(arrayBuffer); } else if (ext === 'pptx') { text = await extractPptxText(arrayBuffer); } else if (ext === 'xlsx') { text = extractXlsxText(arrayBuffer); } if (!text || text.trim().length === 0) { statusEl.textContent = 'EMPTY'; statusEl.className = 'upload-file-status err'; continue; } statusEl.textContent = 'SAVING'; var docData = { filename: file.name, file_type: ext, content_text: text.trim() }; var res = await sbFetch('geo_documents', 'POST', docData); if (res.ok) { statusEl.textContent = 'DONE'; statusEl.className = 'upload-file-status ok'; successCount++; } else { statusEl.textContent = 'DB ERROR'; statusEl.className = 'upload-file-status err'; } } catch (err) { statusEl.textContent = 'ERROR'; statusEl.className = 'upload-file-status err'; } }
   document.getElementById('upload-file-input').value = '';
-  if (successCount > 0) {
-    showToast(successCount + ' document(s) uploaded.', 'green');
-    loadUploadedDocs();
-  }
-  setTimeout(function() {
-    progressDiv.classList.remove('active');
-    progressDiv.innerHTML = '';
-  }, 5000);
+  if (successCount > 0) { showToast(successCount + ' document(s) uploaded.', 'green'); loadUploadedDocs(); }
+  setTimeout(function() { progressDiv.classList.remove('active'); progressDiv.innerHTML = ''; }, 5000);
 }
 
-// === UPLOAD ARCHIVE WITH SELECT ===
-var DOCS = [];
-var docSelectMode = false;
-var selectedDocIds = [];
+// === UPLOAD ARCHIVE ===
+var DOCS = []; var docSelectMode = false; var selectedDocIds = [];
+async function loadUploadedDocs() { var archive = document.getElementById('upload-archive'); if (!archive) return; if (!CFG.sbUrl || !CFG.sbKey) { archive.innerHTML = '<div class="empty-state" style="padding:30px">Configure Supabase first.</div>'; return; } archive.innerHTML = '<div class="empty-state" style="padding:20px"><span class="spinner"></span></div>'; var res = await sbFetch('geo_documents?hidden=neq.true&order=uploaded_at.desc&limit=200'); if (!res.ok || !res.data) { archive.innerHTML = '<div class="empty-state" style="padding:30px">Failed to load.</div>'; return; } DOCS = res.data; var countEl = document.getElementById('upload-doc-count'); if (countEl) countEl.textContent = DOCS.length + ' document' + (DOCS.length !== 1 ? 's' : ''); renderDocs(); }
+function renderDocs() { var archive = document.getElementById('upload-archive'); if (!archive) return; if (DOCS.length === 0) { archive.innerHTML = '<div class="empty-state" style="padding:30px">No documents uploaded yet.</div>'; return; } var html = ''; DOCS.forEach(function(doc) { var ext = doc.file_type || getFileExt(doc.filename); var icon = FILE_ICONS[ext] || '\u{1F4C1}'; var date = doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleString() : '-'; var textLen = doc.content_text ? doc.content_text.length : 0; var sizeStr = textLen > 1000 ? Math.round(textLen / 1000) + 'k chars' : textLen + ' chars'; var isSelected = selectedDocIds.indexOf(String(doc.id)) !== -1; html += '<div class="doc-card' + (isSelected ? ' selected' : '') + '"' + (docSelectMode ? ' onclick="toggleDocSelect(\'' + esc(String(doc.id)) + '\')"' : '') + '>'; if (docSelectMode) html += '<span style="font-size:18px;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer">' + (isSelected ? '\u25CF' : '\u25CB') + '</span>'; html += '<div class="doc-icon">' + icon + '</div><div class="doc-info"><div class="doc-name">' + esc(doc.filename) + '</div><div class="doc-meta"><span>' + ext.toUpperCase() + '</span><span>' + sizeStr + '</span><span>' + date + '</span></div></div>'; if (!docSelectMode) html += '<div class="doc-actions"><button class="btn-sm" onclick="deleteDoc(\'' + esc(String(doc.id)) + '\',\'' + esc(doc.filename) + '\')">Del</button></div>'; html += '</div>'; }); archive.innerHTML = html; }
+function toggleDocSelectMode() { docSelectMode = !docSelectMode; selectedDocIds = []; var bar = document.getElementById('doc-select-bar'); var btn = document.getElementById('btn-doc-select'); if (bar) bar.classList.toggle('visible', docSelectMode); if (btn) btn.textContent = docSelectMode ? 'Cancel' : '\u2610 Select'; renderDocs(); }
+function toggleDocSelect(id) { var idx = selectedDocIds.indexOf(id); if (idx === -1) selectedDocIds.push(id); else selectedDocIds.splice(idx, 1); document.getElementById('doc-select-count').textContent = selectedDocIds.length + ' selected'; renderDocs(); }
+function selectAllDocs() { selectedDocIds = DOCS.map(function(d) { return String(d.id); }); document.getElementById('doc-select-count').textContent = selectedDocIds.length + ' selected'; renderDocs(); }
+function deselectAllDocs() { selectedDocIds = []; document.getElementById('doc-select-count').textContent = '0 selected'; renderDocs(); }
+async function deleteSelectedDocs() { if (!selectedDocIds.length) return; if (!confirm('Delete ' + selectedDocIds.length + ' document(s)?')) return; for (var i = 0; i < selectedDocIds.length; i++) { await sbFetch('geo_documents?id=eq.' + selectedDocIds[i], 'PATCH', { hidden: true }); } selectedDocIds = []; docSelectMode = false; document.getElementById('doc-select-bar').classList.remove('visible'); document.getElementById('btn-doc-select').textContent = '\u2610 Select'; showToast('Documents hidden.', 'amber'); loadUploadedDocs(); }
+async function deleteDoc(id, name) { if (!confirm('Delete "' + name + '"?')) return; var res = await sbFetch('geo_documents?id=eq.' + id, 'PATCH', { hidden: true }); if (res.ok) { showToast('Document hidden.', 'amber'); loadUploadedDocs(); } }
 
-async function loadUploadedDocs() {
-  var archive = document.getElementById('upload-archive');
-  if (!archive) return;
-  if (!CFG.sbUrl || !CFG.sbKey) {
-    archive.innerHTML = '<div class="empty-state" style="padding:30px">Configure Supabase first.</div>';
-    return;
-  }
-
-  archive.innerHTML = '<div class="empty-state" style="padding:20px"><span class="spinner"></span></div>';
-
-  var res = await sbFetch('geo_documents?hidden=neq.true&order=uploaded_at.desc&limit=200');
-  if (!res.ok || !res.data) {
-    archive.innerHTML = '<div class="empty-state" style="padding:30px">Failed to load.</div>';
-    return;
-  }
-
-  DOCS = res.data;
-  var countEl = document.getElementById('upload-doc-count');
-  if (countEl) countEl.textContent = DOCS.length + ' document' + (DOCS.length !== 1 ? 's' : '');
-  renderDocs();
-}
-
-function renderDocs() {
-  var archive = document.getElementById('upload-archive');
-  if (!archive) return;
-  if (DOCS.length === 0) {
-    archive.innerHTML = '<div class="empty-state" style="padding:30px">No documents uploaded yet.</div>';
-    return;
-  }
-
-  var html = '';
-  DOCS.forEach(function(doc) {
-    var ext = doc.file_type || getFileExt(doc.filename);
-    var icon = FILE_ICONS[ext] || '\u{1F4C1}';
-    var date = doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleString() : '-';
-    var textLen = doc.content_text ? doc.content_text.length : 0;
-    var sizeStr = textLen > 1000 ? Math.round(textLen / 1000) + 'k chars' : textLen + ' chars';
-    var isSelected = selectedDocIds.indexOf(String(doc.id)) !== -1;
-
-    html += '<div class="doc-card' + (isSelected ? ' selected' : '') + '"' +
-      (docSelectMode ? ' onclick="toggleDocSelect(\'' + esc(String(doc.id)) + '\')"' : '') + '>';
-    if (docSelectMode) {
-      html += '<span style="font-size:18px;color:' + (isSelected ? 'var(--accent)' : 'var(--text3)') + ';cursor:pointer">' + (isSelected ? '\u25CF' : '\u25CB') + '</span>';
-    }
-    html += '<div class="doc-icon">' + icon + '</div>';
-    html += '<div class="doc-info">';
-    html += '<div class="doc-name">' + esc(doc.filename) + '</div>';
-    html += '<div class="doc-meta"><span>' + ext.toUpperCase() + '</span><span>' + sizeStr + '</span><span>' + date + '</span></div>';
-    html += '</div>';
-    if (!docSelectMode) {
-      html += '<div class="doc-actions"><button class="btn-sm" onclick="deleteDoc(\'' + esc(String(doc.id)) + '\',\'' + esc(doc.filename) + '\')">Del</button></div>';
-    }
-    html += '</div>';
-  });
-  archive.innerHTML = html;
-}
-
-function toggleDocSelectMode() {
-  docSelectMode = !docSelectMode; selectedDocIds = [];
-  var bar = document.getElementById('doc-select-bar');
-  var btn = document.getElementById('btn-doc-select');
-  if (bar) bar.classList.toggle('visible', docSelectMode);
-  if (btn) btn.textContent = docSelectMode ? 'Cancel' : '\u2610 Select';
-  renderDocs();
-}
-
-function toggleDocSelect(id) {
-  var idx = selectedDocIds.indexOf(id);
-  if (idx === -1) selectedDocIds.push(id); else selectedDocIds.splice(idx, 1);
-  document.getElementById('doc-select-count').textContent = selectedDocIds.length + ' selected';
-  renderDocs();
-}
-
-function selectAllDocs() {
-  selectedDocIds = DOCS.map(function(d) { return String(d.id); });
-  document.getElementById('doc-select-count').textContent = selectedDocIds.length + ' selected';
-  renderDocs();
-}
-
-function deselectAllDocs() {
-  selectedDocIds = [];
-  document.getElementById('doc-select-count').textContent = '0 selected';
-  renderDocs();
-}
-
-async function deleteSelectedDocs() {
-  if (!selectedDocIds.length) return;
-  if (!confirm('Delete ' + selectedDocIds.length + ' document(s)?')) return;
-  for (var i = 0; i < selectedDocIds.length; i++) {
-    await sbFetch('geo_documents?id=eq.' + selectedDocIds[i], 'PATCH', { hidden: true });
-  }
-  selectedDocIds = []; docSelectMode = false;
-  document.getElementById('doc-select-bar').classList.remove('visible');
-  document.getElementById('btn-doc-select').textContent = '\u2610 Select';
-  showToast('Documents hidden.', 'amber');
-  loadUploadedDocs();
-}
-
-async function deleteDoc(id, name) {
-  if (!confirm('Delete "' + name + '"?')) return;
-  var res = await sbFetch('geo_documents?id=eq.' + id, 'PATCH', { hidden: true });
-  if (res.ok) { showToast('Document hidden.', 'amber'); loadUploadedDocs(); }
-}
-
-// Init PDF.js worker
-if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-}
+if (typeof pdfjsLib !== 'undefined') { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
 
 // === LOG ===
-function logRun(msg, type) {
-  var log = document.getElementById('run-log'); if (!log) return;
-  var time = new Date().toLocaleTimeString();
+function logRun(msg, type) { var log = document.getElementById('run-log'); if (!log) return; var time = new Date().toLocaleTimeString(); var div = document.createElement('div'); div.className = 'log-line'; div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + esc(msg) + '</span>'; log.appendChild(div); log.scrollTop = log.scrollHeight; }
+function copyLog() { var log = document.getElementById('run-log'); if (!log) return; var text = Array.from(log.querySelectorAll('.log-line')).map(function(l) { return l.textContent.trim(); }).join('\n'); navigator.clipboard.writeText(text).then(function() { showToast('Log copied.', 'green'); }); }
+function clearLog() { var log = document.getElementById('run-log'); if (!log) return; log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>'; lastLogIndex = 999999; }
+
+// === QUERY KB CHAT ===
+var qkbHistory = [];
+var qkbBusy = false;
+
+function qkbAutoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function qkbAskExample(el) {
+  var input = document.getElementById('qkb-input');
+  input.value = el.textContent;
+  qkbAutoResize(input);
+  qkbSend();
+}
+
+function qkbClearChat() {
+  qkbHistory = [];
+  var msgs = document.getElementById('qkb-messages');
+  msgs.innerHTML = '';
+  var welcome = document.createElement('div');
+  welcome.className = 'qkb-welcome';
+  welcome.id = 'qkb-welcome';
+  welcome.innerHTML = '<div class="qkb-welcome-icon">&#9670;</div><div class="qkb-welcome-title">Knowledge Base Assistant</div><div class="qkb-welcome-sub">Ask any question. The assistant will search the knowledge base, analyze relevant articles, and provide a synthesized answer with sources.</div><div class="qkb-welcome-examples"><div class="qkb-example" onclick="qkbAskExample(this)">What are the main geopolitical risk themes emerging from recent analyses?</div><div class="qkb-example" onclick="qkbAskExample(this)">Summarize the key developments in EU-China relations and their potential impact on trade policy</div><div class="qkb-example" onclick="qkbAskExample(this)">Identify 5 risk drivers with a severity score from 1-5 and explain the rationale for each</div></div>';
+  msgs.appendChild(welcome);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var input = document.getElementById('qkb-input');
+  if (input) {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); qkbSend(); }
+    });
+  }
+});
+
+function qkbAddMessage(role, html, sources) {
+  var msgs = document.getElementById('qkb-messages');
+  var welcome = document.getElementById('qkb-welcome');
+  if (welcome) welcome.remove();
+
   var div = document.createElement('div');
-  div.className = 'log-line';
-  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + esc(msg) + '</span>';
-  log.appendChild(div);
-  log.scrollTop = log.scrollHeight;
+  div.className = 'qkb-msg qkb-msg-' + (role === 'user' ? 'user' : 'ai');
+
+  if (role === 'user') {
+    div.innerHTML = '<div class="qkb-bubble">' + esc(html) + '</div>';
+  } else {
+    var bubbleHtml = '<div class="qkb-avatar qkb-avatar-ai">&#9670;</div><div class="qkb-bubble">' + html;
+    if (sources && sources.length > 0) {
+      bubbleHtml += '<div class="qkb-sources"><div class="qkb-sources-label">Sources</div>';
+      sources.forEach(function(s, i) {
+        bubbleHtml += '<div class="qkb-source-item"><span class="qkb-source-idx">[' + (i + 1) + ']</span><div><div class="qkb-source-title"><a href="' + esc(s.url) + '" target="_blank">' + esc(s.title) + '</a></div><div class="qkb-source-meta">' + esc(s.source) + ' &middot; ' + esc(s.date) + '</div></div></div>';
+      });
+      bubbleHtml += '</div>';
+    }
+    bubbleHtml += '</div>';
+    div.innerHTML = bubbleHtml;
+  }
+
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
 }
 
-function copyLog() {
-  var log = document.getElementById('run-log'); if (!log) return;
-  var text = Array.from(log.querySelectorAll('.log-line')).map(function(l) { return l.textContent.trim(); }).join('\n');
-  navigator.clipboard.writeText(text).then(function() { showToast('Log copied.', 'green'); });
+function qkbShowThinking() {
+  var msgs = document.getElementById('qkb-messages');
+  var div = document.createElement('div');
+  div.className = 'qkb-msg qkb-msg-ai';
+  div.id = 'qkb-thinking';
+  div.innerHTML = '<div class="qkb-avatar qkb-avatar-ai">&#9670;</div><div class="qkb-thinking"><div class="qkb-thinking-dots"><span></span><span></span><span></span></div><span class="qkb-thinking-text">Searching knowledge base and analyzing...</span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function clearLog() {
-  var log = document.getElementById('run-log'); if (!log) return;
-  log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>';
-  lastLogIndex = 999999;
+function qkbRemoveThinking() {
+  var el = document.getElementById('qkb-thinking');
+  if (el) el.remove();
+}
+
+async function qkbSearchArticles(query) {
+  if (!CFG.sbUrl || !CFG.sbKey) return [];
+  // Extract keywords from query (simple approach: split, filter short words)
+  var words = query.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(function(w) { return w.length > 3; });
+  if (words.length === 0) words = query.split(/\s+/).slice(0, 3);
+
+  // Search by multiple keywords using OR on title and content
+  var results = [];
+  var seen = {};
+
+  // Strategy 1: search by title keywords
+  for (var i = 0; i < Math.min(words.length, 4); i++) {
+    var w = words[i];
+    var path = 'geo_articles?hidden=neq.true&or=(title.ilike.*' + encodeURIComponent(w) + '*,content_original.ilike.*' + encodeURIComponent(w) + '*)&order=published_at.desc.nullslast&limit=10';
+    var res = await sbFetch(path);
+    if (res.ok && res.data) {
+      res.data.forEach(function(a) {
+        if (!seen[a.id]) { seen[a.id] = true; results.push(a); }
+      });
+    }
+  }
+
+  // Sort by relevance: count keyword hits in title + content
+  results.forEach(function(a) {
+    var text = ((a.title || '') + ' ' + (a.content_original || '')).toLowerCase();
+    a._score = 0;
+    words.forEach(function(w) {
+      if (text.indexOf(w) !== -1) a._score++;
+    });
+  });
+  results.sort(function(a, b) { return b._score - a._score; });
+
+  return results.slice(0, 15);
+}
+
+async function qkbSend() {
+  if (qkbBusy) return;
+  var input = document.getElementById('qkb-input');
+  var query = input.value.trim();
+  if (!query) return;
+
+  if (!CFG.antKey) { showToast('Configure Anthropic API key in Config tab.', 'amber'); return; }
+  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
+
+  qkbBusy = true;
+  var sendBtn = document.getElementById('qkb-send');
+  sendBtn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  qkbAddMessage('user', query);
+  qkbShowThinking();
+
+  try {
+    // Search articles
+    var articles = await qkbSearchArticles(query);
+
+    // Build context from articles
+    var context = '';
+    var sourcesForDisplay = [];
+    if (articles.length > 0) {
+      context = 'The following articles from the knowledge base are relevant to the query. Use them to inform your answer. Cite sources by number [1], [2], etc.\n\n';
+      articles.forEach(function(a, i) {
+        var src = SOURCES.find(function(s) { return String(s.id) === String(a.source_id); });
+        var srcName = src ? src.name : 'Unknown';
+        var date = a.published_at ? new Date(a.published_at).toLocaleDateString() : 'unknown date';
+        var content = a.content_original || '';
+        if (content.length > 2000) content = content.substring(0, 2000) + '...';
+        context += '[' + (i + 1) + '] Title: ' + (a.title || 'Untitled') + '\n';
+        context += 'Source: ' + srcName + ' | Date: ' + date + '\n';
+        if (a.author) context += 'Author: ' + a.author + '\n';
+        context += 'Content: ' + content + '\n\n';
+        sourcesForDisplay.push({ title: a.title || 'Untitled', source: srcName, date: date, url: a.url || '#' });
+      });
+    } else {
+      context = 'No directly relevant articles were found in the knowledge base. Answer based on your general knowledge and note that no KB sources were available.\n\n';
+    }
+
+    // Build conversation history for Claude
+    var messages = [];
+    qkbHistory.forEach(function(h) {
+      messages.push({ role: h.role, content: h.content });
+    });
+    messages.push({ role: 'user', content: context + 'User question: ' + query });
+
+    // Call Claude API
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CFG.antKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        system: 'You are an analytical assistant for a knowledge base. You provide thorough, well-structured answers based on the articles provided as context. Always cite your sources using [1], [2], etc. when referencing specific articles. If asked to create structured outputs (tables, ratings, lists), format them clearly. You can respond in any language the user writes in. Be analytical, precise, and insightful.',
+        messages: messages
+      })
+    });
+
+    qkbRemoveThinking();
+
+    if (!res.ok) {
+      var errData = await res.json().catch(function() { return {}; });
+      qkbAddMessage('ai', '<p style="color:var(--red)">API Error: ' + (errData.error ? errData.error.message : res.status) + '</p>');
+    } else {
+      var data = await res.json();
+      var answer = data.content.map(function(c) { return c.text || ''; }).join('');
+
+      // Convert markdown-ish to simple HTML
+      var htmlAnswer = answer
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n- /g, '\n<li>')
+        .replace(/\n\d+\. /g, '\n<li>');
+      htmlAnswer = '<p>' + htmlAnswer + '</p>';
+
+      qkbAddMessage('ai', htmlAnswer, articles.length > 0 ? sourcesForDisplay : null);
+
+      // Save to history
+      qkbHistory.push({ role: 'user', content: query });
+      qkbHistory.push({ role: 'assistant', content: answer });
+      // Keep history manageable
+      if (qkbHistory.length > 20) qkbHistory = qkbHistory.slice(-20);
+    }
+  } catch (err) {
+    qkbRemoveThinking();
+    qkbAddMessage('ai', '<p style="color:var(--red)">Error: ' + esc(err.message) + '</p>');
+  }
+
+  qkbBusy = false;
+  sendBtn.disabled = false;
+  input.focus();
 }
 
 </script>
