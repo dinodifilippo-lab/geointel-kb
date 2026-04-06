@@ -343,13 +343,13 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.8.1</div>
+  <div class="version">v5.8.2</div>
 </div>
 
 <!-- APP -->
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.8.1</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.8.2</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -395,7 +395,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
       <button class="btn-run" onclick="startAsyncJob('discover')" style="width:auto;margin-top:0;padding:8px 18px;min-width:120px;background:rgba(0,212,255,0.08)">DISCOVER ONLY</button>
       <button class="btn-run" onclick="startAsyncJob('process')" style="width:auto;margin-top:0;padding:8px 18px;min-width:120px;background:rgba(0,255,136,0.08);color:var(--green)">PROCESS ONLY</button>
       <button class="btn-run" id="btn-retry-failed" onclick="retryFailed()" style="width:auto;margin-top:0;padding:8px 18px;min-width:120px;background:rgba(255,68,102,0.08);color:var(--red);display:none">RETRY FAILED</button>
-      <button class="btn-run" id="btn-kg-extract" onclick="startKgLoop()" style="width:auto;margin-top:0;padding:8px 18px;min-width:140px;background:rgba(138,43,226,0.12);color:#b388ff">EXTRACT KG</button>
+      <button class="btn-run" id="btn-kg-extract" onclick="startAsyncJob('extract-kg')" style="width:auto;margin-top:0;padding:8px 18px;min-width:140px;background:rgba(138,43,226,0.12);color:#b388ff">EXTRACT KG</button>
     </div>
     <div class="dash-grid">
       <div class="panel" style="display:flex;flex-direction:column;flex:1">
@@ -937,7 +937,6 @@ var activeJobId = null; var jobPollTimer = null; var lastLogIndex = 0;
 async function startAsyncJob(jobType) {
   if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
   if (activeJobId) { showToast('A job is already running. Stop it first.', 'amber'); return; }
-  if (kgRunning) { showToast('KG extraction is running. Stop it first.', 'amber'); return; }
   var res = await sbFetch('geo_jobs', 'POST', { job_type: jobType, status: 'running', progress: {} }); if (!res.ok || !res.data || !res.data.length) { showToast('Failed to create job.', 'red'); return; }
   var job = res.data[0]; activeJobId = job.id; lastLogIndex = 0;
   logRun('=== JOB STARTED: ' + jobType.toUpperCase() + ' ===', 'info'); logRun('Job ID: ' + job.id, 'info'); setAsyncRunningUI(true);
@@ -954,7 +953,6 @@ function setAsyncRunningUI(running) {
 
 async function pollJobStatus() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
-  if (kgRunning) return;
   var res = await sbFetch('geo_jobs?order=created_at.desc&limit=1'); if (!res.ok || !res.data || !res.data.length) return;
   var job = res.data[0]; var progress = job.progress || {};
   var jobBody = document.getElementById('job-status-body');
@@ -1023,158 +1021,6 @@ function logRun(msg, type) { var log = document.getElementById('run-log'); if (!
 function copyLog() { var log = document.getElementById('run-log'); if (!log) return; var text = Array.from(log.querySelectorAll('.log-line')).map(function(l) { return l.textContent.trim(); }).join('\n'); navigator.clipboard.writeText(text).then(function() { showToast('Log copied.', 'green'); }); }
 function clearLog() { var log = document.getElementById('run-log'); if (!log) return; log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>'; lastLogIndex = 999999; }
 
-// === KG EXTRACTION -- PARALLEL CLIENT LOOP ===
-var kgRunning = false;
-var kgStopRequested = false;
-var kgWorkers = 3;
-var kgBatchSize = 10;
-var kgTotals = { batches: 0, articles: 0, entities: 0, relations: 0, errors: 0 };
-var kgActiveWorkers = 0;
-var kgStartTime = null;
-
-function startKgLoop() {
-  if (kgRunning) {
-    kgStopRequested = true;
-    logRun('=== KG STOP REQUESTED ===', 'warn');
-    var btn = document.getElementById('btn-kg-extract');
-    if (btn) { btn.textContent = 'STOPPING...'; btn.style.color = 'var(--amber)'; }
-    return;
-  }
-  if (activeJobId) { showToast('A pipeline job is running. Stop it first.', 'amber'); return; }
-  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
-
-  kgRunning = true;
-  kgStopRequested = false;
-  kgTotals = { batches: 0, articles: 0, entities: 0, relations: 0, errors: 0 };
-  kgActiveWorkers = 0;
-  kgStartTime = Date.now();
-
-  var btn = document.getElementById('btn-kg-extract');
-  if (btn) { btn.textContent = 'STOP KG'; btn.style.color = 'var(--red)'; btn.style.background = 'rgba(255,68,102,0.12)'; }
-
-  logRun('=== KG EXTRACTION STARTED ===', 'kg');
-  logRun('Workers: ' + kgWorkers + ' | Batch size: ' + kgBatchSize, 'kg');
-
-  for (var w = 1; w <= kgWorkers; w++) {
-    kgActiveWorkers++;
-    kgWorkerLoop(w);
-  }
-
-  kgUpdatePanel();
-}
-
-async function kgWorkerLoop(workerId) {
-  var tag = '[W' + workerId + ']';
-  var consecutiveErrors = 0;
-
-  logRun(tag + ' Worker started', 'kg');
-
-  while (!kgStopRequested) {
-    try {
-      var res = await fetch(CFG.sbUrl + '/functions/v1/extract-kg', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CFG.sbKey },
-        body: JSON.stringify({ batch_size: kgBatchSize })
-      });
-
-      if (!res.ok) {
-        consecutiveErrors++;
-        kgTotals.errors++;
-        var errText = '';
-        try { var errData = await res.json(); errText = errData.error || res.status; } catch(e) { errText = 'HTTP ' + res.status; }
-        logRun(tag + ' Error: ' + errText, 'err');
-        if (consecutiveErrors >= 3) {
-          logRun(tag + ' 3 consecutive errors, stopping worker', 'err');
-          break;
-        }
-        await kgDelay(2000);
-        continue;
-      }
-
-      var data = await res.json();
-      consecutiveErrors = 0;
-
-      var processed = data.processed || 0;
-      var entities = data.total_entities || 0;
-      var relations = data.total_relations || 0;
-      var errors = data.errors || 0;
-
-      if (processed === 0) {
-        logRun(tag + ' No more articles to process', 'ok');
-        break;
-      }
-
-      kgTotals.batches++;
-      kgTotals.articles += processed;
-      kgTotals.entities += entities;
-      kgTotals.relations += relations;
-      kgTotals.errors += errors;
-
-      logRun(tag + ' Batch done: ' + processed + ' articles, +' + entities + ' entities, +' + relations + ' relations' + (errors > 0 ? ', ' + errors + ' errors' : ''), errors > 0 ? 'warn' : 'kg');
-
-      kgUpdatePanel();
-
-    } catch (err) {
-      consecutiveErrors++;
-      kgTotals.errors++;
-      logRun(tag + ' Network error: ' + err.message, 'err');
-      if (consecutiveErrors >= 3) {
-        logRun(tag + ' 3 consecutive errors, stopping worker', 'err');
-        break;
-      }
-      await kgDelay(3000);
-    }
-  }
-
-  kgActiveWorkers--;
-  logRun(tag + ' Worker finished', 'kg');
-
-  if (kgActiveWorkers <= 0) {
-    kgFinish();
-  }
-}
-
-function kgDelay(ms) {
-  return new Promise(function(resolve) { setTimeout(resolve, ms); });
-}
-
-function kgFinish() {
-  kgRunning = false;
-  kgStopRequested = false;
-  var elapsed = Math.round((Date.now() - kgStartTime) / 1000);
-  var mins = Math.floor(elapsed / 60);
-  var secs = elapsed % 60;
-  var timeStr = mins > 0 ? mins + 'm ' + secs + 's' : secs + 's';
-
-  logRun('=== KG EXTRACTION COMPLETE ===', 'ok');
-  logRun('Totals: ' + kgTotals.articles + ' articles, ' + kgTotals.entities + ' entities, ' + kgTotals.relations + ' relations, ' + kgTotals.errors + ' errors in ' + timeStr, 'ok');
-
-  var btn = document.getElementById('btn-kg-extract');
-  if (btn) { btn.textContent = 'EXTRACT KG'; btn.style.color = '#b388ff'; btn.style.background = 'rgba(138,43,226,0.12)'; }
-
-  kgUpdatePanel();
-  refreshDashboard();
-}
-
-function kgUpdatePanel() {
-  var jobBody = document.getElementById('job-status-body');
-  if (!jobBody || !kgRunning) return;
-
-  var elapsed = Math.round((Date.now() - kgStartTime) / 1000);
-  var rate = elapsed > 0 ? Math.round((kgTotals.articles / elapsed) * 3600) : 0;
-
-  var html = '';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Mode</span><span style="color:#b388ff;font-size:11px;font-weight:700">KG EXTRACTION</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Workers Active</span><span style="color:#b388ff;font-size:11px">' + kgActiveWorkers + ' / ' + kgWorkers + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Batches</span><span style="color:var(--text);font-size:11px">' + kgTotals.batches + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Articles</span><span style="color:var(--green);font-size:11px">' + kgTotals.articles + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Entities</span><span style="color:#b388ff;font-size:11px">' + kgTotals.entities + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Relations</span><span style="color:#b388ff;font-size:11px">' + kgTotals.relations + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Errors</span><span style="color:var(--red);font-size:11px">' + kgTotals.errors + '</span></div>';
-  html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border);margin-top:4px;padding-top:8px"><span style="color:var(--text2);font-size:11px">Rate</span><span style="color:var(--text);font-size:11px">~' + rate.toLocaleString() + ' articles/hr</span></div>';
-
-  jobBody.innerHTML = html;
-}
 
 // === QUERY KB ===
 var qkbHistory = [];
