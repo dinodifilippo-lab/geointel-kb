@@ -350,14 +350,14 @@ display: flex; align-items: center; justify-content: space-between; background: 
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.9.0</div>
+  <div class="version">v5.9.1</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.0</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.1</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -383,9 +383,9 @@ display: flex; align-items: center; justify-content: space-between; background: 
         <div class="stat-sub">in knowledge base</div>
       </div>
       <div class="stat stat-green">
-        <div class="stat-lbl">Queue Pending</div>
-        <div class="stat-val" style="color:var(--green)" id="stat-queue-pending">--</div>
-        <div class="stat-sub">awaiting processing</div>
+        <div class="stat-lbl">Embedded</div>
+        <div class="stat-val" style="color:var(--green)" id="stat-embedded">--</div>
+        <div class="stat-sub">with vector index</div>
       </div>
       <div class="stat stat-amber">
         <div class="stat-lbl">Active Sources</div>
@@ -393,9 +393,9 @@ display: flex; align-items: center; justify-content: space-between; background: 
         <div class="stat-sub">being monitored</div>
       </div>
       <div class="stat stat-red">
-        <div class="stat-lbl">Queue Failed</div>
-        <div class="stat-val" style="color:var(--red)" id="stat-queue-failed">--</div>
-        <div class="stat-sub">after 3 retries</div>
+        <div class="stat-lbl">Not Embedded</div>
+        <div class="stat-val" style="color:var(--red)" id="stat-not-embedded">--</div>
+        <div class="stat-sub">pending indexing</div>
       </div>
     </div>
     <div class="action-bar">
@@ -405,6 +405,12 @@ display: flex; align-items: center; justify-content: space-between; background: 
       <button class="btn-run" onclick="startAsyncJob('process')" style="width:auto;margin-top:0;padding:8px 18px;min-width:120px;background:rgba(0,255,136,0.08);color:var(--green)">PROCESS ONLY</button>
       <button class="btn-run" id="btn-retry-failed" onclick="retryFailed()" style="width:auto;margin-top:0;padding:8px 18px;min-width:120px;background:rgba(255,68,102,0.08);color:var(--red);display:none">RETRY FAILED</button>
       <button class="btn-run" id="btn-kg-extract" onclick="startAsyncJob('extract-kg')" style="width:auto;margin-top:0;padding:8px 18px;min-width:140px;background:rgba(138,43,226,0.12);color:#b388ff">EXTRACT KG</button>
+    </div>
+    <div class="panel" style="margin-bottom:4px">
+      <div class="panel-hdr"><div class="panel-title">Source Stats</div><button class="btn-sm" onclick="loadSourceStats()">&#8635;</button></div>
+      <div id="source-stats-body" style="padding:10px 18px">
+        <div style="color:var(--text3);font-size:12px;text-align:center;padding:8px 0">Loading...</div>
+      </div>
     </div>
     <div class="dash-grid">
       <div class="panel" style="display:flex;flex-direction:column;flex:1">
@@ -421,21 +427,9 @@ display: flex; align-items: center; justify-content: space-between; background: 
       </div>
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="panel">
-          <div class="panel-hdr"><div class="panel-title">Source Stats</div><button class="btn-sm" onclick="loadSourceStats()">&#8635;</button></div>
-          <div class="panel-body" id="source-stats-body">
-            <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">Loading...</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-hdr"><div class="panel-title">Job Status</div></div>
+          <div class="panel-hdr"><div class="panel-title">Job Status</div><button class="btn-sm" onclick="clearJobStatus()">Clear</button></div>
           <div class="panel-body" id="job-status-body">
             <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No active job</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-hdr"><div class="panel-title">Queue Status</div></div>
-          <div class="panel-body" id="queue-status-body">
-            <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">Loading...</div>
           </div>
         </div>
       </div>
@@ -949,55 +943,31 @@ async function deleteSelectedArticles() { if (!selectedArticleIds.length) return
 async function loadDashboardStats() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
   var totalArticles = await sbCount('geo_articles', 'hidden=neq.true'); var el = document.getElementById('stat-total-articles'); if (el) el.textContent = totalArticles;
-  var pendingCount = await sbCount('geo_queue', 'status=eq.pending'); var el2 = document.getElementById('stat-queue-pending'); if (el2) el2.textContent = pendingCount;
-  var failedCount = await sbCount('geo_queue', 'status=eq.failed'); var el3 = document.getElementById('stat-queue-failed'); if (el3) el3.textContent = failedCount;
-  var btnRetry = document.getElementById('btn-retry-failed'); if (btnRetry) btnRetry.style.display = failedCount > 0 ? '' : 'none';
+  var embeddedCount = await sbCount('geo_articles', 'hidden=neq.true&embedding=not.is.null'); var el2 = document.getElementById('stat-embedded'); if (el2) el2.textContent = embeddedCount;
+  var notEmbedded = totalArticles - embeddedCount; var el3 = document.getElementById('stat-not-embedded'); if (el3) el3.textContent = notEmbedded;
   var activeSrc = SOURCES.filter(function(s) { return s.active === true; }).length; var el4 = document.getElementById('stat-active-sources'); if (el4) el4.textContent = activeSrc;
-  await loadQueueStatus();
-}
-
-async function loadQueueStatus() {
-  var body = document.getElementById('queue-status-body'); if (!body) return;
-  var res = await sbFetch('geo_queue?select=source_id,status'); if (!res.ok || !res.data) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No data</div>'; return; }
-  var counts = {}; res.data.forEach(function(r) { var srcId = r.source_id; if (!counts[srcId]) counts[srcId] = { pending: 0, done: 0, error: 0, failed: 0 }; var st = r.status || 'pending'; if (counts[srcId][st] !== undefined) counts[srcId][st]++; });
-  var html = '';
-  SOURCES.forEach(function(s) { var c = counts[String(s.id)]; if (!c) return; var total = c.pending + c.done + c.error + c.failed; if (total === 0) return; html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="flex:1;color:var(--text);font-size:11px">' + esc(s.name) + '</span><span style="color:var(--accent);font-size:10px">' + c.pending + ' pend</span><span style="color:var(--green);font-size:10px">' + c.done + ' done</span>'; if (c.error > 0) html += '<span style="color:var(--amber);font-size:10px">' + c.error + ' err</span>'; if (c.failed > 0) html += '<span style="color:var(--red);font-size:10px">' + c.failed + ' fail</span>'; html += '</div>'; });
-  if (!html) html = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">Queue empty</div>';
-  body.innerHTML = html;
 }
 
 function refreshDashboard() { loadDashboardStats(); loadSourceStats(); var ts = document.getElementById('dash-refresh-ts'); if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString(); }
 
+function clearJobStatus() {
+  var body = document.getElementById('job-status-body');
+  if (body) body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No active job</div>';
+}
+
 async function loadSourceStats() {
   var body = document.getElementById('source-stats-body');
   if (!body || !CFG.sbUrl || !CFG.sbKey) return;
-  body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0"><span class="spinner"></span></div>';
+  body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:8px 0"><span class="spinner"></span></div>';
   try {
-    var activeSources = SOURCES.filter(function(s) { return s.active; });
-    if (activeSources.length === 0) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No active sources</div>'; return; }
-    var sourceIds = activeSources.map(function(s) { return String(s.id); });
-    var artRes = await sbFetch('geo_articles?select=source_id,content_original,embedding&hidden=neq.true&source_id=in.(' + sourceIds.join(',') + ')&limit=50000');
-    if (!artRes.ok || !artRes.data) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:12px 0">Failed to load</div>'; return; }
-    var stats = {};
-    sourceIds.forEach(function(sid) { stats[sid] = { discovered: 0, processed: 0, embedded: 0 }; });
-    artRes.data.forEach(function(a) {
-      var sid = String(a.source_id);
-      if (!stats[sid]) stats[sid] = { discovered: 0, processed: 0, embedded: 0 };
-      stats[sid].discovered++;
-      if (a.content_original) stats[sid].processed++;
-      if (a.embedding) stats[sid].embedded++;
+    var res = await fetch(CFG.sbUrl + '/rest/v1/rpc/get_source_stats', {
+      method: 'POST',
+      headers: { 'apikey': CFG.sbKey, 'Authorization': 'Bearer ' + CFG.sbKey, 'Content-Type': 'application/json' },
+      body: '{}'
     });
-    var kgStats = {};
-    try {
-      var kgRes = await sbFetch('kg_extraction_log?select=article_id,geo_articles!inner(source_id)&limit=50000');
-      if (kgRes.ok && kgRes.data) {
-        kgRes.data.forEach(function(r) {
-          var sid = String(r.geo_articles.source_id);
-          if (!kgStats[sid]) kgStats[sid] = 0;
-          kgStats[sid]++;
-        });
-      }
-    } catch(e) {}
+    if (!res.ok) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:8px 0">Failed to load (HTTP ' + res.status + ')</div>'; return; }
+    var data = await res.json();
+    if (!data || data.length === 0) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:8px 0">No active sources</div>'; return; }
     var html = '<div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:0;font-size:10px">';
     html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)">SOURCE</div>';
     html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">DISC</div>';
@@ -1005,18 +975,15 @@ async function loadSourceStats() {
     html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">EMBD</div>';
     html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">KG</div>';
     var totalD = 0, totalP = 0, totalE = 0, totalK = 0;
-    activeSources.forEach(function(s) {
-      var sid = String(s.id);
-      var st = stats[sid] || { discovered: 0, processed: 0, embedded: 0 };
-      var kg = kgStats[sid] || 0;
-      totalD += st.discovered; totalP += st.processed; totalE += st.embedded; totalK += kg;
-      var procColor = st.processed === st.discovered ? 'var(--green)' : 'var(--amber)';
-      var embColor = st.embedded === st.discovered ? 'var(--green)' : 'var(--amber)';
-      html += '<div style="padding:5px 8px;color:var(--text);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.name) + '</div>';
-      html += '<div style="padding:5px 8px;color:var(--accent);text-align:right;border-bottom:1px solid var(--border)">' + st.discovered + '</div>';
-      html += '<div style="padding:5px 8px;color:' + procColor + ';text-align:right;border-bottom:1px solid var(--border)">' + st.processed + '</div>';
-      html += '<div style="padding:5px 8px;color:' + embColor + ';text-align:right;border-bottom:1px solid var(--border)">' + st.embedded + '</div>';
-      html += '<div style="padding:5px 8px;color:#b388ff;text-align:right;border-bottom:1px solid var(--border)">' + kg + '</div>';
+    data.forEach(function(r) {
+      totalD += Number(r.total); totalP += Number(r.with_content); totalE += Number(r.embedded); totalK += Number(r.kg_extracted);
+      var procColor = Number(r.with_content) === Number(r.total) ? 'var(--green)' : 'var(--amber)';
+      var embColor = Number(r.embedded) === Number(r.total) ? 'var(--green)' : 'var(--amber)';
+      html += '<div style="padding:5px 8px;color:var(--text);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.source_name) + '</div>';
+      html += '<div style="padding:5px 8px;color:var(--accent);text-align:right;border-bottom:1px solid var(--border)">' + r.total + '</div>';
+      html += '<div style="padding:5px 8px;color:' + procColor + ';text-align:right;border-bottom:1px solid var(--border)">' + r.with_content + '</div>';
+      html += '<div style="padding:5px 8px;color:' + embColor + ';text-align:right;border-bottom:1px solid var(--border)">' + r.embedded + '</div>';
+      html += '<div style="padding:5px 8px;color:#b388ff;text-align:right;border-bottom:1px solid var(--border)">' + r.kg_extracted + '</div>';
     });
     html += '<div style="padding:5px 8px;color:#fff;font-weight:700">TOTAL</div>';
     html += '<div style="padding:5px 8px;color:var(--accent);text-align:right;font-weight:700">' + totalD + '</div>';
@@ -1025,7 +992,7 @@ async function loadSourceStats() {
     html += '<div style="padding:5px 8px;color:#b388ff;text-align:right;font-weight:700">' + totalK + '</div>';
     html += '</div>';
     body.innerHTML = html;
-  } catch(e) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:12px 0">Error: ' + esc(e.message) + '</div>'; }
+  } catch(e) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:8px 0">Error: ' + esc(e.message) + '</div>'; }
 }
 
 // === ASYNC JOB PIPELINE ===
