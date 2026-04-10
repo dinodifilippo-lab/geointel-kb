@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -263,75 +264,81 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 /* === QUERY KB === */
 #view-query { display: none; flex: 1; flex-direction: column; padding: 20px; gap: 14px; overflow: hidden; min-height: 0; }
 #view-query.active { display: flex; }
-.q-panel { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent); flex-shrink: 0; }
+.q-panel { background: var(–surface); border: 1px solid var(–border); border-top: 3px solid var(–accent); flex-shrink: 0; }
 .q-hdr {
-  padding: 10px 18px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3);
+padding: 10px 18px; border-bottom: 1px solid var(–border);
+display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3);
 }
-.q-hdr-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); }
-.q-hdr-info { font-size: 10px; color: var(--text3); letter-spacing: 0.5px; flex: 1; }
-.q-body { padding: 14px 18px; background: var(--bg); display: flex; gap: 12px; align-items: flex-start; }
+.q-hdr-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–text2); }
+.q-hdr-info { font-size: 10px; color: var(–text3); letter-spacing: 0.5px; flex: 1; }
+.q-body { padding: 14px 18px; background: var(–bg); display: flex; gap: 12px; align-items: flex-start; }
 .q-input {
-  flex: 1; background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text); font-family: var(--mono); font-size: 13px; padding: 12px 16px;
-  outline: none; resize: none; min-height: 44px; max-height: 140px; line-height: 1.6;
+flex: 1; background: var(–surface2); border: 1px solid var(–border);
+color: var(–text); font-family: var(–mono); font-size: 13px; padding: 12px 16px;
+outline: none; resize: none; min-height: 44px; max-height: 140px; line-height: 1.6;
 }
-.q-input::placeholder { color: var(--text3); }
-.q-input:focus { border-color: var(--accent); background: var(--bg); }
+.q-input::placeholder { color: var(–text3); }
+.q-input:focus { border-color: var(–accent); background: var(–bg); }
 .q-btn {
-  background: var(--accent); border: none; color: var(--bg);
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  letter-spacing: 2px; padding: 12px 24px; cursor: pointer;
-  text-transform: uppercase; flex-shrink: 0;
+background: var(–accent); border: none; color: var(–bg);
+font-family: var(–mono); font-size: 11px; font-weight: 700;
+letter-spacing: 2px; padding: 12px 24px; cursor: pointer;
+text-transform: uppercase; flex-shrink: 0;
 }
 .q-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .q-btn:hover:not(:disabled) { background: #33e0ff; }
 .c-panel {
-  background: var(--surface); border: 1px solid var(--border);
-  flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+background: var(–surface); border: 1px solid var(–border);
+flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;
 }
 .c-hdr {
-  padding: 10px 18px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3);
+padding: 10px 18px; border-bottom: 1px solid var(–border);
+display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3);
 }
 .c-thread { flex: 1; overflow-y: auto; background: #010406; }
-.c-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text3); font-size: 11px; letter-spacing: 1px; }
+.c-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(–text3); font-size: 11px; letter-spacing: 1px; }
 .qmsg { border-bottom: 1px solid rgba(26,74,114,0.5); padding: 20px 22px; }
 .qmsg:last-child { border-bottom: none; }
-.qmsg-user { border-left: 3px solid var(--accent); background: rgba(0,212,255,0.02); }
-.qmsg-ai { border-left: 3px solid var(--green); background: transparent; }
-.qmsg-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.qmsg-label-u { color: var(--accent); }
-.qmsg-label-a { color: var(--green); }
-.qmsg-time { color: var(--text3); font-size: 9px; letter-spacing: 1px; }
-.qmsg-body { font-family: var(--sans); font-size: 13px; line-height: 1.9; color: var(--text); }
+.qmsg-user { border-left: 3px solid var(–accent); background: rgba(0,212,255,0.02); }
+.qmsg-ai { border-left: 3px solid var(–green); background: transparent; }
+.qmsg-label { font-family: var(–mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.qmsg-label-u { color: var(–accent); }
+.qmsg-label-a { color: var(–green); }
+.qmsg-time { color: var(–text3); font-size: 9px; letter-spacing: 1px; }
+.qmsg-body { font-family: var(–sans); font-size: 13px; line-height: 1.9; color: var(–text); }
 .qmsg-body p { margin-bottom: 12px; }
 .qmsg-body p:last-child { margin-bottom: 0; }
 .qmsg-body strong { color: #fff; font-weight: 600; }
 .qmsg-body ul, .qmsg-body ol { margin: 8px 0 10px 20px; }
 .qmsg-body li { margin-bottom: 5px; }
-.src-box { margin-top: 16px; padding: 14px 16px; background: rgba(2,5,7,0.6); border: 1px solid var(--border); }
-.src-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.src-box { margin-top: 16px; padding: 14px 16px; background: rgba(2,5,7,0.6); border: 1px solid var(–border); }
+.src-label { font-family: var(–mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(–text3); margin-bottom: 10px; }
 .src-item { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; font-size: 11px; line-height: 1.5; }
-.src-idx { color: var(--accent); font-family: var(--mono); font-size: 10px; min-width: 20px; flex-shrink: 0; }
-.src-title a { color: var(--accent); text-decoration: none; }
+.src-idx { color: var(–accent); font-family: var(–mono); font-size: 10px; min-width: 20px; flex-shrink: 0; }
+.src-title a { color: var(–accent); text-decoration: none; }
 .src-title a:hover { text-decoration: underline; }
-.src-meta { color: var(--text3); font-size: 10px; }
-.qmsg-think { border-bottom: 1px solid rgba(26,74,114,0.5); padding: 16px 22px; border-left: 3px solid var(--amber); background: rgba(255,170,0,0.02); }
+.src-meta { color: var(–text3); font-size: 10px; }
+.qmsg-think { border-bottom: 1px solid rgba(26,74,114,0.5); padding: 16px 22px; border-left: 3px solid var(–amber); background: rgba(255,170,0,0.02); }
 .think-inner { display: flex; align-items: center; gap: 12px; }
-.think-text { color: var(--amber); font-size: 11px; font-family: var(--mono); letter-spacing: 1px; animation: pulse 1.5s infinite; }
-.think-dot { width: 5px; height: 5px; background: var(--amber); border-radius: 50%; display: inline-block; animation: pulse 1.2s infinite; }
+.think-text { color: var(–amber); font-size: 11px; font-family: var(–mono); letter-spacing: 1px; animation: pulse 1.5s infinite; }
+.think-dot { width: 5px; height: 5px; background: var(–amber); border-radius: 50%; display: inline-block; animation: pulse 1.2s infinite; }
 .think-dot:nth-child(2) { animation-delay: 0.2s; }
 .think-dot:nth-child(3) { animation-delay: 0.4s; }
 </style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </head>
 <body>
 
 <!-- LOGIN -->
+
 <div id="login">
   <div>
     <div class="wordmark">Geo<span>Intel</span> KB</div>
@@ -343,13 +350,14 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.8.2</div>
+  <div class="version">v5.9.0</div>
 </div>
 
 <!-- APP -->
+
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.8.2</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.0</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -366,6 +374,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </header>
 
   <!-- DASHBOARD -->
+
   <div class="view active" id="view-dashboard">
     <div class="stats">
       <div class="stat stat-cyan">
@@ -412,6 +421,12 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
       </div>
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="panel">
+          <div class="panel-hdr"><div class="panel-title">Source Stats</div><button class="btn-sm" onclick="loadSourceStats()">&#8635;</button></div>
+          <div class="panel-body" id="source-stats-body">
+            <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">Loading...</div>
+          </div>
+        </div>
+        <div class="panel">
           <div class="panel-hdr"><div class="panel-title">Job Status</div></div>
           <div class="panel-body" id="job-status-body">
             <div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No active job</div>
@@ -428,6 +443,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- SOURCES -->
+
   <div class="view" id="view-sources">
     <div class="toolbar">
       <input class="search-input" placeholder="Filter sources&hellip;" oninput="filterSrcUI(this.value)"/>
@@ -453,6 +469,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- ARTICLES -->
+
   <div class="view" id="view-articles">
     <div id="articles-alert" style="display:none"></div>
     <div class="toolbar">
@@ -475,6 +492,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- ARTICLE DETAIL -->
+
   <div class="view" id="view-article-detail">
     <button class="btn-outline" style="width:fit-content" onclick="showView('articles', document.querySelector('nav button:nth-child(3)'))">&#8592; Back</button>
     <div class="detail-wrap" id="article-detail-content">
@@ -483,19 +501,33 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- MANUAL UPLOAD -->
+
   <div class="view" id="view-upload">
     <div class="toolbar">
       <span style="color:var(--text2);font-size:12px;letter-spacing:1px">MANUAL UPLOAD</span>
       <span style="color:var(--text3);font-size:11px;margin-left:8px" id="upload-doc-count"></span>
       <button class="btn-outline" style="margin-left:auto" onclick="loadUploadedDocs()">&#8635; Refresh</button>
     </div>
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('upload-file-input').click()">
-      <div class="upload-zone-icon">&#8682;</div>
-      <div class="upload-zone-text">Tap to select files or drag &amp; drop</div>
-      <div class="upload-zone-sub">PDF &middot; DOCX &middot; PPTX &middot; XLSX</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('upload-file-input').click()">
+          <div class="upload-zone-icon">&#8682;</div>
+          <div class="upload-zone-text">Tap to select files or drag &amp; drop</div>
+          <div class="upload-zone-sub">PDF &middot; DOCX &middot; PPTX &middot; XLSX</div>
+        </div>
+        <input type="file" id="upload-file-input" multiple accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="handleFileUpload(this.files)"/>
+        <div class="upload-progress" id="upload-progress"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-hdr"><div class="panel-title">Paste Text</div></div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+          <div class="form-row"><label>Title</label><input type="text" id="paste-title" placeholder="Article title..."/></div>
+          <div class="form-row"><label>Source</label><select id="paste-source" class="filter-select" style="width:100%"><option value="">Select source...</option></select></div>
+          <div class="form-row"><label>Content</label><textarea id="paste-content" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;outline:none;width:100%;min-height:120px;resize:vertical" placeholder="Paste article text here..."></textarea></div>
+          <button class="btn-accent" onclick="savePastedArticle()">SAVE ARTICLE</button>
+        </div>
+      </div>
     </div>
-    <input type="file" id="upload-file-input" multiple accept=".pdf,.docx,.pptx,.xlsx" style="display:none" onchange="handleFileUpload(this.files)"/>
-    <div class="upload-progress" id="upload-progress"></div>
     <div class="select-action-bar" id="doc-select-bar">
       <span class="select-count" id="doc-select-count">0 selected</span>
       <button class="btn-sm" onclick="selectAllDocs()">All</button>
@@ -514,6 +546,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- QUERY KB -->
+
   <div class="view" id="view-query">
     <div class="q-panel">
       <div class="q-hdr">
@@ -535,6 +568,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
   </div>
 
   <!-- CONFIG -->
+
   <div class="view" id="view-config">
     <div class="panel">
       <div class="panel-hdr"><div class="panel-title">Connection</div></div>
@@ -570,6 +604,7 @@ nav button.active { color: var(--accent); background: rgba(0,212,255,0.12); bord
 </div>
 
 <!-- MODALS -->
+
 <div class="modal-overlay" id="modal-source">
   <div class="modal">
     <div class="modal-hdr">
@@ -616,6 +651,7 @@ function showApp() {
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').classList.add('visible');
   loadCFGtoForm();
+  restoreLog();
   if (CFG.sbUrl && CFG.sbKey) { loadSources(); refreshDashboard(); }
   startJobPoll();
 }
@@ -756,6 +792,7 @@ async function loadSources() {
     artSrcFilter.innerHTML = '<option value="">All sources</option>';
     SOURCES.forEach(function(s) { artSrcFilter.innerHTML += '<option value="' + esc(String(s.id)) + '">' + esc(s.name) + '</option>'; });
   }
+  populatePasteSourceSelect();
 }
 
 function renderSources(list) {
@@ -929,7 +966,67 @@ async function loadQueueStatus() {
   body.innerHTML = html;
 }
 
-function refreshDashboard() { loadDashboardStats(); var ts = document.getElementById('dash-refresh-ts'); if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString(); }
+function refreshDashboard() { loadDashboardStats(); loadSourceStats(); var ts = document.getElementById('dash-refresh-ts'); if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString(); }
+
+async function loadSourceStats() {
+  var body = document.getElementById('source-stats-body');
+  if (!body || !CFG.sbUrl || !CFG.sbKey) return;
+  body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0"><span class="spinner"></span></div>';
+  try {
+    var activeSources = SOURCES.filter(function(s) { return s.active; });
+    if (activeSources.length === 0) { body.innerHTML = '<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px 0">No active sources</div>'; return; }
+    var sourceIds = activeSources.map(function(s) { return String(s.id); });
+    var artRes = await sbFetch('geo_articles?select=source_id,content_original,embedding&hidden=neq.true&source_id=in.(' + sourceIds.join(',') + ')&limit=50000');
+    if (!artRes.ok || !artRes.data) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:12px 0">Failed to load</div>'; return; }
+    var stats = {};
+    sourceIds.forEach(function(sid) { stats[sid] = { discovered: 0, processed: 0, embedded: 0 }; });
+    artRes.data.forEach(function(a) {
+      var sid = String(a.source_id);
+      if (!stats[sid]) stats[sid] = { discovered: 0, processed: 0, embedded: 0 };
+      stats[sid].discovered++;
+      if (a.content_original) stats[sid].processed++;
+      if (a.embedding) stats[sid].embedded++;
+    });
+    var kgStats = {};
+    try {
+      var kgRes = await sbFetch('kg_extraction_log?select=article_id,geo_articles!inner(source_id)&limit=50000');
+      if (kgRes.ok && kgRes.data) {
+        kgRes.data.forEach(function(r) {
+          var sid = String(r.geo_articles.source_id);
+          if (!kgStats[sid]) kgStats[sid] = 0;
+          kgStats[sid]++;
+        });
+      }
+    } catch(e) {}
+    var html = '<div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:0;font-size:10px">';
+    html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border)">SOURCE</div>';
+    html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">DISC</div>';
+    html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">PROC</div>';
+    html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">EMBD</div>';
+    html += '<div style="padding:4px 8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;text-align:right;border-bottom:1px solid var(--border)">KG</div>';
+    var totalD = 0, totalP = 0, totalE = 0, totalK = 0;
+    activeSources.forEach(function(s) {
+      var sid = String(s.id);
+      var st = stats[sid] || { discovered: 0, processed: 0, embedded: 0 };
+      var kg = kgStats[sid] || 0;
+      totalD += st.discovered; totalP += st.processed; totalE += st.embedded; totalK += kg;
+      var procColor = st.processed === st.discovered ? 'var(--green)' : 'var(--amber)';
+      var embColor = st.embedded === st.discovered ? 'var(--green)' : 'var(--amber)';
+      html += '<div style="padding:5px 8px;color:var(--text);border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(s.name) + '</div>';
+      html += '<div style="padding:5px 8px;color:var(--accent);text-align:right;border-bottom:1px solid var(--border)">' + st.discovered + '</div>';
+      html += '<div style="padding:5px 8px;color:' + procColor + ';text-align:right;border-bottom:1px solid var(--border)">' + st.processed + '</div>';
+      html += '<div style="padding:5px 8px;color:' + embColor + ';text-align:right;border-bottom:1px solid var(--border)">' + st.embedded + '</div>';
+      html += '<div style="padding:5px 8px;color:#b388ff;text-align:right;border-bottom:1px solid var(--border)">' + kg + '</div>';
+    });
+    html += '<div style="padding:5px 8px;color:#fff;font-weight:700">TOTAL</div>';
+    html += '<div style="padding:5px 8px;color:var(--accent);text-align:right;font-weight:700">' + totalD + '</div>';
+    html += '<div style="padding:5px 8px;color:var(--green);text-align:right;font-weight:700">' + totalP + '</div>';
+    html += '<div style="padding:5px 8px;color:var(--green);text-align:right;font-weight:700">' + totalE + '</div>';
+    html += '<div style="padding:5px 8px;color:#b388ff;text-align:right;font-weight:700">' + totalK + '</div>';
+    html += '</div>';
+    body.innerHTML = html;
+  } catch(e) { body.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:12px 0">Error: ' + esc(e.message) + '</div>'; }
+}
 
 // === ASYNC JOB PIPELINE ===
 var activeJobId = null; var jobPollTimer = null; var lastLogIndex = 0;
@@ -963,6 +1060,7 @@ async function pollJobStatus() {
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Phase</span><span style="color:var(--accent);font-size:11px">' + (progress.phase || '-') + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Discovered</span><span style="color:var(--text);font-size:11px">' + (progress.total_discovered || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Processed</span><span style="color:var(--green);font-size:11px">' + (progress.total_processed || 0) + '</span></div>';
+    html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Embedded</span><span style="color:var(--green);font-size:11px">' + (progress.total_embedded || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">Errors</span><span style="color:var(--red);font-size:11px">' + (progress.total_errors || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">KG Articles</span><span style="color:#b388ff;font-size:11px">' + (progress.total_kg_articles || 0) + '</span></div>';
     html += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text2);font-size:11px">KG Entities</span><span style="color:#b388ff;font-size:11px">' + (progress.total_kg_entities || 0) + '</span></div>';
@@ -1003,6 +1101,44 @@ async function handleFileUpload(fileList) {
   setTimeout(function() { progressDiv.classList.remove('active'); progressDiv.innerHTML = ''; }, 5000);
 }
 
+// === PASTE TEXT UPLOAD ===
+function populatePasteSourceSelect() {
+  var sel = document.getElementById('paste-source');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Select source...</option>';
+  SOURCES.forEach(function(s) { sel.innerHTML += '<option value="' + esc(String(s.id)) + '">' + esc(s.name) + '</option>'; });
+}
+
+async function savePastedArticle() {
+  var title = document.getElementById('paste-title').value.trim();
+  var content = document.getElementById('paste-content').value.trim();
+  var sourceId = document.getElementById('paste-source').value;
+  if (!title) { showToast('Title is required.', 'amber'); return; }
+  if (!content) { showToast('Content is required.', 'amber'); return; }
+  if (!sourceId) { showToast('Select a source.', 'amber'); return; }
+  if (!CFG.sbUrl || !CFG.sbKey) { showToast('Configure Supabase first.', 'amber'); return; }
+  var urlHash = await hashStr(title + '_' + Date.now());
+  var data = {
+    source_id: sourceId,
+    title: title,
+    content_original: content,
+    url: 'manual://' + urlHash.substring(0, 16),
+    url_hash: urlHash.substring(0, 32),
+    scraped_at: new Date().toISOString(),
+    published_at: new Date().toISOString(),
+    original_language: 'en'
+  };
+  var res = await sbFetch('geo_articles', 'POST', data);
+  if (res.ok) {
+    document.getElementById('paste-title').value = '';
+    document.getElementById('paste-content').value = '';
+    document.getElementById('paste-source').value = '';
+    showToast('Article saved. Will be embedded on next job run.', 'green');
+  } else {
+    showToast('Failed to save article.', 'red');
+  }
+}
+
 // === UPLOAD ARCHIVE ===
 var DOCS = []; var docSelectMode = false; var selectedDocIds = [];
 async function loadUploadedDocs() { var archive = document.getElementById('upload-archive'); if (!archive) return; if (!CFG.sbUrl || !CFG.sbKey) { archive.innerHTML = '<div class="empty-state" style="padding:30px">Configure Supabase first.</div>'; return; } archive.innerHTML = '<div class="empty-state" style="padding:20px"><span class="spinner"></span></div>'; var res = await sbFetch('geo_documents?hidden=neq.true&order=uploaded_at.desc&limit=200'); if (!res.ok || !res.data) { archive.innerHTML = '<div class="empty-state" style="padding:30px">Failed to load.</div>'; return; } DOCS = res.data; var countEl = document.getElementById('upload-doc-count'); if (countEl) countEl.textContent = DOCS.length + ' document' + (DOCS.length !== 1 ? 's' : ''); renderDocs(); }
@@ -1016,10 +1152,46 @@ async function deleteDoc(id, name) { if (!confirm('Delete "' + name + '"?')) ret
 
 if (typeof pdfjsLib !== 'undefined') { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
 
-// === LOG ===
-function logRun(msg, type) { var log = document.getElementById('run-log'); if (!log) return; var time = new Date().toLocaleTimeString(); var div = document.createElement('div'); div.className = 'log-line'; div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + esc(msg) + '</span>'; log.appendChild(div); log.scrollTop = log.scrollHeight; }
+// === LOG (persistent) ===
+var LOG_STORAGE_KEY = 'gi_run_log';
+var LOG_MAX_ENTRIES = 500;
+
+function logRun(msg, type) {
+  var log = document.getElementById('run-log');
+  if (!log) return;
+  var time = new Date().toLocaleTimeString();
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || 'info') + '">' + esc(msg) + '</span>';
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  try {
+    var stored = JSON.parse(localStorage.getItem(LOG_STORAGE_KEY) || '[]');
+    stored.push({ t: time, m: msg, c: type || 'info' });
+    if (stored.length > LOG_MAX_ENTRIES) stored = stored.slice(-LOG_MAX_ENTRIES);
+    localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(stored));
+  } catch(e) {}
+}
+
+function restoreLog() {
+  try {
+    var stored = JSON.parse(localStorage.getItem(LOG_STORAGE_KEY) || '[]');
+    if (stored.length === 0) return;
+    var log = document.getElementById('run-log');
+    if (!log) return;
+    log.innerHTML = '';
+    stored.forEach(function(entry) {
+      var div = document.createElement('div');
+      div.className = 'log-line';
+      div.innerHTML = '<span class="log-time">' + esc(entry.t) + '</span><span class="log-msg ' + (entry.c || 'info') + '">' + esc(entry.m) + '</span>';
+      log.appendChild(div);
+    });
+    log.scrollTop = log.scrollHeight;
+  } catch(e) {}
+}
+
 function copyLog() { var log = document.getElementById('run-log'); if (!log) return; var text = Array.from(log.querySelectorAll('.log-line')).map(function(l) { return l.textContent.trim(); }).join('\n'); navigator.clipboard.writeText(text).then(function() { showToast('Log copied.', 'green'); }); }
-function clearLog() { var log = document.getElementById('run-log'); if (!log) return; log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>'; lastLogIndex = 999999; }
+function clearLog() { var log = document.getElementById('run-log'); if (!log) return; log.innerHTML = '<div class="log-line"><span class="log-time">--:--</span><span class="log-msg info">Log cleared.</span></div>'; lastLogIndex = 999999; try { localStorage.removeItem(LOG_STORAGE_KEY); } catch(e) {} }
 
 
 // === QUERY KB ===
@@ -1171,5 +1343,6 @@ showView = function(id, btn) {
 };
 
 </script>
+
 </body>
 </html>
