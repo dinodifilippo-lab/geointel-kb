@@ -350,14 +350,14 @@ display: flex; align-items: center; justify-content: space-between; background: 
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.9.4</div>
+  <div class="version">v5.9.5</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.4</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.5</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -956,8 +956,8 @@ async function deleteSelectedArticles() { if (!selectedArticleIds.length) return
 async function loadDashboardStats() {
   if (!CFG.sbUrl || !CFG.sbKey) return;
 
-  // Queued (geo_queue pending)
-  var queued = await sbCount('geo_queue', 'status=eq.pending');
+    // Queued (all items in pipeline)
+  var queued = await sbCount('geo_queue');
   var elQ = document.getElementById('stat-queued');
   if (elQ) elQ.textContent = queued.toLocaleString();
 
