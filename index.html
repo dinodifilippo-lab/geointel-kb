@@ -350,14 +350,14 @@ display: flex; align-items: center; justify-content: space-between; background: 
     <div class="login-error" id="login-error"></div>
     <button class="btn-enter" onclick="doLogin()">ENTER</button>
   </div>
-  <div class="version">v5.9.5</div>
+  <div class="version">v5.9.6</div>
 </div>
 
 <!-- APP -->
 
 <div id="app">
   <header>
-    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.5</span></div>
+    <div class="logo">Geo<span>Intel</span><span class="logo-ver">v5.9.6</span></div>
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('sources',this)">Sources</button>
@@ -961,8 +961,8 @@ async function loadDashboardStats() {
   var elQ = document.getElementById('stat-queued');
   if (elQ) elQ.textContent = queued.toLocaleString();
 
-  // Processed (geo_articles total)
-  var totalArticles = await sbCount('geo_articles', 'hidden=neq.true');
+    // Processed (geo_articles with content)
+  var totalArticles = await sbCount('geo_articles', 'hidden=neq.true&content_original=not.is.null');
   var elP = document.getElementById('stat-processed');
   if (elP) elP.textContent = totalArticles.toLocaleString();
 
