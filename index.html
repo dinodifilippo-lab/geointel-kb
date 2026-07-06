@@ -642,6 +642,7 @@ async function hashStr(s) {
   return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
 }
 var pwdHash = localStorage.getItem('gi_pwd') || '';
+alert('HASH: ' + pwdHash);
 if (!pwdHash) document.getElementById('login-label').textContent = 'SET APP PASSWORD (FIRST RUN)';
 
 async function doLogin() {
